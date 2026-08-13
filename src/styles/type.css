@@ -20,6 +20,14 @@
   --sans: var(--font-sans);
   --mono: var(--font-mono);
 
+  /* The front page's two faces (astro.config's other two cssVariables — both
+     must be consumed here by name, or the tokens test rightly fails the build
+     for downloading a family nothing uses). --display is Fraunces, the cover's
+     serif, spent at display sizes only; --farsi is Vazirmatn, spent on exactly
+     one word: پایش on the cover. Neither is for body copy. */
+  --display: var(--font-display);
+  --farsi: var(--font-farsi);
+
   /* ── the type scale ───────────────────────────────────────────────────
      Fluid between a 360px and a 1200px viewport, in `vi` rather than `vw`
      because this fleet's CSS stays on logical axes. Body lands 17px → 18px,
@@ -32,6 +40,22 @@
   --text-h3: clamp(1.25rem, 1.1696rem + 0.3571vi, 1.4375rem);
   --text-h2: clamp(1.5rem, 1.3393rem + 0.7143vi, 1.875rem);
   --text-h1: clamp(2rem, 1.6786rem + 1.4286vi, 2.75rem);
+
+  /* ── the cover ────────────────────────────────────────────────────────
+     Three steps only the front page uses, and a branch rather than a
+     stretch of the reading scale: a cover headline at 80px is not a bigger
+     h1, it is a different kind of object — closer to the social cards than
+     to a heading — and folding it into the reading ratio would bend the
+     ratio for twenty pages that never use it. Same 360→1200 fluid range as
+     the rest of the scale.
+
+     cover      the front page's one headline
+     covermark  پایش — the wordmark in its own script, set as a plate
+     ledger     the findings' figures, larger than h2 and smaller than the
+                headline, because on that page the number is the argument */
+  --text-cover: clamp(2.625rem, 1.6071rem + 4.5238vi, 5rem);
+  --text-covermark: clamp(4.5rem, 2.7857rem + 7.619vi, 8.5rem);
+  --text-ledger: clamp(2rem, 1.4643rem + 2.381vi, 3.25rem);
 
   /* ── the social cards ─────────────────────────────────────────────────
      A separate branch of the scale, and separate on purpose: a card is a

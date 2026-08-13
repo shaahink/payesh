@@ -67,58 +67,70 @@ const resolved = items.map((item) => ({
 </ol>
 
 <style>
-  /* Two columns on a wide viewport, because six findings in one column is a
-     scroll rather than a page — and the eye compares the numbers down the
-     column, which is the comparison worth making. One column below the same
-     64rem the table of contents and the corpus table already use, so the site
-     has one breakpoint rather than three nobody can explain.
-
-     `align-items: start` so a short finding does not stretch to the height of
-     the tall one beside it and hang a rule in mid-air. */
+  /* A ledger, not a card grid (2026-08-13, with the front page's ink dress):
+     one finding per row, the figure in its own column on a laptop and the
+     claim beside it, each row opened by a hairline. Down the figure column is
+     where the eye compares the numbers, which is the comparison worth making
+     — and a ledger is what this site actually is, so the front page may as
+     well be set like one. One column below the site's one 64rem breakpoint. */
   .findings {
     list-style: none;
     padding: 0;
-    margin-block-start: var(--space-xl);
-    display: grid;
-    gap: var(--space-xl) var(--space-l);
-    align-items: start;
-  }
-
-  @media (min-width: 64rem) {
-    .findings {
-      grid-template-columns: 1fr 1fr;
-    }
+    margin-block-start: var(--space-l);
   }
 
   .findings li {
     border-block-start: var(--rule);
-    padding-block-start: var(--space-s);
+    padding-block: var(--space-m);
   }
 
-  .figure {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: var(--space-2xs);
+  @media (min-width: 64rem) {
+    .findings li {
+      display: grid;
+      grid-template-columns: minmax(11rem, 15rem) 1fr;
+      column-gap: var(--space-2xl);
+      align-items: start;
+    }
+
+    .figure {
+      grid-column: 1;
+      grid-row: 1 / span 2;
+    }
+
+    .claim {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .where {
+      grid-column: 2;
+      grid-row: 2;
+    }
   }
 
-  /* The one place on the site a figure is set at heading size. It is the front
-     page's argument, and the argument is the number. */
+  /* The largest type on the page after the headline, and still mono, because
+     mono is the promise: this number was recomputed from the store. In the
+     accent — on this page the vermilion marks what a scanning eye should
+     catch, and the number is the argument. */
   .value {
+    display: block;
     font-family: var(--mono);
-    font-size: var(--text-h2);
-    color: var(--text);
+    font-size: var(--text-ledger);
+    color: var(--accent);
     line-height: 1.1;
   }
 
   .label {
+    display: block;
     font-size: var(--text-small);
     color: var(--muted);
+    margin-block-start: var(--space-3xs);
   }
 
   .claim {
     margin-block-start: var(--space-2xs);
     color: var(--text);
+    max-inline-size: var(--measure-narrow);
   }
 
   .where {

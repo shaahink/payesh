@@ -1,9 +1,17 @@
 # Payesh
 
+[![CI](https://github.com/shaahink/payesh/actions/workflows/ci.yml/badge.svg)](https://github.com/shaahink/payesh/actions/workflows/ci.yml)
+[![Gates](https://github.com/shaahink/payesh/actions/workflows/gates.yml/badge.svg)](https://github.com/shaahink/payesh/actions/workflows/gates.yml)
+[![Live](https://img.shields.io/badge/live-payesh.vercel.app-b02f10)](https://payesh.vercel.app)
+
 **A field guide to agentic engineering** — ten concepts the market is hiring for, each one worked
 end to end in a real orchestrator, with what it cost.
 
 Live at **<https://payesh.vercel.app>**.
+
+| paper — the light scheme | soot — the dark scheme |
+| --- | --- |
+| ![The front page in paper: a cream cover, an ink display headline, پایش set large in vermilion, and a contents rail](docs/assets/front-page-paper.png) | ![The same cover in soot: warm near-black, a cream headline, the vermilion brighter](docs/assets/front-page-soot.png) |
 
 *پایش* is Persian for **monitoring**: watching something over time and keeping the record of it,
 which is what this site is made of. The repo was `conductor-site` until 2026-08-07; GitHub
@@ -35,6 +43,19 @@ the phrases this site's own paragraphs use (`linkAs`) to a term index; the first
 them on any other page becomes a link. Adding a name to a concept wires that phrase site-wide,
 including into pages written before the concept existed. See `src/lib/links.ts` for the five rules
 that keep it from becoming a sea of blue.
+
+## The look
+
+The inner pages wear Conductor's terminal Face: the sixteen colour roles in `src/styles/tokens.css`
+are the exact values the Face ships in its mocha and latte schemes, so the site and the tool are
+visibly one thing. The front page is the one exception — it dresses as print (warm paper and ink
+with a single vermilion, in both a light and a dark cut), with a display serif for the cover and
+پایش set in its own script. That dress is scoped to the front page alone; step into any concept and
+you are back in the Face's own palette.
+
+Every colour is a role and every size is a step: `test/tokens.test.mjs` fails the build on a hex or
+a font-size literal outside the two token files, and `test/contrast.test.mjs` recomputes the
+contrast of the shipped palette against the same thresholds the Face's own theme test enforces.
 
 ## The rule that shapes everything
 

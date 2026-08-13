@@ -143,6 +143,40 @@ export default defineConfig({
       styles: ["normal"],
       subsets: ["latin"],
       fallbacks: ["ui-monospace", "SFMono-Regular", "Consolas", "monospace"]
+    },
+
+    /* The front page's two extra faces. Neither is rendered by Base.astro —
+       index.astro injects them through the head slot, so twenty other pages
+       download nothing for them. Both still route through a cssVariable that
+       type.css consumes, same trap, same rule as the two above.
+
+       Fraunces is the cover's display serif: the home page dresses as print —
+       ink on paper — and a grotesk headline would leave that claim half made.
+       It appears at display sizes only; body copy stays in the sans.
+
+       Vazirmatn is for one word: پایش, the site's own name, set large on the
+       cover in the script it is actually written in. The fallback chain would
+       render it in whatever Arabic face the visitor's system carries, which is
+       a different mark on every machine — for a decorative glyph in a footnote
+       that would be fine, for the wordmark it is not. Arabic subset only; the
+       Latin never comes from this face. */
+    {
+      provider: fontProviders.google(),
+      name: "Fraunces",
+      cssVariable: "--font-display",
+      weights: [400, 600],
+      styles: ["normal", "italic"],
+      subsets: ["latin"],
+      fallbacks: ["Georgia", "Times New Roman", "serif"]
+    },
+    {
+      provider: fontProviders.google(),
+      name: "Vazirmatn",
+      cssVariable: "--font-farsi",
+      weights: [400],
+      styles: ["normal"],
+      subsets: ["arabic"],
+      fallbacks: ["Segoe UI", "Tahoma", "sans-serif"]
     }
   ],
 

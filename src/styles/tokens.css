@@ -66,6 +66,72 @@
    is what test/contrast.test.mjs parses. Do not remove it, and keep each
    block's declarations in role order. */
 
+/* ── the front page's dress: ink on paper ──────────────────────────────────
+   The cover wears print where the rest of the site wears the terminal. The
+   inner pages are the Face's own two schemes — that identity stands — and the
+   front page is the jacket around them: warm paper and ink with one vermilion,
+   in the same two-scheme structure (soot when the site is dark, paper when it
+   is light), scoped to `body[data-page="home"]`, which only Base.astro's
+   `pageId` prop ever sets. Nothing outside the front page resolves these.
+
+   Placement is load-bearing: these blocks sit ABOVE the first `scheme` marker
+   because test/contrast.test.mjs slices this file from each marker to the next
+   marker or to the end of file — a hex added after the final latte block would
+   be parsed as latte's and fail the sixteen-role check. Above the first marker
+   is the region the parser deliberately ignores. Keep it that way, and keep
+   bang-comments out of this section.
+
+   Only the reading roles are re-dressed. The semantic roles (green, red,
+   yellow, peach, teal, sky, blue) stay the Face's: they mark status in the two
+   drawings, and status keeps its meaning across the whole site. Measured with
+   the contrast test's own math on both new bases: text 14.7:1 and 15.1:1,
+   muted 4.7–5.2:1 on base and mantle, accent 5.1–6.6:1, and every inherited
+   semantic role ≥ 3.9:1 — all above the bars the marked blocks are held to.
+
+   --muted, --link and --current are re-derived here and not merely inherited,
+   because a custom property substitutes its var()s where it is *declared*: the
+   :root versions have already been mixed from mocha or latte by the time body
+   could inherit them. */
+body[data-page="home"] {
+  /* soot — the dark jacket */
+  --base: #141110;
+  --mantle: #1c1815;
+  --surface: #38322a;
+  --selection: #4a4238;
+  --text: #ece3d1;
+  --accent: #ff6a3c;
+  --muted: color-mix(in srgb, var(--text) 55%, var(--base));
+  --link: var(--accent);
+  --current: color-mix(in srgb, var(--accent) 70%, var(--text));
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) body[data-page="home"] {
+    /* paper — the light jacket; duplicated below for the toggle, same as latte */
+    --base: #f5f0e6;
+    --mantle: #ece5d4;
+    --surface: #d8cfba;
+    --selection: #c8bda2;
+    --text: #211b10;
+    --accent: #b02f10;
+    --muted: color-mix(in srgb, var(--text) 66%, var(--base));
+    --link: var(--accent);
+    --current: color-mix(in srgb, var(--accent) 70%, var(--text));
+  }
+}
+
+:root[data-theme="light"] body[data-page="home"] {
+  --base: #f5f0e6;
+  --mantle: #ece5d4;
+  --surface: #d8cfba;
+  --selection: #c8bda2;
+  --text: #211b10;
+  --accent: #b02f10;
+  --muted: color-mix(in srgb, var(--text) 66%, var(--base));
+  --link: var(--accent);
+  --current: color-mix(in srgb, var(--accent) 70%, var(--text));
+}
+
 /* ── mocha — the default, and what `conductor-face` shows out of the box ─── */
 :root {
   /*! scheme:mocha */

@@ -39,6 +39,11 @@ interface Props {
      entries rather than a wrong guess about which one to write to. */
   editCollection?: string;
   editEntry?: string;
+  /* Names the page on <body data-page> so tokens.css can dress one page
+     differently — today only the front page ("home"), which wears ink on
+     paper while every inner page keeps the Face's two schemes. A page that
+     omits it gets no attribute and no override, which is the right default. */
+  pageId?: string;
 }
 
 const {
@@ -49,7 +54,8 @@ const {
   ogImage,
   canonical,
   editCollection,
-  editEntry
+  editEntry,
+  pageId
 } = Astro.props;
 
 /* Content states paths; the head publishes absolute URLs resolved against
@@ -159,6 +165,7 @@ const ogImageUrl = absolute(Astro.site!, ogImage ?? ogCardFor(canonical));
   </head>
 
   <body
+    data-page={pageId}
     data-sk-collection={editCollection}
     data-sk-entry={editEntry}
     data-sk-editor-path="/edit"

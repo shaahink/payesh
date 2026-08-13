@@ -18,12 +18,23 @@
    then the reader has a reason to use it. Near the foot, the one section
    allowed to face forward — labelled as intent, detailed on /roadmap/.
 
+   The dress is the page's own (2026-08-13, the owner asked for a front page
+   that looks like nothing inside): ink on paper — tokens.css's soot and paper
+   blocks, scoped to `data-page="home"` — a display serif for the cover and the
+   section heads, and پایش set large in its own script. The inner pages keep
+   the Face's two schemes untouched; this page is the jacket around them, the
+   way a field guide's cover is cloth while its plates are paper. What does NOT
+   change with the dress: mono still means "recomputed from a run store" and
+   nothing else, the semantic colours still mark status only, and every rule is
+   still a rule rather than a shadow.
+
    Every section below reads its list from the collections rather than from a
    copy kept here. Ten titles typed onto the front page are ten titles that go
    stale the day one is renamed, and the front page is the one nobody re-reads
    — a rule this repo has already paid for once, when SPEC Part VII's front page
    requirement was owned by no checkpoint and shipped as a stub with every gate
    green on it. */
+import { Font } from "astro:assets";
 import { getEntry } from "astro:content";
 import { isVisible } from "@shaahink/sitekit/visibility";
 import EntryList from "../components/EntryList.astro";
@@ -92,6 +103,24 @@ const doors = await Promise.all(
     links: await Promise.all(entry.where.map(findingTarget))
   }))
 );
+
+/* The cover's contents rail: the sections below, by their own titles, with the
+   same fixed numbers the sections print — fixed rather than renumbered, so a
+   section the owner turns off leaves a gap in the count instead of silently
+   renumbering everything after it and orphaning the numbers a reader already
+   scrolled past. Titles come from the same bindings the sections render, so
+   the rail cannot drift from the page it lists. */
+type RailEntry = { no: string; href: string; label: string };
+const rail: RailEntry[] = [];
+if (isVisible(page.data, "findings")) rail.push({ no: "01", href: "#findings", label: findings.title });
+if (isVisible(page.data, "machine")) rail.push({ no: "02", href: "#machine", label: machine.title });
+if (isVisible(page.data, "orient")) rail.push({ no: "03", href: "#orient", label: orient.title });
+rail.push({ no: "04", href: "#spine", label: spine.title });
+rail.push({ no: "05", href: "#reading", label: reading.title });
+rail.push({ no: "06", href: "#runs", label: runs.title });
+if (isVisible(page.data, "next")) rail.push({ no: "07", href: "#next", label: next.title });
+rail.push({ no: "08", href: "#ways", label: ways.title });
+if (isVisible(page.data, "notes")) rail.push({ no: "09", href: "#notes", label: notes.title });
 ---
 
 <Base
@@ -103,16 +132,34 @@ const doors = await Promise.all(
   canonical={meta.canonical}
   editCollection="homePage"
   editEntry="home"
+  pageId="home"
 >
+  {/* The cover's two faces, injected through the head slot so the twenty inner
+      pages download nothing for them. Both preloaded: both paint above the
+      fold — the headline immediately, the mark beside it. */}
+  <Font cssVariable="--font-display" preload slot="head" />
+  <Font cssVariable="--font-farsi" preload slot="head" />
+
   <main id="main" class="home">
     {/* `data-sk-edit` names the content path the element is showing, and sits
         beside the binding it names so it is easy to write and obvious when it
         rots. The editor checks both that the path resolves and that the
         element is showing that value verbatim — an annotation that has drifted
         says so on the page rather than silently refusing to save. */}
-    <header class="opening">
-      <h1 data-sk-edit="hero.title">{hero.title}</h1>
-      <p class="tagline" data-sk-edit="hero.tagline">{hero.tagline}</p>
+    <header class="cover">
+      <div class="masthead">
+        <div class="title">
+          <h1 data-sk-edit="hero.title">{hero.title}</h1>
+          <p class="tagline" data-sk-edit="hero.tagline">{hero.tagline}</p>
+        </div>
+
+        {/* The site's name in the script it is actually written in, set as the
+            cover's plate. aria-hidden and out of the reading order: the top
+            bar already carries the name and its gloss for every reader, and a
+            screen reader announcing an Arabic-script word between the headline
+            and the standfirst would be decoration read aloud. */}
+        <p class="mark" lang="fa" dir="rtl" aria-hidden="true">پایش</p>
+      </div>
 
       {
         hero.standfirst.map((para, index) => (
@@ -121,6 +168,24 @@ const doors = await Promise.all(
           </p>
         ))
       }
+
+      {/* The contents rail: a cover is allowed to be a contents page in
+          miniature — that is what the cover of a field guide is for. Numbers
+          match the sections' own; labels are the sections' own titles. */}
+      <nav class="contents" aria-label="On this page">
+        <ol>
+          {
+            rail.map((entry) => (
+              <li>
+                <a href={entry.href}>
+                  <span class="no" aria-hidden="true">{entry.no}</span>
+                  <span class="sec">{entry.label}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+      </nav>
     </header>
 
     {/* SPEC Part VII requirement 2: a cold reader has to be able to see, above
@@ -282,50 +347,186 @@ const doors = await Promise.all(
      tracks a line; this page is a column of prose *and* two grids that want
      two or three columns on a laptop.
 
-     The resolution is one left edge, not one centre. Every heading and every
-     paragraph is capped at the measure and set flush left; the two grids run
-     the full width from the same edge. Centring the prose instead — which is
-     what this page did first — puts the headings a quarter of the way in while
-     the grid beside them starts at the margin, and the page reads as two
-     layouts that did not agree. Flush left is also what a reader's eye is
-     already doing: the return sweep goes to one place. */
+     The resolution is one left edge, not one centre: prose capped at the
+     measure and flush to the same edge the grids run from. The cover and the
+     section heads may be display-sized, but the return sweep still goes to
+     one place. */
   .home {
     inline-size: min(100%, var(--page-wide));
     margin-inline: auto;
-    padding-block: var(--space-2xl) var(--space-3xl);
+    padding-block: var(--space-xl) var(--space-3xl);
     padding-inline: var(--space-m);
   }
 
-  /* The measure applies to anything made of sentences, at whatever depth. The
-     grids and the evidence strip are exempt by being neither. */
-  .opening,
-  .home section > h2,
-  .home section > p {
-    inline-size: min(100%, var(--measure));
+  /* ── the cover ──────────────────────────────────────────────────────────
+     Opened by the heaviest rule on the site. Every other page starts with a
+     hairline; a cover is allowed one act of weight, and this is it. */
+  .cover {
+    border-block-start: 4px solid var(--text);
+    padding-block-start: var(--space-l);
+  }
+
+  .masthead {
+    display: grid;
+    gap: var(--space-l);
+    align-items: start;
+  }
+
+  @media (min-width: 64rem) {
+    .masthead {
+      grid-template-columns: 1fr auto;
+      column-gap: var(--space-2xl);
+    }
+  }
+
+  /* The headline, in the display serif — the one place besides the section
+     heads the face appears. Capped in ch of its own size so two lines break
+     where a cover's lines should, not where the grid happens to end. */
+  .cover h1 {
+    font-family: var(--display);
+    font-weight: var(--weight-medium);
+    font-size: var(--text-cover);
+    line-height: var(--leading-tight);
+    letter-spacing: -0.02em;
+    max-inline-size: 16ch;
+  }
+
+  /* پایش — the plate. Decorative (the top bar names the site for every
+     reader), so it is allowed the accent, which on this page is the vermilion
+     a printer would have mixed once and spent carefully. */
+  .mark {
+    font-family: var(--farsi);
+    font-size: var(--text-covermark);
+    line-height: 1;
+    color: var(--accent);
   }
 
   .tagline {
     font-size: var(--text-lead);
     color: var(--muted);
     margin-block-start: var(--space-s);
+    max-inline-size: var(--measure-narrow);
   }
 
-  /* The paragraph that tells a stranger what they are looking at. Set at the
-     body size rather than the lead size: it is prose to be read, and a whole
-     paragraph at lead size is a poster. */
+  /* The paragraph that tells a stranger what they are looking at. Lead size
+     here, against the site's own body-size habit, because this page is now a
+     cover and a cover's standfirst is display matter — the reading pages keep
+     their discipline. Narrow measure in its own ch, so the line stays a line. */
   .standfirst {
-    margin-block-start: var(--space-m);
+    margin-block-start: var(--space-l);
+    font-size: var(--text-lead);
+    max-inline-size: var(--measure-narrow);
   }
 
+  /* The contents rail: the cover as a contents page in miniature. Three
+     columns of three on a laptop, one column on a phone, every row opened by
+     a hairline — a printed table of contents, not a nav bar. */
+  .contents {
+    margin-block-start: var(--space-2xl);
+  }
+
+  .contents ol {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    column-gap: var(--space-l);
+  }
+
+  @media (min-width: 40rem) {
+    .contents ol {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .contents li {
+    border-block-start: var(--rule);
+  }
+
+  .contents a {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-xs);
+    padding-block: var(--space-xs);
+    text-decoration: none;
+    color: var(--text);
+  }
+
+  .contents .no {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    color: var(--accent);
+  }
+
+  .contents .sec {
+    font-size: var(--text-small);
+  }
+
+  .contents a:hover .sec,
+  .contents a:focus-visible .sec {
+    color: var(--current);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+
+  /* ── the sections ───────────────────────────────────────────────────────
+     Each opened by a heavy ink rule — the page's structure drawn in the
+     page's ink, where the inner pages use hairlines — with the number set in
+     the display face's italic and the vermilion, in its own margin column on
+     a laptop. The number is arrangement, not machine truth, which is exactly
+     why it is *not* mono: on this site mono is a promise about where a value
+     came from, and these came from nowhere but order. */
   .home section {
     margin-block-start: var(--space-3xl);
-    border-block-start: var(--rule);
-    padding-block-start: var(--space-l);
+    border-block-start: 3px solid var(--text);
+    padding-block-start: var(--space-m);
+  }
+
+  @media (min-width: 64rem) {
+    .home section {
+      display: grid;
+      grid-template-columns: 6rem 1fr;
+      column-gap: var(--space-l);
+    }
+
+    /* `:global(*)`, not `*`: a scoped universal selector only matches elements
+       carrying this page's scope attribute, and half of a section's children
+       are component roots — the findings ledger, the entry lists — which do
+       not. Scoped, they fall out of this rule and auto-place into the 6rem
+       number column. The .secnum rule below still wins on specificity. */
+    .home section > :global(*) {
+      grid-column: 2;
+    }
+
+    .home section > .secnum {
+      grid-column: 1;
+      grid-row: 1;
+    }
+  }
+
+  /* Written at the same compound depth as the `> p` rule below, because the
+     number IS a p and the muted-intro rule would out-specify a bare .secnum
+     and grey the vermilion out. */
+  .home section > .secnum {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: var(--text-h2);
+    line-height: var(--leading-tight);
+    color: var(--accent);
+    margin-block-end: var(--space-2xs);
+  }
+
+  .home section > h2 {
+    font-family: var(--display);
+    font-weight: var(--weight-medium);
+    letter-spacing: -0.01em;
+    inline-size: min(100%, var(--measure));
   }
 
   .home section > p {
     color: var(--muted);
     margin-block-start: var(--space-s);
+    inline-size: min(100%, var(--measure));
   }
 
   .corpus {
@@ -334,17 +535,6 @@ const doors = await Promise.all(
 
   .more {
     margin-block-start: var(--space-s);
-  }
-
-  /* The Face numbers its tabs; the page numbers its sections the same way.
-     Mono because a position in a sequence is the one kind of number the
-     arrangement is allowed to write — the EntryList ordinals' own rule. */
-  .secnum {
-    font-family: var(--mono);
-    font-size: var(--text-micro);
-    letter-spacing: 0.08em;
-    color: var(--muted);
-    margin-block-end: var(--space-2xs);
   }
 
   .figures {
@@ -357,7 +547,7 @@ const doors = await Promise.all(
      mantle behind them says "a different kind of thing" without reaching for
      a box or a shadow, and the two bands give the page a rhythm — reading
      surface, band, reading surface — instead of nine sections cut by nine
-     identical hairlines. Same inline padding as the strip, so the two bands
+     identical rules. Same inline padding as the strip, so the two bands
      share an inner edge. */
   #orient {
     background: var(--mantle);
@@ -382,19 +572,20 @@ const doors = await Promise.all(
   }
 
   .doors > li {
-    border-block-start: var(--rule);
+    border-block-start: 2px solid var(--text);
     padding-block-start: var(--space-s);
   }
 
-  /* The eyebrow is the door's question, set like every other eyebrow on the
-     site: mono, small, lettered out. It is who the door is for, which is the
-     one fact a scanning reader needs before the sentence. */
+  /* The eyebrow is the door's question — who the door is for, which is the
+     one fact a scanning reader needs before the sentence. In the vermilion,
+     because on this page the accent's job is to mark the things a scanning
+     eye should catch: numbers, questions, destinations. */
   .doors .eyebrow {
     font-family: var(--mono);
     font-size: var(--text-micro);
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: var(--muted);
+    color: var(--accent);
   }
 
   .doors .blurb {
@@ -452,11 +643,10 @@ const doors = await Promise.all(
   }
 
   /* The ten concepts are the spine and they earn the page's width: two columns
-     of five on a laptop, so the whole spine is one eyeful instead of a scroll,
-     and each entry reads as a block a reader can enter — which is what SPEC
-     Part VII asked the list to be. One column below the site's one breakpoint,
-     same as the findings above it. `align-items: start` so a short one-liner
-     does not stretch and hang its neighbour's rule in mid-air. */
+     of five on a laptop, so the whole spine is one eyeful instead of a scroll.
+     One column below the site's one breakpoint, same as the findings above it.
+     `align-items: start` so a short one-liner does not stretch and hang its
+     neighbour's rule in mid-air. */
   #spine :global(.entries) {
     align-items: start;
   }
@@ -466,5 +656,17 @@ const doors = await Promise.all(
       grid-template-columns: 1fr 1fr;
       column-gap: var(--space-2xl);
     }
+  }
+
+  /* On this page the shared lists dress to match the cover: titles in the
+     display serif, ordinals in the vermilion. Inner index pages keep the sans
+     — this is the jacket, not a new rule. */
+  .home :global(.entries .entry-title) {
+    font-family: var(--display);
+    font-weight: var(--weight-medium);
+  }
+
+  .home :global(.entries .ordinal) {
+    color: var(--accent);
   }
 </style>
