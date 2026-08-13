@@ -115,6 +115,7 @@ to be seen red. They run against `dist/`, so they go after `npm run build`.
 | `npm run seo` | One canonical per page, a sitemap that is the site, robots agreeing with it, social cards that still render their own numbers | CI |
 | `npm run a11y` | A lang, one identified `<main>`, a working skip link, landmarks, accessible names, tab order | CI |
 | `npm run harvest` | *(not a gate)* recompute `corpus.json` from the run store | Locally |
+| `npm run sync` | *(not a gate)* harvest, and if the record moved: re-prove the cited keys, commit only `corpus.json`, push | Locally — a daily scheduled task (`payesh-record-sync`) runs it, and a person or an agent can run it any time |
 
 Contrast, focus visibility and layout shift need a browser and are measured by hand — the run and
 its numbers are in [`docs/evidence`](docs/evidence).

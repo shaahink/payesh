@@ -9,6 +9,7 @@
     "preview": "astro preview",
     "check": "astro check && node --test \"test/**/*.test.mjs\"",
     "harvest": "node scripts/harvest.mjs",
+    "sync": "node scripts/sync.mjs",
     "evidence": "node scripts/harvest.mjs --check",
     "evidence:cited": "node scripts/harvest.mjs --cited",
     "anonymity": "node scripts/anonymity.mjs",
