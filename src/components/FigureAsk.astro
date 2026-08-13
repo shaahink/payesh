@@ -1,0 +1,193 @@
+---
+/* Structured events against prose logs — the question nobody planned for.
+   ---------------------------------------------------------------------------
+   One store of typed events, two questions, and a toggle that rewrites the
+   same history as sentences. The questions are chosen to be the two
+   quantities the concept says get skipped — time spent waiting, and where
+   the money went — and the prose mode answers them the only way prose can,
+   which is not at all. The rows carry no clock times and no amounts: fields
+   are named, sizes are words, because a value drawn here would be the one
+   figure on the site the harvest cannot recompute. */
+
+const EVENTS = [
+  { kind: "session_started", fields: "stage 2", prose: "Started on the next piece of work." },
+  { kind: "wait_declared", fields: "until the window reopens", prose: "Waiting on the deploy allowance." },
+  { kind: "token_delta", fields: "stage 2 · large", prose: "Made good progress reading the code." },
+  { kind: "gate_finished", fields: "tests · exit 1", prose: "Some checks were unhappy; looking into it." },
+  { kind: "session_finished", fields: "stage 2 · rolled over", prose: "Ran out of room, handing off." },
+  { kind: "wait_declared", fields: "until the window reopens", prose: "Still waiting on the allowance." },
+  { kind: "token_delta", fields: "stage 3 · small", prose: "Wrapped up the last details." }
+];
+---
+
+<figure class="fig fig-ask" data-fig="ask">
+  <div
+    class="drawing"
+    role="img"
+    aria-label="An append-only store of typed events — sessions starting and finishing, waits declared, token deltas, gate results — each a record with fields rather than a sentence. Asking what the waiting cost, or which stage the spend landed on, is answered by filtering and counting the matching rows. Rewrite the same history as prose log lines and the identical questions become unanswerable: a log answers only the questions its author imagined."
+  >
+    <div class="store pane" aria-hidden="true">
+      <span class="fig-label" data-store-label>the store — one typed event per transition</span>
+      <ol class="events" data-events>
+        {EVENTS.map((event) => (
+          <li data-kind={event.kind} data-prose={event.prose}>
+            <span class="e-kind">{event.kind}</span>
+            <span class="e-fields">{"{"}{event.fields}{"}"}</span>
+          </li>
+        ))}
+      </ol>
+      <p class="answer mono" data-answer hidden></p>
+    </div>
+  </div>
+
+  <div class="fig-controls">
+    <button type="button" class="fig-btn" data-act="waits">what did the waiting cost?</button>
+    <button type="button" class="fig-btn" data-act="money">which stage took the spend?</button>
+    <button type="button" class="fig-btn" data-act="prose" aria-pressed="false">
+      keep prose logs instead
+    </button>
+    <button type="button" class="fig-btn" data-act="reset">reset</button>
+    <p class="fig-status" data-status aria-live="polite">
+      Ask a question the recorder never planned for.
+    </p>
+  </div>
+
+  <figcaption>
+    Observability is being able to ask a question nobody was imagined asking.
+    Fields can be filtered, counted and joined afterwards; a sentence answers
+    its author's questions, slowly, and nobody asks it a second one.
+  </figcaption>
+</figure>
+
+<script>
+  import { wire } from "../scripts/figures.js";
+
+  const QUERIES: Record<string, { match: (row: HTMLElement) => boolean; answer: string; status: string }> = {
+    waits: {
+      match: (row) => row.dataset.kind === "wait_declared",
+      answer: "→ two waits, spanning most of the elapsed time — counted, not remembered",
+      status: "waiting leaves no trace unless something records it — here, something did"
+    },
+    money: {
+      match: (row) => row.dataset.kind === "token_delta",
+      answer: "→ the spend sits on stage 2 — grouped from the deltas, not from anyone's summary",
+      status: "a question thought of afterwards, answered by a filter rather than an archaeology"
+    }
+  };
+
+  wire("ask", (figure) => {
+    const status = figure.querySelector("[data-status]")!;
+    const answer = figure.querySelector<HTMLElement>("[data-answer]")!;
+    const storeLabel = figure.querySelector("[data-store-label]")!;
+    const prose = figure.querySelector<HTMLElement>('[data-act="prose"]')!;
+    const rows = [...figure.querySelectorAll<HTMLElement>("[data-kind]")];
+
+    const inProse = () => prose.getAttribute("aria-pressed") === "true";
+
+    const clearHits = () => rows.forEach((row) => row.classList.remove("hit"));
+
+    for (const [act, query] of Object.entries(QUERIES)) {
+      figure.querySelector(`[data-act="${act}"]`)!.addEventListener("click", () => {
+        clearHits();
+        if (inProse()) {
+          answer.hidden = false;
+          answer.textContent = "→ no answer — the sentences do not carry the fields the question needs";
+          status.textContent =
+            "the log answers the questions its author imagined, and this was not one of them";
+          return;
+        }
+        rows.filter(query.match).forEach((row) => row.classList.add("hit"));
+        answer.hidden = false;
+        answer.textContent = query.answer;
+        status.textContent = query.status;
+      });
+    }
+
+    prose.addEventListener("click", () => {
+      const on = !inProse();
+      prose.setAttribute("aria-pressed", String(on));
+      figure.classList.toggle("prose", on);
+      clearHits();
+      answer.hidden = true;
+      storeLabel.textContent = on
+        ? "the log — sentences a programmer wrote for a reader they imagined"
+        : "the store — one typed event per transition";
+      for (const row of rows) {
+        const kind = row.querySelector(".e-kind")!;
+        const fields = row.querySelector(".e-fields")!;
+        if (on) {
+          kind.textContent = row.dataset.prose ?? "";
+          fields.textContent = "";
+        } else {
+          kind.textContent = row.dataset.kind ?? "";
+          fields.textContent = `{${row.dataset.fieldsText ?? ""}}`;
+        }
+      }
+      status.textContent = on
+        ? "the same history, as prose — now ask the questions again"
+        : "typed events again — fields, not sentences";
+    });
+
+    /* The original field text is in the markup; keep a copy before prose mode
+       overwrites it, so the toggle can restore rather than reconstruct. */
+    for (const row of rows) {
+      row.dataset.fieldsText = (row.querySelector(".e-fields")!.textContent ?? "").replace(/[{}]/g, "");
+    }
+
+    figure.querySelector('[data-act="reset"]')!.addEventListener("click", () => {
+      if (inProse()) prose.click();
+      clearHits();
+      answer.hidden = true;
+      status.textContent = "Ask a question the recorder never planned for.";
+    });
+  });
+</script>
+
+<style>
+  .store {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+  }
+
+  .events {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--space-3xs);
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+  }
+
+  .events li {
+    border-block-start: var(--rule);
+    padding-block-start: var(--space-3xs);
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: var(--space-2xs);
+    color: var(--muted);
+  }
+
+  .events li.hit {
+    color: var(--text);
+  }
+
+  .events li.hit .e-kind {
+    color: var(--accent);
+  }
+
+  /* Prose mode reads as prose: the reading face, not the machine's. The swap
+     is the argument — the same facts, dressed as a story, stop being data. */
+  .fig-ask.prose .events li {
+    font-family: var(--sans);
+    font-size: var(--text-small);
+  }
+
+  .answer {
+    font-size: var(--text-micro);
+    color: var(--current);
+    border-block-start: var(--rule);
+    padding-block-start: var(--space-2xs);
+  }
+</style>

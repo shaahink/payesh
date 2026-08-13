@@ -1,0 +1,189 @@
+---
+/* The concept's own drawing: one turn of the loop that is the unit of the
+   work — pick, start, watch, check, record, and the return edge that makes it
+   a cycle rather than a checklist.
+   ---------------------------------------------------------------------------
+   Same idiom as FigureRun: panes, hairlines, mono labels, arrows that are
+   characters. The interaction steps a reader through two turns, because the
+   argument needs both: a turn where the claim survives the check, and a turn
+   where it does not — the check is where these systems are lost, and a
+   stepper that only ever confirms would draw the transcription it warns
+   about. The beat is scripted, not sampled: the same press always shows the
+   same turn, so the figure is a drawing that moves, never a demo that got
+   lucky. */
+---
+
+<figure class="fig fig-cycle" data-fig="cycle">
+  <div
+    class="drawing"
+    role="img"
+    aria-label="One turn of the orchestration cycle: pick what to work on from the work graph, start a session under a ceiling, watch its liveness from outside, check the claim against the artifacts, and record what happened. The record is what the next pick reads — the cycle is the unit, and the engineering is in the turn, not in the model."
+  >
+    <div class="stations" aria-hidden="true">
+      <div class="station" data-station="pick">
+        <span class="fig-label">pick</span>
+        <span class="fig-note">from the work graph — what closed, not what the plan declares</span>
+      </div>
+      <span class="arrow"><span class="h">→</span><span class="v">↓</span></span>
+      <div class="station" data-station="start">
+        <span class="fig-label">start</span>
+        <span class="fig-note">carrying the last handoff, under a ceiling</span>
+      </div>
+      <span class="arrow"><span class="h">→</span><span class="v">↓</span></span>
+      <div class="station" data-station="watch">
+        <span class="fig-label">watch</span>
+        <span class="fig-note">liveness sampled from outside; quiet is not dead</span>
+      </div>
+      <span class="arrow"><span class="h">→</span><span class="v">↓</span></span>
+      <div class="station" data-station="check">
+        <span class="fig-label">check</span>
+        <span class="fig-note">the claim against the artifacts, never the summary</span>
+      </div>
+      <span class="arrow"><span class="h">→</span><span class="v">↓</span></span>
+      <div class="station" data-station="record">
+        <span class="fig-label">record</span>
+        <span class="fig-note">cost and outcome folded in, for the next turn to read</span>
+      </div>
+    </div>
+    <p class="return" aria-hidden="true">
+      <span class="glyph">⟲</span> the record is what the next pick reads — the cycle is the
+      unit of the work
+    </p>
+  </div>
+
+  <div class="fig-controls">
+    <button type="button" class="fig-btn" data-act="step">step</button>
+    <button type="button" class="fig-btn" data-act="reset">reset</button>
+    <p class="fig-status" data-status aria-live="polite">
+      Step through two turns of the loop — one where the claim holds, one where it does not.
+    </p>
+  </div>
+
+  <figcaption>
+    One turn of the loop, and the model is only the middle of it. Every station
+    is a decision with a reasonable wrong answer, and the check is the one
+    where most of these systems are actually lost.
+  </figcaption>
+</figure>
+
+<script>
+  import { wire } from "../scripts/figures.js";
+
+  /* Two scripted turns, five stations each. The second turn's check goes the
+     other way on purpose; see the header comment. */
+  const TURNS: Record<string, string>[] = [
+    {
+      pick: "turn 1 · two checkpoints open — the graph picks the first",
+      start: "turn 1 · session 1 starts, a ceiling over it and nothing to carry yet",
+      watch: "turn 1 · signals from outside: last activity, last tool call, what it left running",
+      check: "turn 1 · the claim is found in the artifacts — the commit exists; confirmed",
+      record: "turn 1 · cost and outcome folded into the run; turn 2 starts better informed"
+    },
+    {
+      pick: "turn 2 · the delivered row is not re-picked — the graph knows what closed",
+      start: "turn 2 · session 2 starts, carrying session 1's handoff",
+      watch: "turn 2 · quiet for a while — a grace window before anyone calls it stalled",
+      check: "turn 2 · a claim the artifacts do not support — a repair is queued, not transcribed",
+      record: "turn 2 · the failed check is recorded too; the record is what the loop learns from"
+    }
+  ];
+  const ORDER = ["pick", "start", "watch", "check", "record"];
+
+  wire("cycle", (figure) => {
+    const status = figure.querySelector("[data-status]")!;
+    const stations = new Map(
+      ORDER.map((name) => [name, figure.querySelector(`[data-station="${name}"]`)!] as const)
+    );
+    let at = -1;
+
+    const paint = () => {
+      ORDER.forEach((name, index) => {
+        stations.get(name)!.classList.toggle("on", index === at % ORDER.length && at >= 0);
+      });
+    };
+
+    figure.querySelector('[data-act="step"]')!.addEventListener("click", () => {
+      at = (at + 1) % (ORDER.length * TURNS.length);
+      const turn = TURNS[Math.floor(at / ORDER.length)]!;
+      const name = ORDER[at % ORDER.length]!;
+      paint();
+      status.textContent = turn[name] ?? "";
+    });
+
+    figure.querySelector('[data-act="reset"]')!.addEventListener("click", () => {
+      at = -1;
+      paint();
+      status.textContent =
+        "Step through two turns of the loop — one where the claim holds, one where it does not.";
+    });
+  });
+</script>
+
+<style>
+  .stations {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+  }
+
+  .station {
+    border: var(--rule);
+    background: var(--mantle);
+    padding: var(--space-2xs) var(--space-s);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+  }
+
+  /* The current station wears the accent the way the site's nav marks the
+     current page: a border, not a fill, so the pane's text stays on its own
+     ground in both schemes. */
+  .station.on {
+    border-color: var(--accent);
+  }
+
+  .station.on .fig-label {
+    color: var(--accent);
+  }
+
+  .arrow {
+    font-family: var(--mono);
+    color: var(--muted);
+    align-self: center;
+  }
+
+  .arrow .h {
+    display: none;
+  }
+
+  .return {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    color: var(--current);
+    margin-block-start: var(--space-2xs);
+  }
+
+  .glyph {
+    font-size: var(--text-small);
+  }
+
+  @media (min-width: 64rem) {
+    .stations {
+      flex-direction: row;
+      align-items: stretch;
+      gap: var(--space-2xs);
+    }
+
+    .station {
+      flex: 1 1 0;
+    }
+
+    .arrow .h {
+      display: inline;
+    }
+
+    .arrow .v {
+      display: none;
+    }
+  }
+</style>

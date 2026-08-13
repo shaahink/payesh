@@ -1,0 +1,228 @@
+---
+/* Claimed and confirmed as two columns — and the gap between them, which is
+   the only interesting quantity in the system.
+   ---------------------------------------------------------------------------
+   The board starts with one row already worked, so the still is a complete
+   drawing: a claim that was confirmed. The interaction adds claims and lets
+   the battery answer them on a script — green, then red — because the red one
+   is where the concept lives: the claim is not withdrawn, the row stays
+   readable, and the gap counts it. The collapse toggle draws the failure
+   mode: fold the two fields into one flag and the gap is not closed, it is
+   unmeasured. */
+---
+
+<figure class="fig fig-claim" data-fig="claim">
+  <div
+    class="drawing"
+    role="img"
+    aria-label="A board with one row per checkpoint and two marks per row: claimed, written when a session believed it was finished, and confirmed, written only when an independent battery agreed at the current head. A red battery leaves the claim standing with the confirmation empty, and the gap between the two counts — how often belief and evidence came apart. Collapsing the two into a single done flag does not close the gap; it makes it unmeasurable."
+  >
+    <div class="board pane" aria-hidden="true">
+      <div class="head">
+        <span class="fig-label">checkpoint</span>
+        <span class="fig-label col-claimed">claimed</span>
+        <span class="fig-label col-confirmed" data-confirmed-head>confirmed</span>
+      </div>
+      <ol class="rows" data-rows>
+        <li class="row">
+          <span class="r-name">checkpoint 1</span>
+          <span class="r-claimed">✓</span>
+          <span class="r-confirmed ok">✓</span>
+        </li>
+      </ol>
+    </div>
+    <p class="gap mono" aria-hidden="true" data-gap>claimed 1 · confirmed 1 · the gap: 0</p>
+  </div>
+
+  <div class="fig-controls">
+    <button type="button" class="fig-btn" data-act="claim">a session claims done</button>
+    <button type="button" class="fig-btn" data-act="verify">the battery answers</button>
+    <button type="button" class="fig-btn" data-act="collapse" aria-pressed="false">
+      collapse to one flag
+    </button>
+    <button type="button" class="fig-btn" data-act="reset">reset</button>
+    <p class="fig-status" data-status aria-live="polite">
+      Claim, then let the battery answer — it does not always agree.
+    </p>
+  </div>
+
+  <figcaption>
+    A claim and a confirmation are two facts and want two fields. The gap
+    between the columns is the system's honest picture of itself — and a
+    board with one "done" flag has not closed that gap, only stopped being
+    able to see it.
+  </figcaption>
+</figure>
+
+<script>
+  import { wire } from "../scripts/figures.js";
+
+  const MAX_ROWS = 4;
+  /* The battery's scripted answers for rows 2, 3, 4: green, red, green. */
+  const ANSWERS = ["ok", "red", "ok"];
+
+  wire("claim", (figure) => {
+    const rows = figure.querySelector("[data-rows]")!;
+    const gap = figure.querySelector("[data-gap]")!;
+    const status = figure.querySelector("[data-status]")!;
+    const collapse = figure.querySelector('[data-act="collapse"]')!;
+
+    const state = () => {
+      const all = [...rows.children];
+      const claimed = all.length;
+      const confirmed = all.filter((row) => row.querySelector(".r-confirmed.ok")).length;
+      return { all, claimed, confirmed };
+    };
+
+    const paintGap = () => {
+      if (figure.classList.contains("collapsed")) {
+        gap.textContent = "one flag · the gap: unmeasured — the system agrees with itself";
+        return;
+      }
+      const { claimed, confirmed } = state();
+      gap.textContent = `claimed ${claimed} · confirmed ${confirmed} · the gap: ${claimed - confirmed}`;
+    };
+
+    figure.querySelector('[data-act="claim"]')!.addEventListener("click", () => {
+      const { all } = state();
+      if (all.length >= MAX_ROWS) {
+        status.textContent = "enough rows to see the shape — the gap is the number to keep";
+        return;
+      }
+      const row = document.createElement("li");
+      row.className = "row";
+      row.innerHTML =
+        `<span class="r-name">checkpoint ${all.length + 1}</span>` +
+        '<span class="r-claimed">✓</span>' +
+        '<span class="r-confirmed pending">·</span>';
+      rows.appendChild(row);
+      paintGap();
+      status.textContent =
+        "a session believed it was finished — that is a fact worth keeping, and it is not the " +
+        "same fact as being right";
+    });
+
+    figure.querySelector('[data-act="verify"]')!.addEventListener("click", () => {
+      const pending = rows.querySelector(".r-confirmed.pending");
+      if (!pending) {
+        status.textContent = "nothing is waiting on the battery — claim something first";
+        return;
+      }
+      const answered = [...rows.querySelectorAll(".r-confirmed:not(.pending)")].length;
+      const answer = ANSWERS[(answered - 1) % ANSWERS.length];
+      pending.classList.remove("pending");
+      if (answer === "ok") {
+        pending.classList.add("ok");
+        pending.textContent = "✓";
+        status.textContent = "the battery agreed at the current head — confirmed, by a different author";
+      } else {
+        pending.classList.add("red");
+        pending.textContent = "—";
+        status.textContent =
+          "the battery said no. the claim stays standing — a repair is briefed to make it true, " +
+          "and the gap remembers";
+      }
+      paintGap();
+    });
+
+    collapse.addEventListener("click", () => {
+      const on = collapse.getAttribute("aria-pressed") !== "true";
+      collapse.setAttribute("aria-pressed", String(on));
+      figure.classList.toggle("collapsed", on);
+      paintGap();
+      status.textContent = on
+        ? "every row now reads done — not because the work improved, because the question left"
+        : "two fields again — and the gap comes back with them";
+    });
+
+    figure.querySelector('[data-act="reset"]')!.addEventListener("click", () => {
+      rows.innerHTML =
+        '<li class="row"><span class="r-name">checkpoint 1</span>' +
+        '<span class="r-claimed">✓</span><span class="r-confirmed ok">✓</span></li>';
+      collapse.setAttribute("aria-pressed", "false");
+      figure.classList.remove("collapsed");
+      paintGap();
+      status.textContent = "Claim, then let the battery answer — it does not always agree.";
+    });
+  });
+</script>
+
+<style>
+  .board {
+    display: grid;
+    gap: var(--space-3xs);
+  }
+
+  .head,
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 9ch 9ch;
+    align-items: baseline;
+    gap: var(--space-2xs);
+  }
+
+  .rows {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--space-3xs);
+  }
+
+  .row {
+    border-block-start: var(--rule);
+    padding-block-start: var(--space-3xs);
+  }
+
+  .r-name {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+  }
+
+  .r-claimed,
+  .r-confirmed {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    text-align: center;
+  }
+
+  .r-claimed {
+    color: var(--text);
+  }
+
+  .r-confirmed.pending {
+    color: var(--muted);
+  }
+
+  .r-confirmed.ok {
+    color: var(--green);
+  }
+
+  /* An unconfirmed claim is attention, not failure: the work may well be
+     there — what is missing is anybody else saying so. */
+  .r-confirmed.red {
+    color: var(--yellow);
+  }
+
+  /* One flag: the confirmed column leaves, and every remaining mark warms to
+     the claim's own colour — the board agreeing with itself. */
+  .collapsed .col-confirmed,
+  .collapsed .r-confirmed {
+    display: none;
+  }
+
+  .collapsed .head,
+  .collapsed .row {
+    grid-template-columns: 1fr 9ch;
+  }
+
+  .collapsed .col-claimed::after {
+    content: " = done";
+  }
+
+  .gap {
+    font-size: var(--text-micro);
+    color: var(--muted);
+    margin-block-start: var(--space-3xs);
+  }
+</style>

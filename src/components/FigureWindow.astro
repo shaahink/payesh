@@ -1,0 +1,221 @@
+---
+/* The context window as a budgeted bar — and the cut that falls from the end.
+   ---------------------------------------------------------------------------
+   The drawing is the concept's fourth mechanism paragraph: the ledger and the
+   open bugs are assembled first, and the cap cuts from the end, so what a
+   full prompt loses is the tail of the transcript, never what earlier
+   sessions worked out. The toggle draws the failure the problem section
+   describes — put the knowledge at the end, where it reads naturally, and
+   the same cap deletes the one part that was supposed to compound.
+
+   The segments are widths, not values: units of an imaginary window, chosen
+   to make the shape readable. Nothing here is a measurement, which is why
+   nothing here is a number a reader can see. */
+
+const SEGMENTS = [
+  { key: "ledger", label: "ledger", units: 2 },
+  { key: "bugs", label: "bugs", units: 1 },
+  { key: "reading", label: "reading", units: 3 },
+  { key: "handoff", label: "handoff", units: 1 },
+  { key: "transcript", label: "transcript", units: 3 }
+];
+const CAP = 12;
+const USED = SEGMENTS.reduce((sum, s) => sum + s.units, 0);
+---
+
+<figure class="fig fig-window" data-fig="window">
+  <div
+    class="drawing"
+    role="img"
+    aria-label="A context window drawn as a bar under a fixed cap. The knowledge ledger and the open bugs are placed first, then the required reading and the last session's handoff, then the transcript. As turns are added the transcript grows toward the cap, and everything past the cap is cut from the end — so the transcript's tail is lost and the ledger survives. Reverse the order, with the knowledge appended last, and the same cap deletes the ledger instead."
+  >
+    <div class="bar" data-bar aria-hidden="true" style={`--cap: ${CAP}`}>
+      {SEGMENTS.map((segment) => (
+        <span class={`seg seg-${segment.key}`} style={`--u: ${segment.units}`}>
+          {segment.label}
+        </span>
+      ))}
+      <span class="seg free" style={`--u: ${CAP - USED}`}>free</span>
+    </div>
+    <p class="cap mono" aria-hidden="true">the cap — everything past it is cut, from the end</p>
+  </div>
+
+  <div class="fig-controls">
+    <button type="button" class="fig-btn" data-act="turn">add a turn</button>
+    <button type="button" class="fig-btn" data-act="flip" aria-pressed="false">
+      put the knowledge last
+    </button>
+    <button type="button" class="fig-btn" data-act="reset">reset</button>
+    <p class="fig-status" data-status aria-live="polite">
+      Add turns until the window fills, and watch where the cut falls.
+    </p>
+  </div>
+
+  <figcaption>
+    A context window is a bill, and the order of what goes in is a decision.
+    Assembled knowledge-first, a full window loses the tail of its transcript.
+    Assembled the "natural" way — knowledge appended at the end — the cap
+    quietly deletes the one part that was supposed to compound.
+  </figcaption>
+</figure>
+
+<script>
+  import { wire } from "../scripts/figures.js";
+
+  /* The same shape the markup renders statically, re-rendered from data once
+     the reader starts moving it. Units are arbitrary; the cap is what makes
+     them mean anything. */
+  const BASE = [
+    { key: "ledger", label: "ledger", units: 2 },
+    { key: "bugs", label: "bugs", units: 1 },
+    { key: "reading", label: "reading", units: 3 },
+    { key: "handoff", label: "handoff", units: 1 }
+  ];
+  const CAP = 12;
+  const START = 3;
+
+  wire("window", (figure) => {
+    const bar = figure.querySelector("[data-bar]")!;
+    const status = figure.querySelector("[data-status]")!;
+    const flip = figure.querySelector('[data-act="flip"]')!;
+    let transcript = START;
+    let flipped = false;
+
+    const render = () => {
+      /* Knowledge-first, or the "natural" order with the knowledge appended
+         last — reading, handoff, transcript, then bugs and ledger. */
+      const order = flipped
+        ? [BASE[2], BASE[3], { key: "transcript", label: "transcript", units: transcript }, BASE[1], BASE[0]]
+        : [...BASE, { key: "transcript", label: "transcript", units: transcript }];
+
+      bar.textContent = "";
+      let filled = 0;
+      const cutFell: string[] = [];
+      for (const segment of order) {
+        const kept = Math.max(0, Math.min(segment.units, CAP - filled));
+        const cut = segment.units - kept;
+        if (kept > 0) {
+          const span = document.createElement("span");
+          span.className = `seg seg-${segment.key}`;
+          span.style.setProperty("--u", String(kept));
+          span.textContent = segment.label;
+          bar.appendChild(span);
+        }
+        if (cut > 0) {
+          const span = document.createElement("span");
+          span.className = "seg cut";
+          span.style.setProperty("--u", String(cut));
+          span.textContent = `${segment.label} · cut`;
+          bar.appendChild(span);
+          cutFell.push(segment.key);
+        }
+        filled += kept;
+      }
+      if (filled < CAP) {
+        const span = document.createElement("span");
+        span.className = "seg free";
+        span.style.setProperty("--u", String(CAP - filled));
+        span.textContent = "free";
+        bar.appendChild(span);
+      }
+      return cutFell;
+    };
+
+    const narrate = (cutFell: string[]) => {
+      if (cutFell.length === 0) {
+        status.textContent = "the window has room — nothing is cut yet";
+      } else if (cutFell.includes("ledger") || cutFell.includes("bugs")) {
+        status.textContent =
+          "the cap fell on the knowledge — the one part that was supposed to compound is gone, " +
+          "and nothing errors";
+      } else {
+        status.textContent =
+          "the window is full — the cut falls on the transcript's tail; the ledger went in first " +
+          "and survives";
+      }
+    };
+
+    figure.querySelector('[data-act="turn"]')!.addEventListener("click", () => {
+      transcript = Math.min(transcript + 1, CAP);
+      narrate(render());
+    });
+
+    flip.addEventListener("click", () => {
+      flipped = !flipped;
+      flip.setAttribute("aria-pressed", String(flipped));
+      const cutFell = render();
+      if (flipped && cutFell.length === 0) {
+        status.textContent =
+          "the knowledge now sits at the end, where it reads naturally — add turns and watch " +
+          "what the cap deletes";
+      } else {
+        narrate(cutFell);
+      }
+    });
+
+    figure.querySelector('[data-act="reset"]')!.addEventListener("click", () => {
+      transcript = START;
+      flipped = false;
+      flip.setAttribute("aria-pressed", "false");
+      render();
+      status.textContent = "Add turns until the window fills, and watch where the cut falls.";
+    });
+  });
+</script>
+
+<style>
+  .bar {
+    display: flex;
+    border: var(--rule);
+    background: var(--mantle);
+    padding: var(--space-3xs);
+    gap: var(--space-3xs);
+    min-block-size: 3.25rem;
+  }
+
+  .seg {
+    flex: var(--u) var(--u) 0;
+    min-inline-size: 0;
+    display: flex;
+    align-items: end;
+    overflow: hidden;
+    padding: var(--space-3xs) var(--space-2xs);
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    white-space: nowrap;
+    background: var(--surface);
+    color: var(--text);
+  }
+
+  /* The two segments the argument is about, marked by the accent's border
+     rather than a louder fill — they are the current thing, not a status. */
+  .seg-ledger,
+  .seg-bugs {
+    border-block-end: 2px solid var(--accent);
+  }
+
+  .free {
+    background: none;
+    color: var(--muted);
+  }
+
+  /* The cut is deliberately-not-kept territory: a hatch of the quiet fill on
+     open ground, dashed at its edge. Fill only — the quiet roles are held to
+     frame bars, so the word itself stays in muted reading text. */
+  .cut {
+    background: repeating-linear-gradient(
+      45deg,
+      var(--pending) 0 3px,
+      transparent 3px 10px
+    );
+    color: var(--muted);
+    border: 1px dashed var(--overlay);
+  }
+
+  .cap {
+    font-size: var(--text-micro);
+    color: var(--muted);
+    text-align: end;
+    margin-block-start: var(--space-3xs);
+  }
+</style>

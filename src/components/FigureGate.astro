@@ -1,0 +1,261 @@
+---
+/* A claim meets the battery — commands, exit codes, and the one retry that is
+   recorded rather than laundered.
+   ---------------------------------------------------------------------------
+   The interaction is scripted as three runs, because the argument needs all
+   three: a green battery (the price of admission), a red one with its
+   recorded retry (the evidence), and the green that follows a repair (the
+   claim made true rather than withdrawn). The other button is the whole
+   concept from the far side — ask the agent instead, and the verdict arrives
+   instantly, warmly, with nothing run at all. */
+
+const GATES = [
+  { name: "types", note: "the checker, not an opinion about the checker" },
+  { name: "build", note: "the compiler's own exit status" },
+  { name: "tests", note: "the suite, at the current head" },
+  { name: "evidence", note: "every cited key still resolves" }
+];
+---
+
+<figure class="fig fig-gate" data-fig="gate">
+  <div
+    class="drawing"
+    role="img"
+    aria-label="An agent's claim of done meets a gate battery: four commands — types, build, tests, evidence — each answered only by a real process's exit code. A red gate is retried exactly once, the retry is recorded, and a red battery leaves the checkpoint open with a repair session briefed. Asking the agent instead returns an instant confirmation with nothing run at all — the report is always good."
+  >
+    <div class="lane" aria-hidden="true">
+      <div class="claim pane">
+        <span class="fig-label">the claim</span>
+        <span class="fig-note">"done" — written by the thing that did the work</span>
+      </div>
+      <span class="arrow"><span class="h">→</span><span class="v">↓</span></span>
+      <div class="battery pane">
+        <span class="fig-label">the battery</span>
+        <ul class="gates">
+          {GATES.map((gate) => (
+            <li class="gate" data-gate={gate.name}>
+              <span class="g-name">{gate.name}</span>
+              <span class="g-note">{gate.note}</span>
+              <span class="g-result" data-result>·</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <span class="arrow"><span class="h">→</span><span class="v">↓</span></span>
+      <div class="verdict pane" data-verdict>
+        <span class="fig-label">the verdict</span>
+        <span class="fig-note" data-verdict-note>an exit code's answer, not a summary's</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="fig-controls">
+    <button type="button" class="fig-btn" data-act="run">run the battery</button>
+    <button type="button" class="fig-btn" data-act="ask">ask the agent instead</button>
+    <button type="button" class="fig-btn" data-act="reset">reset</button>
+    <p class="fig-status" data-status aria-live="polite">
+      Run the battery three times — it does not go the same way twice.
+    </p>
+  </div>
+
+  <figcaption>
+    A gate is a command and an exit code; it cannot be persuaded. The red
+    battery is the evidence the checking works — and the checkpoint it leaves
+    open is claimed still, waiting to be made true rather than talked true.
+  </figcaption>
+</figure>
+
+<script>
+  import { wire, stagger } from "../scripts/figures.js";
+
+  /* Three scripted runs: green; red-with-recorded-retry; green after repair. */
+  const RUNS: { results: Record<string, string>; verdict: string; note: string; status: string }[] = [
+    {
+      results: { types: "ok", build: "ok", tests: "ok", evidence: "ok" },
+      verdict: "ok",
+      note: "confirmed — by exit codes, not by the summary",
+      status: "every command exited zero. green is the price of admission, not the proof"
+    },
+    {
+      results: { types: "ok", build: "ok", tests: "retry", evidence: "ok" },
+      verdict: "red",
+      note: "the checkpoint stays open — a repair session is briefed, carrying the failure",
+      status:
+        "tests exited one, was retried exactly once, and exited one again. both attempts are " +
+        "on the record"
+    },
+    {
+      results: { types: "ok", build: "ok", tests: "ok", evidence: "ok" },
+      verdict: "ok",
+      note: "the claim was kept standing, and has now been made true",
+      status: "after the repair: every command exits zero at the current head. now it is confirmed"
+    }
+  ];
+  const MARK: Record<string, string> = { ok: "exit 0 ✓", retry: "exit 1 · retried · exit 1 ✗" };
+
+  wire("gate", (figure) => {
+    const status = figure.querySelector("[data-status]")!;
+    const verdict = figure.querySelector("[data-verdict]")!;
+    const verdictNote = figure.querySelector("[data-verdict-note]")!;
+    const gates = [...figure.querySelectorAll<HTMLElement>("[data-gate]")];
+    let runIndex = 0;
+    let pass: ReturnType<typeof stagger> = null;
+
+    const clear = () => {
+      if (pass) clearInterval(pass);
+      for (const gate of gates) {
+        gate.classList.remove("ok", "red");
+        gate.querySelector("[data-result]")!.textContent = "·";
+      }
+      verdict.classList.remove("ok", "red", "asked");
+      verdictNote.textContent = "an exit code's answer, not a summary's";
+    };
+
+    figure.querySelector('[data-act="run"]')!.addEventListener("click", () => {
+      const run = RUNS[runIndex % RUNS.length]!;
+      runIndex += 1;
+      clear();
+      status.textContent = "running — real processes, real exit codes";
+      pass = stagger(
+        gates,
+        (gate) => {
+          const result = run.results[gate.dataset.gate ?? ""] ?? "ok";
+          gate.classList.add(result === "ok" ? "ok" : "red");
+          gate.querySelector("[data-result]")!.textContent = MARK[result] ?? "·";
+        },
+        () => {
+          verdict.classList.add(run.verdict === "ok" ? "ok" : "red");
+          verdictNote.textContent = run.note;
+          status.textContent = run.status;
+        }
+      );
+    });
+
+    figure.querySelector('[data-act="ask"]')!.addEventListener("click", () => {
+      clear();
+      verdict.classList.add("asked");
+      verdictNote.textContent = "“done” — nothing ran; the report is the same either way";
+      status.textContent =
+        "instant, warm, and worth nothing: the claim and the check have the same author";
+    });
+
+    figure.querySelector('[data-act="reset"]')!.addEventListener("click", () => {
+      runIndex = 0;
+      clear();
+      status.textContent = "Run the battery three times — it does not go the same way twice.";
+    });
+  });
+</script>
+
+<style>
+  .lane {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+  }
+
+  .pane {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+  }
+
+  .arrow {
+    font-family: var(--mono);
+    color: var(--muted);
+    align-self: center;
+  }
+
+  .arrow .h {
+    display: none;
+  }
+
+  .gates {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--space-3xs);
+  }
+
+  .gate {
+    display: grid;
+    grid-template-columns: 9ch 1fr auto;
+    align-items: baseline;
+    gap: var(--space-2xs);
+    border-block-start: var(--rule);
+    padding-block-start: var(--space-3xs);
+  }
+
+  .g-name {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+  }
+
+  .g-note {
+    font-size: var(--text-micro);
+    color: var(--muted);
+  }
+
+  .g-result {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    color: var(--muted);
+    text-align: end;
+  }
+
+  /* Status colour is status: the one job semantic colour has on this site. */
+  .gate.ok .g-result {
+    color: var(--green);
+  }
+
+  .gate.red .g-result {
+    color: var(--red);
+  }
+
+  .verdict.ok {
+    border-color: var(--green);
+  }
+
+  .verdict.red {
+    border-color: var(--red);
+  }
+
+  /* The consulted verdict is attention, not success and not failure — the
+     yellow of a thing that deserves a second look. */
+  .verdict.asked {
+    border-color: var(--yellow);
+  }
+
+  .verdict.asked .fig-note {
+    color: var(--yellow);
+  }
+
+  @media (min-width: 64rem) {
+    .lane {
+      flex-direction: row;
+      align-items: stretch;
+      gap: var(--space-2xs);
+    }
+
+    .claim {
+      flex: 1 1 0;
+    }
+
+    .battery {
+      flex: 2 1 0;
+    }
+
+    .verdict {
+      flex: 1 1 0;
+    }
+
+    .arrow .h {
+      display: inline;
+    }
+
+    .arrow .v {
+      display: none;
+    }
+  }
+</style>

@@ -14,13 +14,46 @@
    and the last thing on the page is what it actually cost when it ran. `tryIt`
    is two lines and belongs beside the mechanism it demonstrates. */
 import type { GetStaticPaths } from "astro";
+import type { AstroComponentFactory } from "astro/runtime/server/index.js";
 import EvidenceStrip from "../../components/EvidenceStrip.astro";
+import FigureAsk from "../../components/FigureAsk.astro";
+import FigureBill from "../../components/FigureBill.astro";
+import FigureCarry from "../../components/FigureCarry.astro";
+import FigureClaim from "../../components/FigureClaim.astro";
+import FigureCycle from "../../components/FigureCycle.astro";
+import FigureGate from "../../components/FigureGate.astro";
+import FigureKinds from "../../components/FigureKinds.astro";
+import FigureQueue from "../../components/FigureQueue.astro";
+import FigureReplay from "../../components/FigureReplay.astro";
+import FigureWindow from "../../components/FigureWindow.astro";
 import Prose from "../../components/Prose.astro";
 import ReadNext from "../../components/ReadNext.astro";
 import TagList from "../../components/TagList.astro";
 import Reading from "../../layouts/Reading.astro";
 import { hrefOf, ordered, readNextOf, termIndex } from "../../lib/collections.js";
 import { pageContext } from "../../lib/links.js";
+
+/* Each concept's drawing (owner's ask, 2026-08-13: the concepts should be
+   watchable, not only readable). Arrangement, not content, exactly like the
+   articles' map beside their route: the figures move but they show shapes
+   and orderings, never values — a number drawn into one would be the one
+   figure on this site the evidence gate cannot recompute. All ten sit at the
+   same station, the end of the idea, because the drawings are the idea in
+   generic vocabulary; the mechanism section below stays Conductor's own.
+   A concept without a row simply reads as prose, so an eleventh concept
+   costs nothing here. */
+const FIGURES: Record<string, AstroComponentFactory> = {
+  "agentic-engineering": FigureCycle,
+  "multi-agent-orchestration": FigureKinds,
+  "context-engineering": FigureWindow,
+  "token-economics": FigureBill,
+  "evals-and-gates": FigureGate,
+  "independent-verification": FigureClaim,
+  "durable-execution": FigureReplay,
+  "human-in-the-loop": FigureQueue,
+  "agent-observability": FigureAsk,
+  "agent-memory": FigureCarry
+};
 
 export const getStaticPaths = (async () => {
   const concepts = await ordered("concepts");
@@ -30,6 +63,7 @@ export const getStaticPaths = (async () => {
 const { entry } = Astro.props;
 const { meta, title, alsoKnownAs, oneLine, theIdea, theProblem, inConductor, tryIt, evidence, tags } =
   entry.data;
+const Figure = FIGURES[entry.id];
 
 /* One context across the page's three prose blocks, and `self` so a concept
    never links its own title or its own other names — the phrases most likely
@@ -87,6 +121,7 @@ const headings = moves.map((move) => ({ depth: 2, slug: move.id, text: move.text
 
     <h2 id={moves[0]!.id}>{moves[0]!.text}</h2>
     <Prose body={theIdea} terms={terms} context={linking} path="theIdea" />
+    {Figure && <Figure />}
 
     <h2 id={moves[1]!.id}>{moves[1]!.text}</h2>
     <Prose body={theProblem} terms={terms} context={linking} path="theProblem" />

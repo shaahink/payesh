@@ -1,0 +1,198 @@
+---
+/* The shape of a session's bill — the triangle that makes cost closer to the
+   square of the length than to the length.
+   ---------------------------------------------------------------------------
+   One row per turn. Each row re-sends everything before it (the long quiet
+   segment) to add one unit of new work (the short accented one), so the rows
+   stack into a triangle, and the triangle is the argument: twice the turns is
+   four times the area. The cache toggle re-prices the re-read without
+   removing it — cheaper is not free, and the drawing keeps the width while
+   changing the ink.
+
+   Units of an imaginary session, not measurements. The corpus's real figures
+   for this live in the strip at the foot of the page, where the harvest can
+   recompute them. */
+
+const START_TURNS = 4;
+---
+
+<figure class="fig fig-bill" data-fig="bill">
+  <div
+    class="drawing"
+    role="img"
+    aria-label="A session's bill drawn one row per turn. Every turn re-sends the whole conversation so far and adds one new unit of work, so the rows stack into a triangle: by turn four, three units are re-sent to add one. Doubling the turns roughly quadruples the total sent. Pricing the re-read as cache reads makes each re-sent unit cheaper but the re-sending remains — cheaper is not free."
+  >
+    <div class="rows" data-rows aria-hidden="true">
+      {Array.from({ length: START_TURNS }, (_, i) => (
+        <div class="row">
+          <span class="turn">t{i + 1}</span>
+          {i > 0 && <span class="resend" style={`--u: ${i}`}>re-sent</span>}
+          <span class="fresh" style="--u: 1">new</span>
+        </div>
+      ))}
+    </div>
+    <p class="tally mono" aria-hidden="true" data-tally>
+      four turns · ten units sent for four worked
+    </p>
+  </div>
+
+  <div class="fig-controls">
+    <button type="button" class="fig-btn" data-act="turn">next turn</button>
+    <button type="button" class="fig-btn" data-act="cache" aria-pressed="false">
+      price the cache
+    </button>
+    <button type="button" class="fig-btn" data-act="reset">reset</button>
+    <p class="fig-status" data-status aria-live="polite">
+      Add turns and watch what each one re-sends before it works.
+    </p>
+  </div>
+
+  <figcaption>
+    Each turn pays again for every turn before it, which is why a session
+    twice as long costs rather more than twice as much — and why ending a
+    session early buys the expensive first rows all over again in the next
+    one.
+  </figcaption>
+</figure>
+
+<script>
+  import { wire } from "../scripts/figures.js";
+
+  const START = 4;
+  const MAX = 8;
+  const WORDS = ["one", "two", "three", "four", "five", "six", "seven", "eight"];
+  const sent = (turns: number) => (turns * (turns + 1)) / 2;
+
+  wire("bill", (figure) => {
+    const rows = figure.querySelector("[data-rows]")!;
+    const tally = figure.querySelector("[data-tally]")!;
+    const status = figure.querySelector("[data-status]")!;
+    const cache = figure.querySelector('[data-act="cache"]')!;
+    let turns = START;
+
+    const addRow = (turn: number) => {
+      const row = document.createElement("div");
+      row.className = "row";
+      const label = document.createElement("span");
+      label.className = "turn";
+      label.textContent = `t${turn}`;
+      row.appendChild(label);
+      if (turn > 1) {
+        const resend = document.createElement("span");
+        resend.className = "resend";
+        resend.style.setProperty("--u", String(turn - 1));
+        resend.textContent = "re-sent";
+        row.appendChild(resend);
+      }
+      const fresh = document.createElement("span");
+      fresh.className = "fresh";
+      fresh.style.setProperty("--u", "1");
+      fresh.textContent = "new";
+      row.appendChild(fresh);
+      rows.appendChild(row);
+    };
+
+    const paintTally = () => {
+      tally.textContent = `${WORDS[turns - 1]} turns · ${sent(turns)} units sent for ${turns} worked`;
+    };
+
+    figure.querySelector('[data-act="turn"]')!.addEventListener("click", () => {
+      if (turns >= MAX) {
+        status.textContent =
+          "enough rows to see the shape — twice the turns, four times the area. that is the bill";
+        return;
+      }
+      turns += 1;
+      addRow(turns);
+      paintTally();
+      status.textContent =
+        turns === MAX
+          ? "twice the turns of the opening drawing — and four times the sending. the square, drawn"
+          : `turn ${turns} re-sent ${turns - 1} units to add one`;
+    });
+
+    cache.addEventListener("click", () => {
+      const on = cache.getAttribute("aria-pressed") !== "true";
+      cache.setAttribute("aria-pressed", String(on));
+      figure.classList.toggle("cached", on);
+      status.textContent = on
+        ? "the re-read priced as cache reads — a fraction of fresh, and still the largest line. " +
+          "cheaper is not free"
+        : "list price again — the same width, the same shape, more ink";
+    });
+
+    figure.querySelector('[data-act="reset"]')!.addEventListener("click", () => {
+      turns = START;
+      cache.setAttribute("aria-pressed", "false");
+      figure.classList.remove("cached");
+      rows.textContent = "";
+      for (let t = 1; t <= START; t += 1) addRow(t);
+      paintTally();
+      status.textContent = "Add turns and watch what each one re-sends before it works.";
+    });
+  });
+</script>
+
+<style>
+  .rows {
+    display: grid;
+    gap: var(--space-3xs);
+    border: var(--rule);
+    background: var(--mantle);
+    padding: var(--space-2xs);
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3xs);
+  }
+
+  .turn {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    color: var(--muted);
+    inline-size: 2ch;
+    flex: none;
+  }
+
+  /* Widths in shared units so the triangle is honest: a row's re-send is
+     exactly the rows above it. The scale is the drawing's, not a datum. */
+  .resend,
+  .fresh {
+    flex: none;
+    inline-size: calc(var(--u) * clamp(1.6rem, 6vi, 3.5rem));
+    padding-block: var(--space-3xs);
+    padding-inline: var(--space-3xs);
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .resend {
+    background: var(--surface);
+    color: var(--muted);
+  }
+
+  /* Cache pricing keeps the width and lightens the ink: the re-read is still
+     sent, still counted — it is the rate that moved, not the shape. */
+  .cached .resend {
+    background: repeating-linear-gradient(
+      45deg,
+      var(--surface) 0 6px,
+      transparent 6px 12px
+    );
+  }
+
+  .fresh {
+    background: var(--selection);
+    color: var(--text);
+  }
+
+  .tally {
+    font-size: var(--text-micro);
+    color: var(--muted);
+    margin-block-start: var(--space-3xs);
+  }
+</style>

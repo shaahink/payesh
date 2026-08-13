@@ -332,3 +332,112 @@ body > *:not(header):not(footer) {
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+/* ── interactive figures ───────────────────────────────────────────────────
+   The concept pages' drawings take input (owner's ask, 2026-08-13). Ten
+   figures, one instrument: the drawing itself stays in each component, in the
+   panes-and-hairlines idiom FigureLoop set, and what lives here is the part
+   they must not each re-invent — the control row, the status line, and the
+   no-JS bargain.
+
+   Two rules the components are held to. The controls sit *outside* the
+   drawing's role="img", because children of an image role are presentational
+   and a button inside one is a button a screen reader cannot find. And the
+   status line is the interaction's voice — aria-live, real text — so what a
+   sighted reader watches happen is what everyone else is told, in the same
+   words. The drawings show shapes and orderings, never corpus values: a
+   number typed into one would be the one figure on this site the evidence
+   gate cannot recompute. */
+
+.fig {
+  margin: 0;
+  inline-size: min(100%, var(--measure-wide));
+  margin-block-start: var(--space-l);
+}
+
+.fig figcaption {
+  margin-block-start: var(--space-s);
+  font-size: var(--text-small);
+  color: var(--muted);
+  max-inline-size: var(--measure);
+}
+
+/* A pane: the strip's own manner — mantle behind it, a hairline around it. */
+.fig .pane {
+  border: var(--rule);
+  background: var(--mantle);
+  padding: var(--space-s);
+}
+
+/* The eyebrow register, as FigureLoop uses it: a label out of a fixed
+   vocabulary, not a claim of machine truth. */
+.fig .fig-label {
+  font-family: var(--mono);
+  font-size: var(--text-micro);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text);
+}
+
+.fig .fig-note {
+  font-size: var(--text-small);
+  color: var(--muted);
+}
+
+.fig-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2xs);
+  margin-block-start: var(--space-xs);
+}
+
+/* A control is set in the same mono register as the labels it moves — it acts
+   on the drawing, so it dresses like the drawing rather than like the prose
+   around it. */
+.fig-btn {
+  font-family: var(--mono);
+  font-size: var(--text-micro);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text);
+  background: none;
+  border: var(--rule);
+  padding-block: var(--space-3xs);
+  padding-inline: var(--space-xs);
+  cursor: pointer;
+}
+
+.fig-btn:hover,
+.fig-btn:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* A held-down toggle reads as a selected row, which is what --selection is
+   for. aria-pressed carries the state, so the style hangs off the truth the
+   assistive tech is told rather than off a class beside it. */
+.fig-btn[aria-pressed="true"] {
+  background: var(--selection);
+  border-color: var(--overlay);
+}
+
+/* The interaction's voice. min-block-size holds two lines of room so the
+   sentence changing under the reader does not bounce the page. */
+.fig-status {
+  flex-basis: 100%;
+  font-family: var(--mono);
+  font-size: var(--text-micro);
+  color: var(--muted);
+  min-block-size: calc(2 * var(--leading-snug) * var(--text-micro));
+  line-height: var(--leading-snug);
+  margin-block-start: var(--space-3xs);
+}
+
+/* The theme toggle's bargain (see "progressive enhancement" above): without
+   JS the drawing stands whole and the buttons are simply not there. Global
+   for the same reason that rule is — a scoped selector starting at <html>
+   can never match. */
+html:not(.js) .fig-controls {
+  display: none;
+}

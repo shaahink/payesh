@@ -1,0 +1,225 @@
+---
+/* The append-only log, the fold, and the crash that is read from what is
+   missing.
+   ---------------------------------------------------------------------------
+   Two panes: the log on one side, the state folded from it on the other. The
+   kill button takes the process; the replay button rebuilds the state by
+   walking the log and lands on the one fact a dead process left behind — a
+   start with no matching finish. The toggle is the counterfactual the
+   problem section describes: keep the state in the worker instead, and the
+   same kill takes the state with it, and the recovered version is a
+   reconstruction with a reconstruction's optimism. */
+---
+
+<figure class="fig fig-replay" data-fig="replay">
+  <div
+    class="drawing"
+    role="img"
+    aria-label="An append-only event log beside the run state folded from it. Working appends events: sessions start and finish, checkpoints are claimed. Killing the process takes the process and nothing else — the log survives on disk. Replaying folds the log back into the same state, and reads the crash from what is missing: a session start with no matching finish means resume that session. If the state had lived inside the worker instead, the kill would have taken it too, and the restart would begin from zero with only a guess."
+  >
+    <div class="panes" aria-hidden="true">
+      <div class="log pane">
+        <span class="fig-label">the log — appended, never edited</span>
+        <ol class="events" data-events>
+          <li>run started</li>
+          <li>session 1 started</li>
+          <li>checkpoint 1 claimed</li>
+          <li>session 1 finished</li>
+          <li>session 2 started</li>
+        </ol>
+      </div>
+      <div class="state pane" data-state>
+        <span class="fig-label">the state — a fold over the log</span>
+        <p class="fig-note" data-state-note>session 2 open · one checkpoint claimed</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="fig-controls">
+    <button type="button" class="fig-btn" data-act="work">work</button>
+    <button type="button" class="fig-btn" data-act="kill">kill the process</button>
+    <button type="button" class="fig-btn" data-act="replay">restart and replay</button>
+    <button type="button" class="fig-btn" data-act="worker" aria-pressed="false">
+      keep state in the worker
+    </button>
+    <button type="button" class="fig-btn" data-act="reset">reset</button>
+    <p class="fig-status" data-status aria-live="polite">
+      Work, kill the process mid-session, then replay the log and read the crash from what is missing.
+    </p>
+  </div>
+
+  <figcaption>
+    Progress survives the process because the state was never the process's to
+    remember: each fact is written once, in order, and restarting is a replay
+    — arithmetic, not inference. A start with no finish is the crash, written
+    in absence, which is the one signal a dead thing reliably leaves.
+  </figcaption>
+</figure>
+
+<script>
+  import { wire, stagger } from "../scripts/figures.js";
+
+  /* What [work] appends, in order, cycling. Kept short: the drawing needs
+     enough rows to fold, not a transcript. */
+  const WORK = ["checkpoint 2 claimed", "session 2 finished", "session 3 started"];
+
+  wire("replay", (figure) => {
+    const events = figure.querySelector("[data-events]")!;
+    const statePane = figure.querySelector("[data-state]")!;
+    const stateNote = figure.querySelector("[data-state-note]")!;
+    const status = figure.querySelector("[data-status]")!;
+    const worker = figure.querySelector('[data-act="worker"]')!;
+    let worked = 0;
+    let dead = false;
+
+    const inWorker = () => worker.getAttribute("aria-pressed") === "true";
+
+    const fold = () => {
+      const lines = [...events.children].map((line) => line.textContent ?? "");
+      const started = lines.filter((l) => /^session \d+ started$/.test(l));
+      const finished = lines.filter((l) => /^session \d+ finished$/.test(l));
+      const claimed = lines.filter((l) => /claimed$/.test(l)).length;
+      const open = started
+        .map((l) => l.replace(" started", ""))
+        .find((s) => !finished.includes(`${s} finished`));
+      return { open, claimed };
+    };
+
+    const paintState = () => {
+      const { open, claimed } = fold();
+      stateNote.textContent = `${open ? `${open} open` : "no session open"} · ${claimed} checkpoint${claimed === 1 ? "" : "s"} claimed`;
+    };
+
+    figure.querySelector('[data-act="work"]')!.addEventListener("click", () => {
+      if (dead) {
+        status.textContent = "the process is gone — restart and replay first";
+        return;
+      }
+      const line = document.createElement("li");
+      line.textContent = WORK[worked % WORK.length] ?? "";
+      worked += 1;
+      events.appendChild(line);
+      paintState();
+      status.textContent = "another fact, written once, in order — nothing is ever updated";
+    });
+
+    figure.querySelector('[data-act="kill"]')!.addEventListener("click", () => {
+      dead = true;
+      statePane.classList.add("dead");
+      if (inWorker()) {
+        stateNote.textContent = "—";
+        status.textContent =
+          "the kill took the process, and the state lived inside it. whatever was decided and " +
+          "not yet written is gone";
+      } else {
+        status.textContent = "the kill took the process. the log did not notice — it is on disk";
+      }
+    });
+
+    figure.querySelector('[data-act="replay"]')!.addEventListener("click", () => {
+      if (!dead) {
+        status.textContent = "nothing to recover from — kill the process first";
+        return;
+      }
+      dead = false;
+      statePane.classList.remove("dead");
+      if (inWorker()) {
+        stateNote.textContent = "starting over — a reconstruction, and reconstructions are optimistic";
+        status.textContent =
+          "there was nothing to fold. the new process guesses that whatever was in progress had " +
+          "finished, and work gets skipped silently";
+        return;
+      }
+      const lines = [...events.children];
+      lines.forEach((line) => line.classList.remove("read"));
+      status.textContent = "replaying — the same log always folds to the same state";
+      stagger(
+        lines,
+        (line) => line.classList.add("read"),
+        () => {
+          paintState();
+          const { open } = fold();
+          status.textContent = open
+            ? `${open} started and never finished — that absence is the crash, and the engine ` +
+              "resumes that session rather than opening a fresh one"
+            : "every start has its finish — a clean stop, resumed as a continue";
+        }
+      );
+    });
+
+    worker.addEventListener("click", () => {
+      const on = !inWorker();
+      worker.setAttribute("aria-pressed", String(on));
+      status.textContent = on
+        ? "the counterfactual: state held in the worker's memory, written out at the end — " +
+          "now kill it"
+        : "state back in the log, where the worker is not";
+      if (!dead) paintState();
+    });
+
+    figure.querySelector('[data-act="reset"]')!.addEventListener("click", () => {
+      events.innerHTML =
+        "<li>run started</li><li>session 1 started</li><li>checkpoint 1 claimed</li>" +
+        "<li>session 1 finished</li><li>session 2 started</li>";
+      worked = 0;
+      dead = false;
+      statePane.classList.remove("dead");
+      worker.setAttribute("aria-pressed", "false");
+      paintState();
+      status.textContent =
+        "Work, kill the process mid-session, then replay the log and read the crash from what is missing.";
+    });
+  });
+</script>
+
+<style>
+  .panes {
+    display: grid;
+    gap: var(--space-2xs);
+  }
+
+  @media (min-width: 64rem) {
+    .panes {
+      grid-template-columns: 3fr 2fr;
+      align-items: start;
+    }
+  }
+
+  .pane {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+  }
+
+  .events {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--space-3xs);
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    color: var(--muted);
+  }
+
+  .events li {
+    border-block-start: var(--rule);
+    padding-block-start: var(--space-3xs);
+  }
+
+  .events li.read {
+    color: var(--text);
+  }
+
+  /* A dead process's state pane recedes; it does not redden. Losing the
+     worker is the expected event — the drawing's whole argument is about
+     what survives it. */
+  .state.dead {
+    border-style: dashed;
+  }
+
+  .state.dead .fig-label,
+  .state.dead .fig-note {
+    color: var(--muted);
+  }
+</style>

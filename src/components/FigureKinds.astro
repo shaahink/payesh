@@ -1,0 +1,180 @@
+---
+/* Which session runs next — the precedence ladder, and the advisor beside it
+   that is allowed to speak and never to steer.
+   ---------------------------------------------------------------------------
+   The drawing is the concept's third paragraph made pointable: the sequence
+   is resolved from what just happened, not read off a pipeline diagram. So
+   the controls are situations rather than steps — press what just happened,
+   and watch which rung answers. The advisor button exists for the sentence
+   the page keeps having to say: when the cheap lane goes quiet, the run goes
+   where it was already going. */
+---
+
+<figure class="fig fig-kinds" data-fig="kinds">
+  <div
+    class="drawing"
+    role="img"
+    aria-label="A precedence ladder deciding which session runs next. First: resume, which wins outright because it carries the interrupted agent's own session id. Second: whatever a previous step left pending — a repair, an audit, a verification. Third, only when nothing is pending: the stage's workflow, which is data — deliver, then verify, then a repair step that runs only if the verifier did not pass. Beside the ladder, the advisor lane: a separate cheap invocation asked one question when a session ends badly. Its verdict is applied over a deterministic default, so an advisor that times out changes nothing."
+  >
+    <div class="lanes" aria-hidden="true">
+      <ol class="ladder">
+        <li class="rung" data-rung="resume">
+          <span class="fig-label">1 · resume</span>
+          <span class="fig-note">wins outright — it carries the interrupted agent's own session id</span>
+        </li>
+        <li class="rung" data-rung="pending">
+          <span class="fig-label">2 · what a step left pending</span>
+          <span class="fig-note">a repair, an audit, a verification, owed from before</span>
+        </li>
+        <li class="rung" data-rung="workflow">
+          <span class="fig-label">3 · the workflow</span>
+          <span class="fig-note">data, not code: deliver → verify → fix, only if nothing above spoke</span>
+        </li>
+      </ol>
+      <div class="advisor pane" data-advisor>
+        <span class="fig-label">advisor lane</span>
+        <span class="fig-note">a separate, cheaper invocation, asked one question on a bad ending</span>
+        <span class="fig-note quiet">advises over a default already decided — it never steers</span>
+      </div>
+    </div>
+    <p class="next mono" aria-hidden="true">
+      next session → <span data-next>deliver</span>
+    </p>
+  </div>
+
+  <div class="fig-controls">
+    <button type="button" class="fig-btn" data-act="died">the machine died mid-session</button>
+    <button type="button" class="fig-btn" data-act="red">the verifier came back red</button>
+    <button type="button" class="fig-btn" data-act="clear">nothing is pending</button>
+    <button type="button" class="fig-btn" data-act="timeout">the advisor times out</button>
+    <p class="fig-status" data-status aria-live="polite">
+      Press what just happened, and watch which rung answers.
+    </p>
+  </div>
+
+  <figcaption>
+    The plural is in the roles, not the fleet: the same agent, invoked as
+    deliverer, verifier or repairer, chosen by a fixed order of precedence
+    from what actually just happened. The advisor may speak into that; it may
+    not steer it.
+  </figcaption>
+</figure>
+
+<script>
+  import { wire } from "../scripts/figures.js";
+
+  const CASES = {
+    died: {
+      rung: "resume",
+      next: "resume",
+      status:
+        "a session started and never finished — resume wins before anything else is even considered"
+    },
+    red: {
+      rung: "pending",
+      next: "fix",
+      status: "the verifier left a repair owed — the pending state chooses, not the diagram"
+    },
+    clear: {
+      rung: "workflow",
+      next: "deliver",
+      status: "nothing above spoke, so the stage's workflow chooses — and it is data, not code"
+    }
+  };
+
+  wire("kinds", (figure) => {
+    const status = figure.querySelector("[data-status]")!;
+    const next = figure.querySelector("[data-next]")!;
+    const advisor = figure.querySelector("[data-advisor]")!;
+    const rungs = figure.querySelectorAll<HTMLElement>("[data-rung]");
+
+    for (const [act, c] of Object.entries(CASES)) {
+      figure.querySelector(`[data-act="${act}"]`)!.addEventListener("click", () => {
+        advisor.classList.remove("off");
+        rungs.forEach((rung) => rung.classList.toggle("on", rung.dataset.rung === c.rung));
+        next.textContent = c.next;
+        status.textContent = c.status;
+      });
+    }
+
+    figure.querySelector('[data-act="timeout"]')!.addEventListener("click", () => {
+      advisor.classList.add("off");
+      status.textContent =
+        "no verdict arrived — the default was already decided, and it is what runs. " +
+        "an orchestrator that had to wait here would not be an orchestrator";
+    });
+  });
+</script>
+
+<style>
+  .lanes {
+    display: grid;
+    gap: var(--space-2xs);
+  }
+
+  @media (min-width: 64rem) {
+    .lanes {
+      grid-template-columns: 2fr 1fr;
+      align-items: start;
+    }
+  }
+
+  .ladder {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--space-3xs);
+  }
+
+  .rung {
+    border: var(--rule);
+    background: var(--mantle);
+    padding: var(--space-2xs) var(--space-s);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+  }
+
+  .rung.on {
+    border-color: var(--accent);
+  }
+
+  .rung.on .fig-label {
+    color: var(--accent);
+  }
+
+  .advisor {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+  }
+
+  /* A lane that went quiet recedes rather than reddens: silence is its normal
+     failure, and the drawing's argument is that nothing downstream changes. */
+  .advisor.off {
+    border-style: dashed;
+  }
+
+  .advisor.off .fig-label,
+  .advisor.off .fig-note {
+    color: var(--muted);
+  }
+
+  .quiet {
+    border-block-start: var(--rule);
+    padding-block-start: var(--space-3xs);
+    margin-block-start: var(--space-3xs);
+    font-size: var(--text-micro);
+  }
+
+  .next {
+    font-size: var(--text-micro);
+    color: var(--muted);
+    margin-block-start: var(--space-2xs);
+  }
+
+  .next [data-next] {
+    color: var(--current);
+  }
+</style>

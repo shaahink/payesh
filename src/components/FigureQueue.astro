@@ -1,0 +1,218 @@
+---
+/* The owner queue — a stop that names what clears it, derived fresh from the
+   state that raised it.
+   ---------------------------------------------------------------------------
+   Left, what the engine knows; right, the list a person reads, rendered from
+   it. The interaction is resolving causes, not crossing off entries: press
+   an answer and the fact resolves, and the entry is simply not derived at
+   the next render — the whole clearing mechanism, drawn. The wait entry
+   carries an empty command on purpose, and the empty queue prints a
+   sentence, because both of those are the credibility of the rest. */
+
+const FACTS = [
+  {
+    id: "gate",
+    fact: "stage 3 is owner-gated · gates green",
+    what: "a gated stage, done and waiting",
+    unblocks: "the rest of the run",
+    clears: "approve"
+  },
+  {
+    id: "escalation",
+    fact: "the agent wrote: escalate — two readings of the brief",
+    what: "a question only a person can settle",
+    unblocks: "the whole loop — nothing else is safe to run",
+    clears: "decide, then take the line out"
+  },
+  {
+    id: "wait",
+    fact: "a declared wait, until the window reopens",
+    what: "a wait the run declared for itself",
+    unblocks: "nothing that is yours",
+    clears: "— (it wakes itself)"
+  }
+];
+---
+
+<figure class="fig fig-queue" data-fig="queue">
+  <div
+    class="drawing"
+    role="img"
+    aria-label="The engine's open obligations on one side, and the owner queue derived from them on the other. Each queue entry carries three fields: what it is, what it is holding up, and the exact command that clears it. One entry — a wait the run declared for itself — carries an empty command on purpose, because the wait wakes itself. Resolving a cause removes its entry at the next render; nothing is stored, so no entry can outlive the condition that raised it. When nothing is waiting, the queue says so in a sentence."
+  >
+    <div class="panes" aria-hidden="true">
+      <div class="facts pane">
+        <span class="fig-label">what the engine knows</span>
+        <ul class="fact-list">
+          {FACTS.map((fact) => (
+            <li data-fact={fact.id}>{fact.fact}</li>
+          ))}
+        </ul>
+      </div>
+      <span class="arrow">→ derived, each render</span>
+      <div class="queue pane">
+        <span class="fig-label">the owner queue</span>
+        <ul class="entries" data-entries>
+          {FACTS.map((fact) => (
+            <li data-entry={fact.id}>
+              <span class="e-what">{fact.what}</span>
+              <span class="e-line">unblocks · {fact.unblocks}</span>
+              <span class="e-line mono">clears with · {fact.clears}</span>
+            </li>
+          ))}
+        </ul>
+        <p class="empty fig-note" data-empty hidden>
+          nothing is waiting on you — printed, so the rest of this list can be believed
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="fig-controls">
+    <button type="button" class="fig-btn" data-act="gate">approve the stage</button>
+    <button type="button" class="fig-btn" data-act="escalation">answer the escalation</button>
+    <button type="button" class="fig-btn" data-act="wait">the window reopens</button>
+    <button type="button" class="fig-btn" data-act="reset">reset</button>
+    <p class="fig-status" data-status aria-live="polite">
+      Resolve a cause, and watch its entry fail to be derived.
+    </p>
+  </div>
+
+  <figcaption>
+    A usable stop says three things: what it is, what it is holding up, and
+    exactly what clears it. The list is derived rather than kept, so an entry
+    cannot outlive its own cause — resolve the thing, and there is nothing to
+    clean up.
+  </figcaption>
+</figure>
+
+<script>
+  import { wire } from "../scripts/figures.js";
+
+  const LINES: Record<string, string> = {
+    gate:
+      "approved — an event with a time on it, not a shrug. at the next render the entry is " +
+      "simply not derived",
+    escalation:
+      "decided, and the line taken out — two acts, or the next session parks on it again",
+    wait:
+      "the window opened and the run woke itself: one session spawned, no attempt burned, " +
+      "nobody sent to a keyboard"
+  };
+
+  wire("queue", (figure) => {
+    const status = figure.querySelector("[data-status]")!;
+    const empty = figure.querySelector<HTMLElement>("[data-empty]")!;
+
+    const render = () => {
+      let open = 0;
+      for (const entry of figure.querySelectorAll<HTMLElement>("[data-entry]")) {
+        const done = figure
+          .querySelector(`[data-fact="${entry.dataset.entry}"]`)!
+          .classList.contains("done");
+        entry.hidden = done;
+        if (!done) open += 1;
+      }
+      empty.hidden = open > 0;
+    };
+
+    for (const id of Object.keys(LINES)) {
+      figure.querySelector(`[data-act="${id}"]`)!.addEventListener("click", () => {
+        const fact = figure.querySelector(`[data-fact="${id}"]`)!;
+        if (fact.classList.contains("done")) {
+          status.textContent = "already resolved — and its entry is already gone";
+          return;
+        }
+        fact.classList.add("done");
+        render();
+        status.textContent = LINES[id] ?? "";
+      });
+    }
+
+    figure.querySelector('[data-act="reset"]')!.addEventListener("click", () => {
+      for (const fact of figure.querySelectorAll("[data-fact]")) fact.classList.remove("done");
+      render();
+      status.textContent = "Resolve a cause, and watch its entry fail to be derived.";
+    });
+  });
+</script>
+
+<style>
+  .panes {
+    display: grid;
+    gap: var(--space-2xs);
+  }
+
+  @media (min-width: 64rem) {
+    .panes {
+      grid-template-columns: 1fr auto 1.4fr;
+      align-items: start;
+    }
+  }
+
+  .pane {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+  }
+
+  .arrow {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    color: var(--muted);
+    align-self: center;
+  }
+
+  .fact-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--space-3xs);
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    color: var(--muted);
+  }
+
+  .fact-list li {
+    border-block-start: var(--rule);
+    padding-block-start: var(--space-3xs);
+  }
+
+  /* A resolved cause recedes rather than disappearing: the engine still
+     remembers it happened — it is only the queue that stops deriving it. */
+  .fact-list li.done {
+    text-decoration: line-through;
+    text-decoration-color: var(--overlay);
+  }
+
+  .entries {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--space-2xs);
+  }
+
+  .entries li {
+    border-block-start: var(--rule);
+    padding-block-start: var(--space-3xs);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+  }
+
+  .e-what {
+    font-size: var(--text-small);
+    color: var(--text);
+  }
+
+  .e-line {
+    font-size: var(--text-micro);
+    color: var(--muted);
+  }
+
+  .e-line.mono {
+    font-size: var(--text-micro);
+  }
+</style>
