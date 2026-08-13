@@ -65,10 +65,10 @@ const description = `${count} on this site tagged ${info.label} — concepts, ar
   ogDescription={`${count} tagged ${info.label}, gathered by subject rather than by section.`}
   canonical={tagHref(tag)}
 >
-  <main id="main" class="tag">
+  <main id="main" class="page tag">
     <p class="eyebrow">Tag</p>
     <h1>{info.label}</h1>
-    <p class="blurb">{info.blurb}</p>
+    <p class="standfirst">{info.blurb}</p>
 
     {
       items.length > 0 ? (
@@ -81,7 +81,7 @@ const description = `${count} on this site tagged ${info.label} — concepts, ar
       )
     }
 
-    <section class="others">
+    <section class="others after-rule">
       <h2>Every tag</h2>
       <TagList tags={others} label="" />
     </section>
@@ -89,36 +89,15 @@ const description = `${count} on this site tagged ${info.label} — concepts, ar
 </Base>
 
 <style>
-  .tag {
-    inline-size: min(100%, var(--measure));
-    margin-inline: auto;
-    padding-block: var(--space-2xl) var(--space-3xl);
-    padding-inline: var(--space-m);
-  }
-
-  .eyebrow {
-    font-family: var(--mono);
-    font-size: var(--text-micro);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-  }
-
-  .blurb {
-    font-size: var(--text-lead);
-    color: var(--muted);
-    margin-block: var(--space-s) var(--space-xl);
-  }
+  /* `.page`, `.eyebrow`, `.standfirst` and `.after-rule` come from
+     styles.css. The standfirst used to carry its own bottom margin here; it
+     is gone because the list below already opens at --space-xl and the two
+     collapsed to the same number anyway. The only state it changed was the
+     empty one, which now keeps the site's rhythm like everything else. */
 
   .empty {
     color: var(--muted);
     margin-block-start: var(--space-m);
-  }
-
-  .others {
-    margin-block-start: var(--space-2xl);
-    border-block-start: var(--rule);
-    padding-block-start: var(--space-l);
   }
 
   .others h2 {

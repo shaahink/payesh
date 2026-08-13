@@ -68,7 +68,7 @@ const headings = moves.map((move) => ({ depth: 2, slug: move.id, text: move.text
 >
   <article class="concept">
     <h1 data-sk-edit="title">{title}</h1>
-    <p class="lead" data-sk-edit="oneLine">{oneLine}</p>
+    <p class="standfirst" data-sk-edit="oneLine">{oneLine}</p>
 
     {
       alsoKnownAs.length > 0 && (
@@ -141,12 +141,6 @@ const headings = moves.map((move) => ({ depth: 2, slug: move.id, text: move.text
 </Reading>
 
 <style>
-  .lead {
-    font-size: var(--text-lead);
-    color: var(--muted);
-    margin-block-start: var(--space-s);
-  }
-
   .aka {
     font-size: var(--text-small);
     color: var(--muted);
@@ -188,9 +182,16 @@ const headings = moves.map((move) => ({ depth: 2, slug: move.id, text: move.text
     gap: var(--space-xs);
   }
 
+  /* `anywhere`, because these are paths. A repository path is one unbroken
+     word to CSS — `src/Conductor.Core/Orchestration/RunLoop.cs:105` is 423px
+     of mono at 13px — and on a 390px phone it pushed the whole page sideways,
+     which is the worst version of an overflow: every line of prose on the
+     page moves, and nothing on screen shows you why. Breaking mid-path is
+     ugly; a horizontal scrollbar on an article is worse. */
   .citations code {
     font-size: var(--text-small);
     color: var(--teal);
+    overflow-wrap: anywhere;
   }
 
   .cite-note {

@@ -113,6 +113,20 @@
      narrower exception. */
   --page-wide: 68rem;
 
+  /* How every page opens, closes and holds itself off the edge of a phone.
+     Named because eight files were each declaring their own and they had
+     drifted: a reading page opened at 3rem, an index at 4rem, and /404 at
+     nothing at all, so following a link from /concepts/ to a concept moved
+     the headline. They are compositions of the space scale rather than new
+     quantities, which is why they live beside --page-wide and not in it.
+
+     One place to change the site's opening. `.page` in styles.css spends
+     them, and so does the reading grid in Reading.astro, which cannot use
+     `.page` because it is two tracks rather than one column. */
+  --page-open: var(--space-2xl);
+  --page-close: var(--space-3xl);
+  --page-gutter: var(--space-m);
+
   /* ── the space scale ──────────────────────────────────────────────────
      A 4px rhythm. "Panels breathe" is the Face's own discipline and it is
      the reason there is a --space-3xl at all. */

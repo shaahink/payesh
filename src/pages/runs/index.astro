@@ -35,7 +35,7 @@ const { corpusTable } = page.data;
 <SectionIndex page={page} items={items} ordinalLabel="Report">
   {
     corpusTable && (
-      <section class="corpus" aria-labelledby="the-corpus">
+      <section class="corpus after-rule" aria-labelledby="the-corpus">
         <h2 id="the-corpus" data-sk-edit="corpusTable.heading">
           {corpusTable.heading}
         </h2>
@@ -51,17 +51,10 @@ const { corpusTable } = page.data;
 </SectionIndex>
 
 <style>
-  .corpus {
-    margin-block-start: var(--space-3xl);
-    border-block-start: var(--rule);
-    padding-block-start: var(--space-l);
-  }
-
-  .corpus h2 {
-    font-size: var(--text-h2);
-    line-height: var(--leading-snug);
-  }
-
+  /* The hairline, the air above it and the air below it are `.after-rule` in
+     styles.css — the same appended-section idiom the glossary and the tag
+     pages use. What is left here is the one thing that is this page's own:
+     the corpus prose runs narrow because the table under it runs wide. */
   .corpus p {
     margin-block-start: var(--space-s);
     max-inline-size: var(--measure-narrow);

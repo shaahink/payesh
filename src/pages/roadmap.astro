@@ -109,7 +109,7 @@ const ITEMS: Item[] = [
   ogDescription="Intent, labelled as intent: the next era of the engine and of this site, and what each item waits on."
   canonical="/roadmap/"
 >
-  <main id="main" class="roadmap">
+  <main id="main" class="page roadmap">
     <h1>Roadmap</h1>
     <p class="standfirst">
       The one page here with no figures on it, because nothing on it has
@@ -124,7 +124,7 @@ const ITEMS: Item[] = [
       corpus. The way off this page is through the record.
     </p>
 
-    <ol class="items">
+    <ol class="rule-list items">
       {
         ITEMS.map((item) => (
           <li>
@@ -143,7 +143,7 @@ const ITEMS: Item[] = [
       }
     </ol>
 
-    <p class="foot">
+    <p class="foot after-rule">
       The record so far — what has already run, and what it cost — is{" "}
       <a href="/runs/">the runs page</a>; the plans themselves are in{" "}
       <a href="https://github.com/shaahink/conductor">the conductor repository</a>.
@@ -152,34 +152,19 @@ const ITEMS: Item[] = [
 </Base>
 
 <style>
-  .roadmap {
-    inline-size: min(100%, var(--measure));
-    margin-inline: auto;
-    padding-block: var(--space-2xl) var(--space-3xl);
-    padding-inline: var(--space-m);
-  }
-
-  .standfirst {
-    font-size: var(--text-lead);
-    color: var(--muted);
-    margin-block-start: var(--space-s);
-  }
+  /* `.page`, `.standfirst`, `.rule-list` and `.after-rule` are in styles.css.
+     Two departures below, both about the same fact: an item here is several
+     paragraphs long where every other hairline list on the site holds a title
+     and one line. */
 
   .rules {
     margin-block-start: var(--space-m);
   }
 
+  /* Wider gaps than the shared list, so a three-paragraph item does not run
+     into the rule that opens the next one. */
   .items {
-    list-style: none;
-    padding: 0;
-    margin-block-start: var(--space-xl);
-    display: grid;
     gap: var(--space-xl);
-  }
-
-  .items li {
-    border-block-start: var(--rule);
-    padding-block-start: var(--space-s);
   }
 
   .items h2 {
@@ -207,9 +192,6 @@ const ITEMS: Item[] = [
   }
 
   .foot {
-    margin-block-start: var(--space-2xl);
-    border-block-start: var(--rule);
-    padding-block-start: var(--space-l);
     color: var(--muted);
   }
 </style>

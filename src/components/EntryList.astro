@@ -47,7 +47,7 @@ const numbered = items.some((item) => item.order !== undefined);
 
 {
   numbered ? (
-    <ol class="entries">
+    <ol class="rule-list entries">
       {items.map((item) => (
         <li>
           <a href={item.href}>
@@ -62,10 +62,10 @@ const numbered = items.some((item) => item.order !== undefined);
       ))}
     </ol>
   ) : (
-    <ul class="entries">
+    <ul class="rule-list entries">
       {items.map((item) => (
         <li>
-          {item.kind && <span class="kind">{item.kind}</span>}
+          {item.kind && <span class="eyebrow kind">{item.kind}</span>}
           <a href={item.href}>
             <span class="entry-title">{item.title}</span>
           </a>
@@ -77,19 +77,6 @@ const numbered = items.some((item) => item.order !== undefined);
 }
 
 <style>
-  .entries {
-    list-style: none;
-    padding: 0;
-    margin-block-start: var(--space-xl);
-    display: grid;
-    gap: var(--space-l);
-  }
-
-  .entries li {
-    border-block-start: var(--rule);
-    padding-block-start: var(--space-s);
-  }
-
   .entries a {
     display: flex;
     align-items: baseline;
@@ -106,17 +93,15 @@ const numbered = items.some((item) => item.order !== undefined);
     color: var(--muted);
   }
 
-  /* The section label on a mixed list, set like every other eyebrow on the
-     site: mono, small, lettered out, above the thing it describes rather than
-     beside it — so the titles still line up down the left edge and the list
-     scans as a list. */
+  /* The section label on a mixed list is the site's `.eyebrow` — this used to
+     be a fourth hand-copy of its five declarations, under a comment claiming
+     it was "set like every other eyebrow on the site", which is exactly the
+     comment you write while the copies are drifting. What is left is the two
+     things that are about this list rather than about eyebrows: it goes above
+     the title rather than beside it, so the titles still line up down the
+     left edge and the list scans as a list. */
   .kind {
     display: block;
-    font-family: var(--mono);
-    font-size: var(--text-micro);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--muted);
     margin-block-end: var(--space-3xs);
   }
 

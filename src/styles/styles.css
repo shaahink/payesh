@@ -217,14 +217,93 @@ body > *:not(header):not(footer) {
   flex-grow: 1;
 }
 
-/* ── the reading column ────────────────────────────────────────────────────
-   One column, 62–72ch, centred. Concept and article pages are this and
-   nothing else; the sticky table of contents sits beside it on wide
-   viewports without narrowing it. */
+/* ── the page ──────────────────────────────────────────────────────────────
+   One column, 62–72ch, centred, opened and closed the same way on every page
+   of the site. Concept and article pages are this and nothing else; the
+   sticky table of contents sits beside it on wide viewports without
+   narrowing it (Reading.astro builds that grid out of the same tokens).
 
-.measure {
-  inline-size: min(100%, var(--measure));
+   This is a *global* class rather than a copy in each page's `<style>`, and
+   that is the whole point. An Astro `<style>` block is scoped to its file and
+   cannot be imported, so a shell written in a page can only be shared by
+   being retyped — and eight of them were, with three different openings
+   between them. Anything below that more than one page needs lives here.
+
+   A page that wants to differ still can: an Astro-scoped `.foo` compiles to
+   `.foo[data-astro-cid-…]`, two classes' worth of specificity, so a local
+   rule beats these without !important and without fighting. The front page
+   does exactly that. */
+
+/* The gutter is added to the measure rather than taken out of it. Everything
+   here is border-box, so `inline-size: 68ch` with 1.5rem of padding is a 68ch
+   box holding 65ch of text — and the reading column, which has no padding of
+   its own, was getting all 68. Two pages both honestly described as "at the
+   measure" were 48px apart in width and 24px apart in position, which is most
+   of what made a section index and the pages under it feel like two sites. */
+.page {
+  inline-size: min(100%, calc(var(--measure) + 2 * var(--page-gutter)));
   margin-inline: auto;
+  padding-block: var(--page-open) var(--page-close);
+  padding-inline: var(--page-gutter);
+}
+
+/* The one page that is a column of prose *and* grids — the front page. Its
+   prose still sits at the measure inside this; see index.astro. */
+.page.wide {
+  inline-size: min(100%, calc(var(--page-wide) + 2 * var(--page-gutter)));
+}
+
+/* The sentence under a title: what this page is, before it starts being it.
+   Every page has one and every page had its own copy of these three lines,
+   under three different names — `.standfirst`, `.lead`, `.blurb`. One name,
+   because it is one object. */
+.standfirst {
+  font-size: var(--text-lead);
+  color: var(--muted);
+  margin-block-start: var(--space-s);
+}
+
+/* The eyebrow: a short label naming what kind of thing follows — "Concept",
+   "Tag", "Run report". Mono, because it is a label out of a fixed vocabulary
+   rather than a phrase somebody wrote, and quiet, because the title under it
+   is what the reader came for. Not for a sentence: a sentence set in
+   uppercase micro mono is a sentence nobody reads. */
+.eyebrow {
+  font-family: var(--mono);
+  font-size: var(--text-micro);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+/* A section a page appends after its main business — the corpus table under
+   the reports, the market's words under the glossary, every tag under one
+   tag. A hairline, air above it, air below it. Four pages had this and two of
+   them opened at 6rem while two opened at 4rem. */
+.after-rule {
+  margin-block-start: var(--space-2xl);
+  border-block-start: var(--rule);
+  padding-block-start: var(--space-l);
+}
+
+/* A list whose items are separated by a hairline rather than by a bullet —
+   the site's one list idiom, in five files before this. The rule opens each
+   item instead of closing it, so the last item does not end in a line that
+   promises a sixth. */
+.rule-list {
+  list-style: none;
+  padding: 0;
+  margin-block-start: var(--space-xl);
+  display: grid;
+  gap: var(--space-l);
+}
+
+/* `> *` rather than `> li`, because the glossary's is a <dl> and its items are
+   the <div>s that pair a term with its definition. The idiom is about the rule
+   between items, not about which element the list happens to be made of. */
+.rule-list > * {
+  border-block-start: var(--rule);
+  padding-block-start: var(--space-s);
 }
 
 .stack > * + * {

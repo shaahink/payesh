@@ -40,11 +40,23 @@ const { headings = [], ...base } = Astro.props;
 </Base>
 
 <style>
+  /* Not `.page`: this is two tracks on a wide viewport, so it builds its own
+     grid — but out of the same three tokens, so a reading page opens exactly
+     where an index page does. Following a link from /concepts/ to a concept
+     used to move the headline up 1rem, which is the kind of thing a reader
+     feels without being able to name. */
   .reading {
     display: grid;
+    /* The one column, stated as a track rather than left to `auto`. An auto
+       track sizes to its content and a percentage measured against it is
+       indefinite, so `.column`'s own `min(100%, --measure)` had nothing to
+       resolve 100% against and fell through to the measure — 440px of column
+       inside 342px of phone, and every concept, article and report scrolled
+       sideways. The track is what makes the 100% mean something. */
+    grid-template-columns: min(100%, var(--measure));
     gap: var(--space-xl);
-    padding-block: var(--space-xl) var(--space-3xl);
-    padding-inline: var(--space-m);
+    padding-block: var(--page-open) var(--page-close);
+    padding-inline: var(--page-gutter);
     justify-content: center;
   }
 
@@ -55,11 +67,34 @@ const { headings = [], ...base } = Astro.props;
   }
 
   @media (min-width: 64rem) {
+    /* Three tracks, and the two outer ones are `1fr` each so they are always
+       exactly equal — which is what puts the prose in the *middle of the
+       window*, not in the middle of the column-plus-sidebar pair.
+
+       That pair was the second half of the split between a section index and
+       the pages under it: /concepts/ centred its column and a concept centred
+       the column and its table of contents together, so following a link
+       swung the text 168px to the left. The table of contents lives in the
+       right-hand track and the left one is deliberately empty — a margin, the
+       way a printed page has one.
+
+       The gap widens here because the outer tracks are now paying for it out
+       of the sidebar rather than out of the page's own edges. */
     .reading {
-      /* The TOC takes its own track, so it never narrows the measure — the
-         column is the same width on a laptop as it is on a monitor. */
-      grid-template-columns: min(100%, var(--measure)) minmax(10rem, 15rem);
+      grid-template-columns: 1fr min(100%, var(--measure)) 1fr;
+      column-gap: var(--space-l);
       align-items: start;
+    }
+
+    .column {
+      grid-column: 2;
+    }
+
+    /* `:global`, because a component's root element carries no scope
+       attribute of its own and a scoped `.toc` here would never match it. */
+    .reading > :global(.toc) {
+      grid-column: 3;
+      max-inline-size: 15rem;
     }
   }
 </style>

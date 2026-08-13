@@ -34,7 +34,7 @@ const { meta, title, standfirst } = page.data;
   editCollection="sectionPages"
   editEntry={page.id}
 >
-  <main id="main" class="section-index">
+  <main id="main" class="page">
     <h1 data-sk-edit="title">{title}</h1>
     <p class="standfirst" data-sk-edit="standfirst">{standfirst}</p>
 
@@ -49,17 +49,6 @@ const { meta, title, standfirst } = page.data;
   </main>
 </Base>
 
-<style>
-  .section-index {
-    inline-size: min(100%, var(--measure));
-    margin-inline: auto;
-    padding-block: var(--space-2xl) var(--space-3xl);
-    padding-inline: var(--space-m);
-  }
-
-  .standfirst {
-    font-size: var(--text-lead);
-    color: var(--muted);
-    margin-block-start: var(--space-s);
-  }
-</style>
+{/* No styles: the shell and the standfirst are `.page` and `.standfirst` in
+    styles.css, which is where every page on the site gets them. A layout
+    that adds nothing of its own adds no stylesheet. */}

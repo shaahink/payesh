@@ -140,7 +140,7 @@ if (isVisible(page.data, "notes")) rail.push({ no: "09", href: "#notes", label: 
   <Font cssVariable="--font-display" preload slot="head" />
   <Font cssVariable="--font-farsi" preload slot="head" />
 
-  <main id="main" class="home">
+  <main id="main" class="page wide home">
     {/* `data-sk-edit` names the content path the element is showing, and sits
         beside the binding it names so it is easy to write and obvious when it
         rots. The editor checks both that the path resolves and that the
@@ -252,7 +252,7 @@ if (isVisible(page.data, "notes")) rail.push({ no: "09", href: "#notes", label: 
                   {door.links.map((link) => (
                     <li>
                       <a href={link.href}>
-                        <span class="kind">{link.kind}</span>
+                        <span class="eyebrow">{link.kind}</span>
                         <span class="dest">{link.title}</span>
                       </a>
                     </li>
@@ -350,13 +350,11 @@ if (isVisible(page.data, "notes")) rail.push({ no: "09", href: "#notes", label: 
      The resolution is one left edge, not one centre: prose capped at the
      measure and flush to the same edge the grids run from. The cover and the
      section heads may be display-sized, but the return sweep still goes to
-     one place. */
-  .home {
-    inline-size: min(100%, var(--page-wide));
-    margin-inline: auto;
-    padding-block: var(--space-xl) var(--space-3xl);
-    padding-inline: var(--space-m);
-  }
+     one place.
+
+     That width is `.page.wide` in styles.css, and the opening, closing and
+     gutter are the same three tokens every other page spends. A cover is
+     allowed a different dress; it is not allowed a different margin. */
 
   /* ── the cover ──────────────────────────────────────────────────────────
      Opened by the heaviest rule on the site. Every other page starts with a
@@ -408,13 +406,17 @@ if (isVisible(page.data, "notes")) rail.push({ no: "09", href: "#notes", label: 
     max-inline-size: var(--measure-narrow);
   }
 
-  /* The paragraph that tells a stranger what they are looking at. Lead size
-     here, against the site's own body-size habit, because this page is now a
-     cover and a cover's standfirst is display matter — the reading pages keep
-     their discipline. Narrow measure in its own ch, so the line stays a line. */
+  /* The paragraph that tells a stranger what they are looking at. It is the
+     site's `.standfirst` — same size, same object — with the two things a
+     cover changes about it: it opens wider, and it is set in the text colour
+     rather than the quiet one, because on a cover this paragraph *is* the
+     page rather than a caption on it. Both stated, because the shared rule
+     says muted and a scoped rule that only meant to change the margin would
+     silently take the colour with it. Narrow measure in its own ch, so the
+     line stays a line. */
   .standfirst {
     margin-block-start: var(--space-l);
-    font-size: var(--text-lead);
+    color: var(--text);
     max-inline-size: var(--measure-narrow);
   }
 
@@ -576,15 +578,16 @@ if (isVisible(page.data, "notes")) rail.push({ no: "09", href: "#notes", label: 
     padding-block-start: var(--space-s);
   }
 
-  /* The eyebrow is the door's question — who the door is for, which is the
-     one fact a scanning reader needs before the sentence. In the vermilion,
-     because on this page the accent's job is to mark the things a scanning
-     eye should catch: numbers, questions, destinations. */
-  .doors .eyebrow {
-    font-family: var(--mono);
-    font-size: var(--text-micro);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
+  /* The door's question — who the door is for, which is the one fact a
+     scanning reader needs before the sentence. The site's `.eyebrow`, with
+     the one thing this page changes: the vermilion, because on the cover the
+     accent's job is to mark what a scanning eye should catch — numbers,
+     questions, destinations.
+
+     `> li >` and not a descendant selector: a door's destinations carry an
+     eyebrow of their own now that they share the class, and they are the
+     quiet kind — a list of where the door goes, under the question. */
+  .doors > li > .eyebrow {
     color: var(--accent);
   }
 
@@ -607,14 +610,6 @@ if (isVisible(page.data, "notes")) rail.push({ no: "09", href: "#notes", label: 
     gap: var(--space-2xs);
     text-decoration: none;
     font-size: var(--text-small);
-  }
-
-  .destinations .kind {
-    font-family: var(--mono);
-    font-size: var(--text-micro);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--muted);
   }
 
   /* The same link idiom as a finding's destination, because it is the same

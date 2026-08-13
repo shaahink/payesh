@@ -29,7 +29,7 @@ const rows = allTags().map((tag) => {
   ogDescription="Eight subjects gathering the concepts, articles and reports that share them."
   canonical="/tags/"
 >
-  <main id="main" class="tags-index">
+  <main id="main" class="page tags-index">
     <h1>Tags</h1>
     <p class="standfirst">
       The three sections say what kind of page something is. These say what it
@@ -37,7 +37,7 @@ const rows = allTags().map((tag) => {
       because a subject like cost is one thought spread across all three.
     </p>
 
-    <ul class="list">
+    <ul class="rule-list list">
       {
         rows.map((row) => (
           <li>
@@ -57,31 +57,9 @@ const rows = allTags().map((tag) => {
 </Base>
 
 <style>
-  .tags-index {
-    inline-size: min(100%, var(--measure));
-    margin-inline: auto;
-    padding-block: var(--space-2xl) var(--space-3xl);
-    padding-inline: var(--space-m);
-  }
-
-  .standfirst {
-    font-size: var(--text-lead);
-    color: var(--muted);
-    margin-block-start: var(--space-s);
-  }
-
-  .list {
-    list-style: none;
-    padding: 0;
-    margin-block-start: var(--space-xl);
-    display: grid;
-    gap: var(--space-l);
-  }
-
-  .list li {
-    border-block-start: var(--rule);
-    padding-block-start: var(--space-s);
-  }
+  /* The shell, the standfirst and the hairline list are `.page`,
+     `.standfirst` and `.rule-list` in styles.css. What is here is what this
+     page does that the others do not: put a count at the end of every row. */
 
   /* The count sits at the far end of the row rather than after the word, so
      the eight of them make a column a reader can compare down. */

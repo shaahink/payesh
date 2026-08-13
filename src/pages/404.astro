@@ -13,11 +13,12 @@
    and an owner who broke this page would hear about it from a visitor. Chrome,
    not content.
 
-   No styles either, on purpose: the template ships machinery and no face
-   (styles.css says why), so this page wears whatever the site's design becomes.
-   When it gets one, style it with logical properties — margin-inline,
-   padding-block, inset-inline — like every other page in the fleet, so a
-   right-to-left locale costs nothing. */
+   No styles of its own, and now that is a statement rather than an omission.
+   The template shipped machinery and no face, so this page carried no classes
+   at all and its headline sat flush against the edge of the phone — the one
+   page on the site with no shell, found by nobody testing the pages they
+   meant to build. It wears `.page` like every other page, out of styles.css,
+   and the moment that shell changes this changes with it. */
 import Base from "../layouts/Base.astro";
 
 /* Canonical to itself, never to "/". Pointing it at the home page would tell a
@@ -32,7 +33,7 @@ import Base from "../layouts/Base.astro";
   ogDescription="This page does not exist."
   canonical="/404"
 >
-  <main id="main">
+  <main id="main" class="page stack">
     <h1>Page not found</h1>
     <p>That page does not exist — it may have moved, or the link may be wrong.</p>
     <p><a href="/">Go to the home page</a></p>

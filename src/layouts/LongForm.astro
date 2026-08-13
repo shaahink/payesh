@@ -85,23 +85,31 @@ const linking = pageContext(hrefOf(collection, entry.id));
 <style>
   /* The scenario reads as a label rather than as the first sentence: it is
      what this run is published *as*, and confusing it with the piece's own
-     opening line is the one misreading that matters here. */
-  .scenario {
+     opening line is the one misreading that matters here.
+
+     Deliberately not `.eyebrow`. An eyebrow is one or two words out of a
+     fixed vocabulary and can afford mono at micro; a scenario is a full
+     clause — "a four-site web fleet, one shared component library" — and a
+     clause set in uppercase micro mono is a clause nobody reads. It keeps
+     the reading face at small, and takes only the family's tracking. */
+  /* `p.scenario` and not `.scenario`: `.longform p` below is two classes
+     worth of selector once Astro adds its scope attribute, so the plain class
+     loses to it and the paragraph keeps a 16px top margin. Being the first
+     thing in the article, that margin collapsed out through the article and
+     opened every report 16px below every other page on the site — the last
+     page-opening still wrong after the shell was shared, and invisible until
+     the openings were measured rather than looked at. */
+  .longform p.scenario {
     font-size: var(--text-small);
     color: var(--muted);
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.08em;
+    margin-block-start: 0;
     margin-block-end: var(--space-2xs);
   }
 
   .longform :global(.tags) {
     margin-block-start: var(--space-m);
-  }
-
-  .standfirst {
-    font-size: var(--text-lead);
-    color: var(--muted);
-    margin-block-start: var(--space-s);
   }
 
   .longform h2 {

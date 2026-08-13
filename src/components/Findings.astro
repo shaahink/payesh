@@ -57,7 +57,7 @@ const resolved = items.map((item) => ({
 
         <p class="where">
           <a href={item.href}>
-            <span class="kind">{item.kind}</span>
+            <span class="eyebrow">{item.kind}</span>
             <span class="title">{item.title}</span>
           </a>
         </p>
@@ -144,14 +144,6 @@ const resolved = items.map((item) => ({
     gap: var(--space-2xs);
     text-decoration: none;
     font-size: var(--text-small);
-  }
-
-  .kind {
-    font-family: var(--mono);
-    font-size: var(--text-micro);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--muted);
   }
 
   .title {

@@ -187,7 +187,7 @@ const market = (await ordered("concepts"))
   ogDescription="The words this site leans on, defined in plain language, with the market's names for them beside each one."
   canonical="/glossary/"
 >
-  <main id="main" class="glossary">
+  <main id="main" class="page glossary">
     <h1>Glossary</h1>
     <p class="standfirst">
       The words, before they are used on you. In reading order rather than
@@ -201,7 +201,7 @@ const market = (await ordered("concepts"))
       <FigureLoop />
     </div>
 
-    <dl class="terms">
+    <dl class="rule-list terms">
       {
         entries.map((entry) => (
           <div class="entry">
@@ -211,7 +211,7 @@ const market = (await ordered("concepts"))
               {entry.link && (
                 <p class="see">
                   <a href={entry.link.href}>
-                    <span class="kind">{entry.link.kind}</span>
+                    <span class="eyebrow">{entry.link.kind}</span>
                     <span class="dest">{entry.link.title}</span>
                   </a>
                 </p>
@@ -222,14 +222,14 @@ const market = (await ordered("concepts"))
       }
     </dl>
 
-    <section class="market">
+    <section class="market after-rule">
       <h2>The market's words</h2>
       <p>
         The ten concepts go by other names in job ads and vendor pages. Each
         line below is the same idea; the link is the heading it lives under
         here.
       </p>
-      <ul>
+      <ul class="rule-list">
         {
           market.map((row) => (
             <li>
@@ -244,32 +244,12 @@ const market = (await ordered("concepts"))
 </Base>
 
 <style>
-  .glossary {
-    inline-size: min(100%, var(--measure));
-    margin-inline: auto;
-    padding-block: var(--space-2xl) var(--space-3xl);
-    padding-inline: var(--space-m);
-  }
-
-  .standfirst {
-    font-size: var(--text-lead);
-    color: var(--muted);
-    margin-block-start: var(--space-s);
-  }
+  /* `.page`, `.standfirst`, `.rule-list`, `.eyebrow` and `.after-rule` are in
+     styles.css. What is left below is this page's own: the map above the
+     definitions, and how a definition is set. */
 
   .map {
     margin-block-start: var(--space-xl);
-  }
-
-  .terms {
-    margin-block-start: var(--space-xl);
-    display: grid;
-    gap: var(--space-l);
-  }
-
-  .entry {
-    border-block-start: var(--rule);
-    padding-block-start: var(--space-s);
   }
 
   /* The term is a word being defined, not machine truth, so it stays in the
@@ -297,14 +277,6 @@ const market = (await ordered("concepts"))
     font-size: var(--text-small);
   }
 
-  .see .kind {
-    font-family: var(--mono);
-    font-size: var(--text-micro);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-  }
-
   .see .dest {
     color: var(--accent);
     text-decoration: underline;
@@ -317,28 +289,9 @@ const market = (await ordered("concepts"))
     text-decoration-thickness: 2px;
   }
 
-  .market {
-    margin-block-start: var(--space-3xl);
-    border-block-start: var(--rule);
-    padding-block-start: var(--space-l);
-  }
-
   .market > p {
     color: var(--muted);
     margin-block-start: var(--space-s);
-  }
-
-  .market ul {
-    list-style: none;
-    padding: 0;
-    margin-block-start: var(--space-l);
-    display: grid;
-    gap: var(--space-m);
-  }
-
-  .market li {
-    border-block-start: var(--rule);
-    padding-block-start: var(--space-s);
   }
 
   /* The market's names are quotes from elsewhere, so they read quiet; the
