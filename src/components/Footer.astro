@@ -33,9 +33,20 @@ const credit = creditsFor({ siteName: site.name, siteUrl: site.url });
       These are destinations — the words, the intent, the second way through —
       and the footer is where a reader who has run out of page goes looking. */}
   <nav aria-label="Also on this site">
+    <a href="/conductor/">Conductor</a>
     <a href="/glossary/">Glossary</a>
     <a href="/roadmap/">Roadmap</a>
     <a href="/tags/">Tags</a>
+  </nav>
+  {/* How to reach the person whose month this was (owner's ask, 2026-08-13).
+      Real addresses, in the component rather than in content — the same
+      placement as the credit line, because who wrote the site and how to
+      reach them are the same kind of fact. The mail link is written out
+      rather than hidden behind a word: a reader deciding whether to write
+      wants to see the address, and a footer is where they look for it. */}
+  <nav class="contact" aria-label="Contact">
+    <a href="mailto:shaahin69@gmail.com">shaahin69@gmail.com</a>
+    <a href="https://github.com/shaahink" rel="me">github.com/shaahink</a>
   </nav>
   <p>&copy; <span id="current-year"></span> {site.name} · <Fragment set:html={credit} /></p>
 </footer>
@@ -63,6 +74,14 @@ const credit = creditsFor({ siteName: site.name, siteUrl: site.url });
     flex-wrap: wrap;
     gap: var(--space-m);
     margin-block-end: var(--space-s);
+  }
+
+  /* The addresses are machine-shaped strings, so they wear the mono the rest
+     of the site reserves for machine truth — an address either works verbatim
+     or it does not, which is the same promise. */
+  footer .contact a {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
   }
 
   footer nav a {

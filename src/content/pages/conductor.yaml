@@ -1,0 +1,231 @@
+meta:
+  title: "Conductor — the machine behind the record"
+  description: "The orchestrator this site's record comes from: what it is, how a
+    run is declared, and where each of the ten concepts lives in the machine."
+  ogDescription: "What the orchestrator is, how a run is declared, and where each
+    of the ten concepts lives in the machine."
+  canonical: "/conductor/"
+
+hero:
+  title: "Conductor"
+  tagline: "The orchestrator and harness behind every figure on this site."
+  # First person on purpose, same as the cover: the machine is one person's
+  # build, and a page that hides that reads like a product sheet — which is
+  # the one thing SPEC Part I rules out.
+  standfirst:
+    - "Conductor is an orchestrator I built and still run: a program that takes
+      a plan written before anything starts — stages, checkpoints, gates, limits
+      — and drives a coding agent through it, session by session, unattended. It
+      spawns each session, watches it, stops it at its limits, checks the work
+      with commands rather than questions, and writes what happened into a store
+      the run cannot edit."
+    - "This is the technical half of the site. The concepts and the articles
+      read fine without it; this page is for the reader who wants the machine
+      itself — what it is made of, how a run is declared, and where each concept
+      of agent-driven engineering lands in the mechanism. The record it produced
+      is at the foot: the corpus in numbers, what the record showed, and the
+      runs in depth — every figure recomputed from the store, as everywhere else
+      here."
+
+# The drawings, moved here from the front page (owner's call, 2026-08-13):
+# the reader who needs the machine drawn is the reader who came for the
+# machine.
+machine:
+  title: "The shape of the machine"
+  intro: "Half the vocabulary makes sense the moment you can see where a word
+    sits: the loop that is an agent, and the run wrapped around it. Every word
+    in a box is defined in the glossary."
+
+# The join between the field guide and the machine, read from the machine's
+# side. Each `where` is a collection reference the build resolves — a renamed
+# concept fails here rather than publishing a dead row.
+map:
+  title: "The concepts, mapped onto the machine"
+  intro: "Each concept page states its idea so it is useful anywhere, and only
+    then shows the mechanism. This is the same join read from the other end —
+    one row per concept, the mechanism in one breath, the full page a link
+    away."
+  rows:
+    - where: "concepts/agentic-engineering"
+      how: "The session cycle, mechanised: pick the next open checkpoint, build the
+        prompt, spawn a session, watch it, verify what it claims, write the
+        record, repeat until the stage closes. The engineering lives in that
+        ring, not inside the model."
+
+    - where: "concepts/multi-agent-orchestration"
+      how: "Not a fleet of equals. One capable agent does the work through distinct
+        session kinds — deliver, fix, resume, audit, verify, review — while a
+        cheap advisor lane on a smaller model reads the run and comments, with
+        its own line in the ledger."
+
+    - where: "concepts/context-engineering"
+      how: "Prompt templates with a declared read order and handoff blocks between
+        sessions. Every rendered prompt is written to the run's logs, and an
+        unresolved token in a template throws and parks the run rather than
+        shipping a half-built prompt."
+
+    - where: "concepts/token-economics"
+      how: "A ceiling on what one session may spend, cache reads included; a
+        cooperative wrap-up nudge below it; rollover when the ceiling lands
+        mid-turn. The engine's budget verb places the nudge from the ledger's
+        own medians instead of by feel."
+
+    - where: "concepts/evals-and-gates"
+      how: "A battery of real commands with real exit codes, tiered per stage, cached
+        per commit, retried once unconditionally. Nobody asks the agent whether
+        the tests pass; the battery is the answer."
+
+    - where: "concepts/independent-verification"
+      how: "The verifier is a separate program. A tracker claim is not a confirmation,
+        done is not done-and-confirmed, and an agent cannot flip a red build
+        green from inside its own session — the phase gate is the only path that
+        closes a stage."
+
+    - where: "concepts/durable-execution"
+      how: "An event-sourced store under everything: sessions are boundaries, a run
+        resumes across a process restart, the plan can be swapped mid-run, and a
+        rollover consumes no attempt. The record survives the machine that made
+        it."
+
+    - where: "concepts/human-in-the-loop"
+      how: "Stages a person has to close: owner gates, a blocked-until queue, and
+        push-only notification. The run parks where a decision is genuinely the
+        owner's, and the approval is recorded as an event like everything else."
+
+    - where: "concepts/agent-observability"
+      how: "One event spine, and verbs over it — history, money, budget, journey —
+        plus the terminal Face. The harvest behind this site reads the same
+        store, which is how the loop you are looking at closes."
+
+    - where: "concepts/agent-memory"
+      how: "A knowledge ledger and lessons that outlive the session that learned them,
+        and a run-scoped bug ledger — carrying the honest trap that an era's
+        open bugs vanish when the next plan starts."
+
+# The plan bundle, reflected as prose. No plan numbers here on purpose: a
+# ceiling or a cost cap quoted from the plan file would be the one figure on
+# the site the evidence gate cannot recompute (`runs.limits_json` is NULL for
+# every imported run), so the page describes mechanisms and the committed file
+# carries its own values.
+anatomy:
+  title: "What a run is made of"
+  intro: "A run is declared, not improvised: one plan file, one tracker a person
+    can read, and the store the engine writes. The plan that built the page you
+    are reading is committed in this repository — these are its moving parts."
+  parts:
+    - name: "The plan"
+      what: "Stages and their checkpoints, written before anything runs, with
+        dependencies between stages and an owner gate on the one that ships. The
+        engine never re-plans; it enforces what is written."
+
+    - name: "The agent line"
+      what: "The command a session actually runs — here a coding agent CLI, with the
+        model named per run and a separate resume path for a session that comes
+        back. The engine does not care which agent, only that a prompt goes in
+        and a stream of events comes out."
+
+    - name: "The advisor lane"
+      what: "A second, cheaper model that reads the run and comments rather than doing
+        the work. Its cost is a separate category in the ledger, which is how
+        the record can say what the second opinion cost."
+
+    - name: "The gates"
+      what: "Per-stage batteries of real commands with tiers and timeouts: a fast
+        battery on every delivery, the full one before a stage closes. This
+        site's own battery typechecks and builds, diffs the generated files
+        clean, and recomputes every published figure from the run store."
+
+    - name: "The workflow"
+      what: "Which sessions a checkpoint takes. This repository delivers, then pays
+        for a fix session only when the battery actually came back red — rather
+        than a paid re-audit after every delivery."
+
+    - name: "The limits"
+      what: "The ceilings and the patience: a token ceiling per session with the
+        cooperative wrap-up under it, stall detection with backoff, a resume
+        budget per session, and a cost cap on the whole run. The ceilings here
+        were placed by the engine's own budget verb, not by feel."
+
+    - name: "The tracker and the store"
+      what: "A markdown board a person can read beside an event-sourced store the
+        engine owns. The claim lives on the board; the confirmation lives in the
+        store; this site's harvest reads the store and nothing else."
+
+# The record. Keys, never values — recomputed from the run store by
+# `npm run harvest`, and naming one the corpus does not have fails the build.
+evidence:
+  figures:
+    - "totalSessions"
+    - "totalCheckpointsDone"
+    - "totalCostUsd"
+    - "totalEngineTime"
+    - "corpusSpan"
+
+findings:
+  title: "What the record shows"
+  intro: "Six things a month of this turned up that I had not expected, each one
+    measured rather than felt, and each linked to the page where it is worked
+    out properly."
+  items:
+    - figure: "totalCacheReadShare"
+      claim: "of every token the corpus moved was a cache read, not a fresh one. The
+        bill for an agent is mostly the cost of it re-reading what it already
+        knew, which is why session length dominates every other variable."
+      where: "articles/what-a-run-costs"
+
+    - figure: "killedAfterANudge"
+      claim: "of the sessions killed at a token ceiling had already been asked to wrap
+        up, in time, and carried on anyway. The cooperative rail converted none
+        of them — delivery is not conversion, and nobody was measuring the
+        difference."
+      where: "articles/the-nudge-below-the-median"
+
+    - figure: "rolloversWithACommit"
+      claim: "rolled-over sessions recorded a commit, and the column holds a zero
+        rather than nothing at all — so it reads as a measurement instead of a
+        gap. A population whose history was never written looks identical to one
+        that did nothing."
+      where: "articles/the-ledger-that-lied"
+
+    - figure: "totalGatesCrashed"
+      claim: "of the red gates never ran at all: an exit status the command did not
+        choose, dying on the way up in tens of milliseconds. An agent reporting
+        that its tests pass would have sailed straight past every one of them."
+      where: "articles/never-believe-the-agent"
+
+    - figure: "totalCheckpointsDone"
+      claim: "checkpoints closed across the corpus. The most useful run here is the
+        one that stopped one short, because the store recorded exactly why the
+        last one stayed open."
+      where: "reports/the-long-build"
+
+    - figure: "totalAdvisorCostUsd"
+      claim: "went on the advisor lane, against three thousand on the agent doing the
+        work. An orchestrator is not many expensive models in a trench coat; it
+        is one expensive model and a great deal of arithmetic."
+      where: "concepts/multi-agent-orchestration"
+
+runs:
+  title: "Three runs in depth"
+  intro: "Published as the shape of the work rather than as whose work it was, so
+    you can map your own situation onto one. The dates and durations are the
+    sessions' own."
+  corpus: "They are three out of eighteen, and the other fifteen are on the runs
+    page with the same figures beside them — including the false starts and the
+    prototype that was abandoned where it stood. A corpus that shows only the
+    runs worth writing up is a portfolio."
+
+# The one forward-looking section, and the copy carries its own caveat: none
+# of this has an evidence key behind it, so it is published as intent and says
+# so. The detail — and what each item waits on — is /roadmap/.
+next:
+  title: "Where this goes next"
+  body:
+    - "The corpus is one month, and it is still growing. The engine that
+      produced it is mid-life: the era after this one is already written down —
+      several repositories under one plan, analysis running in lanes beside the
+      main session, and the board pushed to GitHub so a run can be watched from
+      a phone without the machine opening a single inbound port."
+    - "None of that is measured yet, which is why it lives on its own page,
+      labelled as intent — the one page here with no figures on it. Runs join
+      the corpus as they finish."

@@ -1,0 +1,473 @@
+---
+/* /conductor/ — the machine, separated from the field guide (owner's call,
+   2026-08-13). The front page is the concepts and the articles; this page is
+   the tool and its record. SPEC Part I promised exactly one honest page for
+   the visitor who wants the tool itself — "one honest /conductor page and the
+   GitHub link" — and this is that page, built the way the rest of the site is
+   built: all prose from src/content, every figure a key into the corpus, and
+   every cross-reference resolved against the real collections so a renamed
+   page fails the build here rather than publishing a dead row.
+
+   The order is an argument too, and it is the reverse of the front page's old
+   one on purpose: a reader arrives here having chosen the machine, so the
+   machine comes first — the drawings, the concept map, the anatomy of a run —
+   and the record closes the page as the proof rather than opening it as the
+   hook. The map is the page's centre: ten rows, each the mechanism that
+   answers one concept, with the concept page a link away. It is deliberately
+   the same join the concept pages make, read from the other end.
+
+   Wears the front page's print dress — heavy ink rules, vermilion section
+   numbers, one left edge — because the two pages are the site's two faces of
+   one thing and should visibly agree. The styles are a scoped copy of the
+   idiom, not a shared class, for the same reason the cover's are: this page
+   and the cover are the only two allowed the weight. */
+import { getEntry } from "astro:content";
+import { isVisible } from "@shaahink/sitekit/visibility";
+import EvidenceStrip from "../components/EvidenceStrip.astro";
+import FigureLoop from "../components/FigureLoop.astro";
+import FigureRun from "../components/FigureRun.astro";
+import Findings from "../components/Findings.astro";
+import RunCards from "../components/RunCards.astro";
+import Base from "../layouts/Base.astro";
+import { findingTarget, hrefOf, ordered } from "../lib/collections.js";
+import { refuseTypedFigures } from "../lib/figures.js";
+
+const page = await getEntry("conductorPage", "conductor");
+if (!page) throw new Error("src/content/pages/conductor.yaml is missing");
+const { meta, hero, machine, map, anatomy, evidence, findings, runs, next } = page.data;
+
+/* The same discipline `ordered()` gives the collections, applied by hand
+   because this page is a single entry no index ever walks: no figure typed
+   into the prose. A ceiling or a cost cap quoted here would be the one number
+   on the site the evidence gate cannot recompute. */
+refuseTypedFigures("pages/conductor.yaml", page.data);
+
+/* The map rows, resolved against the real concepts — and joined to the spine
+   so each row wears the same ordinal the concept list gives the page it links
+   to, rather than a second numbering invented here. */
+const spine = await ordered("concepts");
+const rows = await Promise.all(
+  map.rows.map(async (row) => {
+    const target = await findingTarget(row.where, "pages/conductor.yaml");
+    const concept = spine.find((entry) => entry.id === row.where.split("/")[1]);
+    return { ...target, how: row.how, order: concept?.data.order };
+  })
+);
+
+/* Run label → its report, same join as the front page used to make: a fourth
+   report appears here by existing rather than by being added. */
+const reports = Object.fromEntries(
+  (await ordered("reports")).map((entry) => [
+    entry.id,
+    { href: hrefOf("reports", entry.id), title: entry.data.title }
+  ])
+);
+
+/* Each finding's destination resolved against the real collections. */
+const items = await Promise.all(
+  findings.items.map(async (item) => ({
+    figure: item.figure,
+    claim: item.claim,
+    ...(await findingTarget(item.where, "pages/conductor.yaml"))
+  }))
+);
+
+/* The contents rail, same bargain as the cover's: fixed numbers, titles from
+   the same bindings the sections render, a switched-off section leaves a gap
+   rather than renumbering what a reader already scrolled past. */
+type RailEntry = { no: string; href: string; label: string };
+const rail: RailEntry[] = [];
+if (isVisible(page.data, "machine")) rail.push({ no: "01", href: "#machine", label: machine.title });
+rail.push({ no: "02", href: "#map", label: map.title });
+rail.push({ no: "03", href: "#anatomy", label: anatomy.title });
+if (isVisible(page.data, "findings"))
+  rail.push({ no: "04", href: "#findings", label: findings.title });
+rail.push({ no: "05", href: "#runs", label: runs.title });
+if (isVisible(page.data, "next")) rail.push({ no: "06", href: "#next", label: next.title });
+---
+
+<Base
+  title={meta.title}
+  description={meta.description}
+  ogType={meta.ogType}
+  ogDescription={meta.ogDescription}
+  ogImage={meta.ogImage}
+  canonical={meta.canonical}
+  editCollection="conductorPage"
+  editEntry="conductor"
+>
+  <main id="main" class="page wide conductor">
+    <header class="cover">
+      <h1 data-sk-edit="hero.title">{hero.title}</h1>
+      <p class="tagline" data-sk-edit="hero.tagline">{hero.tagline}</p>
+
+      {
+        hero.standfirst.map((para, index) => (
+          <p class="standfirst" data-sk-edit={`hero.standfirst[${index}]`}>
+            {para}
+          </p>
+        ))
+      }
+
+      {/* The GitHub link SPEC Part I promised beside this page. Arrangement,
+          not content: where the engine lives is a fact about the repository,
+          like the footer's credit, and the URL should not be editable into a
+          dead one from a form. */}
+      <p class="repo">
+        The engine is public:{" "}
+        <a href="https://github.com/shaahink/conductor">github.com/shaahink/conductor</a>.
+      </p>
+
+      <nav class="contents" aria-label="On this page">
+        <ol>
+          {
+            rail.map((entry) => (
+              <li>
+                <a href={entry.href}>
+                  <span class="no" aria-hidden="true">{entry.no}</span>
+                  <span class="sec">{entry.label}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+      </nav>
+    </header>
+
+    {
+      isVisible(page.data, "machine") && (
+        <section id="machine">
+          <p class="secnum" aria-hidden="true">01</p>
+          <h2 data-sk-edit="machine.title">{machine.title}</h2>
+          <p data-sk-edit="machine.intro">{machine.intro}</p>
+          <div class="figures">
+            <FigureLoop />
+            <FigureRun />
+          </div>
+          <p class="more">
+            Every word in a box is defined, in reading order, in{" "}
+            <a href="/glossary/">the glossary</a>.
+          </p>
+        </section>
+      )
+    }
+
+    <section id="map">
+      <p class="secnum" aria-hidden="true">02</p>
+      <h2 data-sk-edit="map.title">{map.title}</h2>
+      <p data-sk-edit="map.intro">{map.intro}</p>
+      <ol class="maprows">
+        {
+          rows.map((row, index) => (
+            <li>
+              <p class="which">
+                <span class="no" aria-hidden="true">
+                  {String(row.order ?? "").padStart(2, "0")}
+                </span>
+                <a href={row.href}>{row.title}</a>
+              </p>
+              <p class="how" data-sk-edit={`map.rows[${index}].how`}>
+                {row.how}
+              </p>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section id="anatomy">
+      <p class="secnum" aria-hidden="true">03</p>
+      <h2 data-sk-edit="anatomy.title">{anatomy.title}</h2>
+      <p data-sk-edit="anatomy.intro">{anatomy.intro}</p>
+      <dl class="parts rule-list">
+        {
+          anatomy.parts.map((part, index) => (
+            <div>
+              <dt data-sk-edit={`anatomy.parts[${index}].name`}>{part.name}</dt>
+              <dd data-sk-edit={`anatomy.parts[${index}].what`}>{part.what}</dd>
+            </div>
+          ))
+        }
+      </dl>
+      {/* The two checkable facts under the anatomy, hardcoded for the same
+          reason the roadmap's provenance lines are: they are claims about
+          this repository, and the way to check them is to open it. */}
+      <p class="more">
+        The bundle that built this page is committed in this site's own public
+        repository:{" "}
+        <a href="https://github.com/shaahink/conductor-site/blob/main/conductor.plan.json">
+          the plan
+        </a>{" "}
+        and{" "}
+        <a href="https://github.com/shaahink/conductor-site/blob/main/TRACKER.md">
+          the tracker the engine kept
+        </a>.
+      </p>
+    </section>
+
+    {/* The record, closing the page: the reader has just been shown the
+        machine, and these are the numbers it wrote about itself. Unguarded,
+        outside the findings toggle — the corpus figures stay on the page even
+        on a day the findings are switched off. */}
+    <EvidenceStrip where="pages/conductor.yaml" evidence={evidence} variant="inline" />
+
+    {
+      isVisible(page.data, "findings") && (
+        <section id="findings">
+          <p class="secnum" aria-hidden="true">04</p>
+          <h2 data-sk-edit="findings.title">{findings.title}</h2>
+          <p data-sk-edit="findings.intro">{findings.intro}</p>
+          <Findings items={items} path="findings.items" where="pages/conductor.yaml findings" />
+        </section>
+      )
+    }
+
+    <section id="runs">
+      <p class="secnum" aria-hidden="true">05</p>
+      <h2 data-sk-edit="runs.title">{runs.title}</h2>
+      <p data-sk-edit="runs.intro">{runs.intro}</p>
+      <RunCards reports={reports} />
+      <p class="corpus" data-sk-edit="runs.corpus">{runs.corpus}</p>
+      <p class="more"><a href="/runs/">All the runs, with their figures</a></p>
+    </section>
+
+    {
+      isVisible(page.data, "next") && (
+        <section id="next">
+          <p class="secnum" aria-hidden="true">06</p>
+          <h2 data-sk-edit="next.title">{next.title}</h2>
+          {next.body.map((para, index) => (
+            <p data-sk-edit={`next.body[${index}]`}>{para}</p>
+          ))}
+          <p class="more">
+            <a href="/roadmap/">The roadmap, with what each item waits on</a>
+          </p>
+        </section>
+      )
+    }
+  </main>
+</Base>
+
+<style>
+  /* The cover's idiom at an inner page's weight: the heavy opening rule and
+     the vermilion numbers, without the display-size headline or the mark —
+     this page is the machine room, not the cover. */
+  .cover {
+    border-block-start: 4px solid var(--text);
+    padding-block-start: var(--space-l);
+  }
+
+  .cover h1 {
+    max-inline-size: 20ch;
+  }
+
+  .tagline {
+    font-size: var(--text-lead);
+    color: var(--muted);
+    margin-block-start: var(--space-s);
+    max-inline-size: var(--measure-narrow);
+  }
+
+  .standfirst {
+    margin-block-start: var(--space-l);
+    color: var(--text);
+    max-inline-size: var(--measure-narrow);
+  }
+
+  .repo {
+    margin-block-start: var(--space-m);
+    font-size: var(--text-small);
+    color: var(--muted);
+  }
+
+  .contents {
+    margin-block-start: var(--space-2xl);
+  }
+
+  .contents ol {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    column-gap: var(--space-l);
+  }
+
+  @media (min-width: 40rem) {
+    .contents ol {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .contents li {
+    border-block-start: var(--rule);
+  }
+
+  .contents a {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-xs);
+    padding-block: var(--space-xs);
+    text-decoration: none;
+    color: var(--text);
+  }
+
+  .contents .no {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    color: var(--accent);
+  }
+
+  .contents .sec {
+    font-size: var(--text-small);
+  }
+
+  .contents a:hover .sec,
+  .contents a:focus-visible .sec {
+    color: var(--current);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+
+  /* ── the sections — the front page's idiom, scoped here too ───────────── */
+  .conductor section {
+    margin-block-start: var(--space-3xl);
+    border-block-start: 3px solid var(--text);
+    padding-block-start: var(--space-m);
+  }
+
+  @media (min-width: 64rem) {
+    .conductor section {
+      display: grid;
+      grid-template-columns: 6rem 1fr;
+      column-gap: var(--space-l);
+    }
+
+    /* `:global(*)` for the same reason as the front page: component roots do
+       not carry this page's scope attribute, and unscoped they would auto-
+       place into the number column. */
+    .conductor section > :global(*) {
+      grid-column: 2;
+    }
+
+    .conductor section > .secnum {
+      grid-column: 1;
+      grid-row: 1;
+    }
+  }
+
+  .conductor section > .secnum {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: var(--text-h2);
+    line-height: var(--leading-tight);
+    color: var(--accent);
+    margin-block-end: var(--space-2xs);
+  }
+
+  .conductor section > h2 {
+    inline-size: min(100%, var(--measure));
+  }
+
+  .conductor section > p {
+    color: var(--muted);
+    margin-block-start: var(--space-s);
+    inline-size: min(100%, var(--measure));
+  }
+
+  .figures {
+    margin-block-start: var(--space-l);
+    display: grid;
+    gap: var(--space-xl);
+  }
+
+  .more {
+    margin-block-start: var(--space-s);
+  }
+
+  .corpus {
+    margin-block-start: var(--space-l);
+  }
+
+  /* ── the map: a ledger of mechanisms ──────────────────────────────────
+     One row per concept, opened by a hairline: the concept's own ordinal and
+     its title as the door, the mechanism sentence beside it on a laptop. The
+     ordinal is the spine's, not this page's — same number a reader saw on the
+     front page's list. */
+  .maprows {
+    list-style: none;
+    padding: 0;
+    margin-block-start: var(--space-l);
+  }
+
+  .maprows li {
+    border-block-start: var(--rule);
+    padding-block: var(--space-m);
+  }
+
+  @media (min-width: 64rem) {
+    .maprows li {
+      display: grid;
+      grid-template-columns: minmax(14rem, 20rem) 1fr;
+      column-gap: var(--space-2xl);
+      align-items: start;
+    }
+  }
+
+  .maprows .which {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-xs);
+  }
+
+  .maprows .no {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    color: var(--accent);
+  }
+
+  .maprows .which a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+
+  .maprows .which a:hover,
+  .maprows .which a:focus-visible {
+    text-decoration-thickness: 2px;
+  }
+
+  .maprows .how {
+    margin-block-start: var(--space-2xs);
+    color: var(--text);
+    max-inline-size: var(--measure-narrow);
+  }
+
+  @media (min-width: 64rem) {
+    .maprows .how {
+      margin-block-start: 0;
+    }
+  }
+
+  /* ── the anatomy: the plan bundle as a definition list ────────────────── */
+  .parts {
+    inline-size: min(100%, var(--measure));
+  }
+
+  .parts dt {
+    font-weight: var(--weight-bold);
+  }
+
+  .parts dd {
+    margin-inline-start: 0;
+    margin-block-start: var(--space-2xs);
+    color: var(--muted);
+  }
+
+  /* The record's opening line of figures, in the page's rhythm like the
+     sections around it — same statement the front page used to make, at the
+     same specificity, for the same reason. */
+  .conductor > :global(.evidence.inline) {
+    margin-block: var(--space-3xl) 0;
+  }
+</style>

@@ -1,8 +1,27 @@
 ---
 /* /articles/<slug>/ — one long-form piece. */
 import type { GetStaticPaths } from "astro";
+import type { AstroComponentFactory } from "astro/runtime/server/index.js";
+import FigureBudget from "../../components/FigureBudget.astro";
+import FigureCostShape from "../../components/FigureCostShape.astro";
+import FigureGatePath from "../../components/FigureGatePath.astro";
+import FigureLedgerGap from "../../components/FigureLedgerGap.astro";
 import LongForm from "../../layouts/LongForm.astro";
 import { ordered, readNextOf } from "../../lib/collections.js";
+
+/* Each article's drawing, and where it lands — after the section whose
+   argument it draws (owner's ask, 2026-08-13: the articles should carry
+   their arguments visually too). Arrangement, not content: the figures show
+   orderings and shapes, never values, because a value drawn into an SVG-ish
+   pane would be the one figure on the site the evidence gate cannot
+   recompute. Keyed by entry id; an article without a row simply reads as
+   prose, so adding a fifth article costs nothing here. */
+const FIGURES: Record<string, { component: AstroComponentFactory; after: number }> = {
+  "what-a-run-costs": { component: FigureCostShape, after: 1 },
+  "never-believe-the-agent": { component: FigureGatePath, after: 2 },
+  "the-nudge-below-the-median": { component: FigureBudget, after: 0 },
+  "the-ledger-that-lied": { component: FigureLedgerGap, after: 1 }
+};
 
 export const getStaticPaths = (async () => {
   const articles = await ordered("articles");
@@ -17,4 +36,4 @@ const next = (await readNextOf("articles", entry)).map((other) => ({
 }));
 ---
 
-<LongForm entry={entry} collection="articles" next={next} />
+<LongForm entry={entry} collection="articles" next={next} figure={FIGURES[entry.id]} />

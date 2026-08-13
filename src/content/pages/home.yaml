@@ -9,89 +9,39 @@ meta:
 
 hero:
   title: "A field guide to agentic engineering"
-  tagline: "Ten concepts, worked end to end in a real orchestrator, with what they
-    cost."
+  tagline: "Ten concepts and four longer pieces, worked end to end against a real
+    record."
   # The answer to "what am I looking at", before any number. First person on
   # purpose: the corpus is one person's month, and a page that hides that reads
-  # like a vendor's benchmark.
+  # like a vendor's benchmark. Since 2026-08-13 the front page is the guide's —
+  # the concepts and the articles — and the machine that produced the record
+  # has a page of its own, pointed at from the section below the doors.
   standfirst:
-    - "For a month I pointed an orchestrator I had built — Conductor — at my own
-      repositories and let it work unattended: planning, spawning agents,
-      running gates, recording what happened. Some of it went well, a good deal
-      of it did not, and both are published here — every figure recomputed from
-      the record rather than typed into a sentence, because a number nobody can
-      check is an opinion with a decimal point."
+    - "For a month I pointed an orchestrator I had built at my own repositories
+      and let it work unattended: planning, spawning agents, running gates,
+      recording what happened. This site is the field guide that came out of it
+      — ten concepts of agent-driven engineering, each stated so it is useful
+      anywhere, and four longer pieces built from what the record actually
+      showed. Some of it went well, a good deal of it did not, and both are
+      published, because a number nobody can check is an opinion with a decimal
+      point."
 
-# The corpus, above the fold. Keys, never values — these are recomputed from the
-# run store by `npm run harvest`, and naming one the corpus does not have fails
-# the build.
-#
-# Not `totalRuns` or `totalRepos`: the strip captions its own corpus group with
-# "N runs across N repositories", so citing those two prints them twice.
-evidence:
-  figures:
-    - "totalSessions"
-    - "totalCheckpointsDone"
-    - "totalCostUsd"
-    - "totalEngineTime"
-    - "corpusSpan"
+spine:
+  title: "The ten concepts"
+  intro: "In order, but there is no wrong door — each page states the idea in
+    plain language first, and only then shows how one orchestrator implements
+    it."
 
-findings:
-  title: "What the record shows"
-  intro: "Six things a month of this turned up that I had not expected, each one
-    measured rather than felt, and each linked to the page where it is worked
-    out properly."
-  items:
-    - figure: "totalCacheReadShare"
-      claim: "of every token the corpus moved was a cache read, not a fresh one. The
-        bill for an agent is mostly the cost of it re-reading what it already
-        knew, which is why session length dominates every other variable."
-      where: "articles/what-a-run-costs"
+reading:
+  title: "Four longer pieces"
+  intro: "Each one carries at least one number nobody else publishes, and each is
+    written from the same store the concepts cite."
 
-    - figure: "killedAfterANudge"
-      claim: "of the sessions killed at a token ceiling had already been asked to wrap
-        up, in time, and carried on anyway. The cooperative rail converted none
-        of them — delivery is not conversion, and nobody was measuring the
-        difference."
-      where: "articles/the-nudge-below-the-median"
-
-    - figure: "rolloversWithACommit"
-      claim: "rolled-over sessions recorded a commit, and the column holds a zero
-        rather than nothing at all — so it reads as a measurement instead of a
-        gap. A population whose history was never written looks identical to one
-        that did nothing."
-      where: "articles/the-ledger-that-lied"
-
-    - figure: "totalGatesCrashed"
-      claim: "of the red gates never ran at all: an exit status the command did not
-        choose, dying on the way up in tens of milliseconds. An agent reporting
-        that its tests pass would have sailed straight past every one of them."
-      where: "articles/never-believe-the-agent"
-
-    - figure: "totalCheckpointsDone"
-      claim: "checkpoints closed across the corpus. The most useful run here is the
-        one that stopped one short, because the store recorded exactly why the
-        last one stayed open."
-      where: "reports/the-long-build"
-
-    - figure: "totalAdvisorCostUsd"
-      claim: "went on the advisor lane, against three thousand on the agent doing the
-        work. An orchestrator is not many expensive models in a trench coat; it
-        is one expensive model and a great deal of arithmetic."
-      where: "concepts/multi-agent-orchestration"
-
-# The drawings. Only these words are content; the figures are arrangement.
-machine:
-  title: "The shape of the machine"
-  intro: "Half the vocabulary makes sense the moment you can see where a word
-    sits. Two drawings — the loop that is an agent, and the run wrapped around
-    it. Every word in a box is defined in the glossary."
-
-# The doors. Findings are for the reader who wants to know what the record
-# said; these are for the one who arrived cold. Sorted by the question they
-# came with, never by the site's own structure, and each destination is a
-# collection reference the build resolves — a renamed page fails here rather
-# than publishing a dead door.
+# The doors. Findings live with the record on the machine's page now; these
+# are for the reader who arrived cold. Sorted by the question they came with,
+# never by the site's own structure, and each destination is a collection
+# reference the build resolves — a renamed page fails here rather than
+# publishing a dead door.
 orient:
   title: "Where to start"
   intro: "The site reads in any order, so these are doors rather than chapters —
@@ -121,41 +71,19 @@ orient:
         - "articles/what-a-run-costs"
         - "concepts/token-economics"
 
-spine:
-  title: "The ten concepts"
-  intro: "In order, but there is no wrong door — each page states the idea in
-    plain language first, and only then shows how one orchestrator implements
-    it."
-
-reading:
-  title: "Four longer pieces"
-  intro: "Each one carries at least one number nobody else publishes, and each is
-    written from the same store the figures above come from."
-
-runs:
-  title: "Three runs in depth"
-  intro: "Published as the shape of the work rather than as whose work it was, so
-    you can map your own situation onto one. The dates and durations are the
-    sessions' own."
-  corpus: "They are three out of eighteen, and the other fifteen are on the runs
-    page with the same figures beside them — including the false starts and the
-    prototype that was abandoned where it stood. A corpus that shows only the
-    runs worth writing up is a portfolio."
-
-# The one forward-looking section, and the copy carries its own caveat: none
-# of this has an evidence key behind it, so it is published as intent and says
-# so. The detail — and what each item waits on — is /roadmap/.
-next:
-  title: "Where this goes next"
+# The one place the front page names the tool, and it is a door rather than a
+# pitch: the machine, its concept map, and the whole record — the corpus
+# figures, the findings, the runs in depth — moved to /conductor/ on
+# 2026-08-13, so the guide and the tool stopped sharing a page.
+conductor:
+  title: "The machine behind it"
   body:
-    - "The corpus is one month, and it is still growing. The engine that
-      produced it is mid-life: the era after this one is already written down —
-      several repositories under one plan, analysis running in lanes beside the
-      main session, and the board pushed to GitHub so a run can be watched from
-      a phone without the machine opening a single inbound port."
-    - "None of that is measured yet, which is why it lives on its own page,
-      labelled as intent — the one page here with no figures on it. Runs join
-      the corpus as they finish."
+    - "Every figure on this site was produced by one orchestrator — Conductor, a
+      machine I built that plans, spawns agent sessions, gates them, and records
+      what happened in a store the run cannot edit. What it is made of, how a
+      run is declared, where each of the ten concepts lives in the mechanism,
+      and the full record it kept — the corpus in numbers, the findings, the
+      runs in depth — now live on their own page."
 
 ways:
   title: "Or start from a subject"

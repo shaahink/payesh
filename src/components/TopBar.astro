@@ -55,6 +55,15 @@ const isCurrent = (href: string) => path === href || path.startsWith(href);
           </li>
         ))
       }
+      {/* Not a section — one page, not a collection index — so it is not in
+          the list the section pages build. It sits in the bar because the
+          owner split the machine from the guide (2026-08-13) and a page that
+          carries the whole record cannot live in the footer alone. */}
+      <li>
+        <a href="/conductor/" aria-current={isCurrent("/conductor/") ? "page" : undefined}>
+          Conductor
+        </a>
+      </li>
     </ul>
   </nav>
 

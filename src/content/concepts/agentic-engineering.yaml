@@ -122,7 +122,7 @@ inConductor:
     - path: "src/Conductor.Core/SessionWatchdog.cs"
       line: 212
       note: "The stall kill, and it fires only after a grace window has also expired.
-        Quiet is not the same as dead, and the engine says so by waiting."
+        Quiet is not the same as dead, and the engine shows it by waiting."
     - path: "src/Conductor.Core/Orchestration/RunLoop.cs"
       line: 293
       note: "A stage whose rows all read done is not done. It gets a battery or an

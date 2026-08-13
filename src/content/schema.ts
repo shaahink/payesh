@@ -341,45 +341,6 @@ export const homePageSchema = z.object({
        leave. */
     standfirst: paragraphs(1, 3).meta({ title: "What this is" })
   }),
-  /* The front page cites the corpus like any other page, which is the whole
-     argument of SPEC Part VII requirement 2: what makes this site different
-     from every other page on the topic is above the fold, and it is the
-     numbers rather than the prose. Same field, same keys, same gate — a home
-     page naming a key the corpus does not have fails the build exactly as a
-     concept page does. Declared after `hero` because that is the reading
-     order: the claim, then what is behind it. */
-  evidence,
-  /* What the month actually showed, which is the reason to read on.
-     ---------------------------------------------------------------------
-     This is the section that decides whether the front page is a contents page
-     or a piece of writing. Ten headings tell a reader what subjects exist; a
-     finding tells them something they did not know and hands them the page
-     where it is argued. Five or six is the range: fewer and the page has no
-     shape, more and it becomes the list it was replacing. */
-  findings: z.object({
-    visible,
-    title: z.string(),
-    intro: z.string().meta({ title: "The line above the findings" }),
-    items: z.array(finding).min(3).max(8)
-  }),
-  /* The drawings. Only the words around them are content — the figures
-     themselves are arrangement (FigureLoop, FigureRun), because a drawing of
-     the machine is the page's furniture the same way a list's markup is. */
-  machine: z.object({
-    visible,
-    title: z.string(),
-    intro: z.string().meta({ title: "The line above the drawings" })
-  }),
-  /* The doors. A reader who followed the findings knows what the record said;
-     this is the section for the reader who arrived cold and wants to know
-     where people like them start. Three doors is the shape — by question, not
-     by collection — and each one resolves like a finding does. */
-  orient: z.object({
-    visible,
-    title: z.string(),
-    intro: z.string().meta({ title: "The line above the doors" }),
-    doors: z.array(door).min(2).max(4)
-  }),
   /* The way in. Ten concepts is too many for a paragraph and exactly right for
      a list, and a reader who already knows what context engineering is should
      be able to enter at the one they do not. The headings are content; the
@@ -388,30 +349,28 @@ export const homePageSchema = z.object({
     title: z.string(),
     intro: z.string().meta({ title: "The line above the list" })
   }),
-  /* The two sections that were on the site but not on its front page: the
-     long-form pieces, and the runs they are drawn from. A front page listing
-     only the concepts published a site with one third of itself hidden. */
   reading: z.object({
     title: z.string(),
     intro: z.string().meta({ title: "The line above the articles" })
   }),
-  runs: z.object({
-    title: z.string(),
-    intro: z.string().meta({ title: "The line above the runs" }),
-    /* The sentence under the three reports, pointing at the whole corpus. It
-       is content rather than markup because it is the one place the front page
-       says *why* eighteen runs are published when three are written up. */
-    corpus: z.string().meta({ title: "The line pointing at all the runs" })
-  }),
-  /* Where the work goes next. Deliberately the one section allowed to talk
-     about the future, and the copy has to say so itself: nothing here has an
-     evidence key behind it, which is why the detail lives on /roadmap/ where
-     every item names what it waits on. Intent, labelled as intent, is the only
-     way a forward-looking sentence survives litmus test 1. */
-  next: z.object({
+  /* The doors. The section for the reader who arrived cold and wants to know
+     where people like them start. Three doors is the shape — by question, not
+     by collection — and each one resolves like a finding does. */
+  orient: z.object({
     visible,
     title: z.string(),
-    body: paragraphs(1, 3).meta({ title: "Where this goes" })
+    intro: z.string().meta({ title: "The line above the doors" }),
+    doors: z.array(door).min(2).max(4)
+  }),
+  /* The one place the front page speaks of the tool by name since the owner
+     split the machine onto its own page (2026-08-13): a short section that
+     says what produced the record and hands the reader /conductor/. Content
+     rather than markup because it is a claim about who ran what, which is the
+     owner's sentence to change; the link itself is arrangement. */
+  conductor: z.object({
+    visible,
+    title: z.string(),
+    body: paragraphs(1, 2).meta({ title: "What the machine is, in passing" })
   }),
   ways: z.object({
     title: z.string(),
@@ -424,6 +383,92 @@ export const homePageSchema = z.object({
     visible,
     title: z.string(),
     body: z.string().meta({ title: "The paragraph" })
+  })
+});
+
+/** One row of the conductor page's map: a concept, and the mechanism behind it.
+    ---------------------------------------------------------------------------
+    The concept pages walk idea-first and are readable with no Conductor in
+    them; this row is the same join read from the other end — the machine's
+    answer to one concept, in one breath, with the concept page a link away.
+    `where` resolves against the real collection exactly as a finding's does,
+    so a renamed concept fails the build rather than publishing a dead row. */
+export const mapRow = z.object({
+  where: z
+    .string()
+    .regex(
+      /^concepts\/[a-z0-9-]+$/,
+      'where names the concept this row answers, as "concepts/evals-and-gates"'
+    )
+    .meta({ title: "The concept" }),
+  how: z.string().min(20).meta({ title: "The mechanism, in one breath" })
+});
+
+/** One moving part of a run's declaration — the plan bundle, reflected.
+    ---------------------------------------------------------------------------
+    The parts are content because what a plan *is* — stages, gates, limits, the
+    tracker — is prose a reader reads and the owner may sharpen. The plan file
+    itself is not quoted: its numbers are plan facts the evidence gate cannot
+    recompute (`runs.limits_json` is NULL for every imported run), so the page
+    describes mechanisms and lets the committed file carry its own values. */
+export const machinePart = z.object({
+  name: z.string().meta({ title: "The part" }),
+  what: z.string().min(20).meta({ title: "What it does" })
+});
+
+/** The machine's own page (owner's call, 2026-08-13): Conductor separated from
+    the field guide. The front page keeps the concepts and the articles; this
+    page carries the tool — what it is, the drawings, the concept map, the
+    anatomy of a run — and the record it produced: the corpus strip, the
+    findings, the runs in depth, and the one forward-looking section. */
+export const conductorPageSchema = z.object({
+  meta,
+  hero: z.object({
+    title: z.string(),
+    tagline: z.string().meta({ title: "Tagline under the title" }),
+    standfirst: paragraphs(1, 3).meta({ title: "What the machine is" })
+  }),
+  /* The drawings. Only the words around them are content — the figures
+     themselves are arrangement (FigureLoop, FigureRun), because a drawing of
+     the machine is the page's furniture the same way a list's markup is. */
+  machine: z.object({
+    visible,
+    title: z.string(),
+    intro: z.string().meta({ title: "The line above the drawings" })
+  }),
+  map: z.object({
+    title: z.string(),
+    intro: z.string().meta({ title: "The line above the map" }),
+    rows: z.array(mapRow).min(5).max(12)
+  }),
+  anatomy: z.object({
+    title: z.string(),
+    intro: z.string().meta({ title: "The line above the parts" }),
+    parts: z.array(machinePart).min(4).max(9)
+  }),
+  /* The record opens with the corpus figures, cited by key like every other
+     page — a page naming a key the corpus does not have fails the build. */
+  evidence,
+  findings: z.object({
+    visible,
+    title: z.string(),
+    intro: z.string().meta({ title: "The line above the findings" }),
+    items: z.array(finding).min(3).max(8)
+  }),
+  runs: z.object({
+    title: z.string(),
+    intro: z.string().meta({ title: "The line above the runs" }),
+    corpus: z.string().meta({ title: "The line pointing at all the runs" })
+  }),
+  /* Where the work goes next. Deliberately the one section allowed to talk
+     about the future, and the copy has to say so itself: nothing here has an
+     evidence key behind it, which is why the detail lives on /roadmap/ where
+     every item names what it waits on. Intent, labelled as intent, is the only
+     way a forward-looking sentence survives litmus test 1. */
+  next: z.object({
+    visible,
+    title: z.string(),
+    body: paragraphs(1, 3).meta({ title: "Where this goes" })
   })
 });
 
@@ -612,6 +657,18 @@ export const editable = {
        different number, it produces a failed build. There is nothing here for
        an owner to change, so the panel should not offer a box. */
     omit: ["evidence"]
+  },
+
+  conductorPage: {
+    label: "Conductor page",
+    schema: conductorPageSchema,
+    file: "src/content/pages/conductor.yaml",
+    entryUrl: "/conductor/",
+    /* `evidence` for the same reason as the home page. The map rows' `where`
+       is a collection reference the build resolves — editing one in a form
+       does not point the row somewhere else, it fails the build — so the
+       panel keeps the mechanism sentence editable and leaves the join alone. */
+    omit: ["evidence", "map.rows[].where"]
   },
 
   /* The three collections below are `dir` rather than `file`: one YAML per

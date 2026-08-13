@@ -232,16 +232,20 @@ export async function termIndex(): Promise<Term[]> {
 
 /** A finding's destination, resolved — or a build failure naming it.
     ---------------------------------------------------------------------------
-    The front page's findings each point at the page that works them out, as
+    A finding, a door or a map row points at the page that works it out, as
     `articles/what-a-run-costs`. The schema checks the *shape* of that string;
     only the collections know whether it names anything. Without this, renaming
-    an article leaves the front page — the page nobody re-reads — linking into a
-    hole, and every gate on this site stays green while it does.
+    an article leaves the pages nobody re-reads — the front page and the
+    machine's — linking into a hole, and every gate on this site stays green
+    while it does.
 
-    Returns the title as well as the href, so the link text is the destination's
-    own name rather than a second copy of it kept in `home.yaml`. */
+    `from` names the entry doing the pointing, because the useful half of the
+    failure is which file to fix. Returns the title as well as the href, so the
+    link text is the destination's own name rather than a second copy of it
+    kept in the YAML. */
 export async function findingTarget(
-  where: string
+  where: string,
+  from = "pages/home.yaml"
 ): Promise<{ href: string; title: string; kind: string }> {
   const [collection, id] = where.split("/") as [Listed, string];
   const entries = await getCollection(collection);
@@ -249,9 +253,9 @@ export async function findingTarget(
 
   if (!entry) {
     throw new Error(
-      `pages/home.yaml: a finding points at "${where}", which is not an entry in ` +
-        `${collection}. A finding with nowhere to go is a boast — the whole reason the front ` +
-        `page is not marketing is that every line on it can be followed. Known entries: ` +
+      `${from}: a reference points at "${where}", which is not an entry in ` +
+        `${collection}. A claim with nowhere to go is a boast — the whole reason these ` +
+        `pages are not marketing is that every line on them can be followed. Known entries: ` +
         `${entries.map((candidate) => candidate.id).sort().join(", ")}.`
     );
   }

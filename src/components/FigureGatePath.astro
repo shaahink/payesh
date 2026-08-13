@@ -1,0 +1,152 @@
+---
+/* The claim and the check — for "Never believe the agent".
+   ---------------------------------------------------------------------------
+   One drawing of the article's whole mechanism: the agent's claim goes in one
+   side, the battery of real commands sits in the middle, and there are three
+   ways out — and only three. Green is the only path to a confirmed
+   checkpoint; red hands the checkpoint to another session; and the third lane
+   is the one the article exists for: a gate that never ran at all, dying on
+   the way up with an exit status the command did not choose. An agent
+   reporting that its tests pass would sail straight past all three.
+
+   Same idiom as FigureLoop: panes, hairlines, mono labels, arrows that are
+   characters, semantic colour for status only. */
+---
+
+<figure class="fig-gates">
+  <div
+    class="flow"
+    role="img"
+    aria-label="The agent claims done. The claim goes to the gate battery — real commands with real exit codes, and nobody asks the agent. Three ways out: exit code zero confirms the checkpoint; a non-zero exit leaves the checkpoint open for another session; and a crashed gate never ran its command at all — an exit status the command did not choose."
+  >
+    <div class="row" aria-hidden="true">
+      <span class="box claim">agent: done</span>
+      <span class="arrow">→</span>
+      <span class="box battery">gate battery — real commands, real exit codes</span>
+    </div>
+
+    <ul class="outcomes" aria-hidden="true">
+      <li>
+        <span class="lane green">exit zero</span>
+        <span class="what">the engine confirms — done <span class="ok">✓</span> — and only this path closes a checkpoint</span>
+      </li>
+      <li>
+        <span class="lane red">exit non-zero</span>
+        <span class="what">the checkpoint stays open; another session takes it, with the gate's output in hand</span>
+      </li>
+      <li>
+        <span class="lane crashed">crashed</span>
+        <span class="what">the command's own logic never ran — died on the way up, in an eyeblink, wearing an exit status it did not choose</span>
+      </li>
+    </ul>
+  </div>
+
+  <figcaption>
+    The claim and the check are different programs, which is the article's one
+    rule. The third lane is why: a gate that crashes before its command runs
+    fails honestly — and every claim of "my tests pass" would have sailed
+    straight past it.
+  </figcaption>
+</figure>
+
+<style>
+  .fig-gates {
+    margin: 0;
+    margin-block-start: var(--space-l);
+    inline-size: min(100%, var(--measure-wide));
+  }
+
+  .flow {
+    background: var(--mantle);
+    border: var(--rule);
+    padding: var(--space-m) var(--space-m) var(--space-s);
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs);
+  }
+
+  .box {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border: var(--rule);
+    background: var(--base);
+    padding-block: var(--space-2xs);
+    padding-inline: var(--space-xs);
+    color: var(--text);
+  }
+
+  /* The claim is quiet on purpose: it is an input to the machine, not a
+     status. The battery is the pane's subject. */
+  .box.claim {
+    color: var(--muted);
+  }
+
+  .arrow {
+    font-family: var(--mono);
+    color: var(--muted);
+  }
+
+  .outcomes {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    margin-block-start: var(--space-m);
+    display: grid;
+    gap: var(--space-2xs);
+  }
+
+  .outcomes li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2xs) var(--space-xs);
+    border-block-start: var(--rule);
+    padding-block-start: var(--space-2xs);
+  }
+
+  .lane {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    flex: 0 0 8rem;
+  }
+
+  /* Status colours doing status work — the only decoration this site allows
+     them. The crashed lane wears peach, the Face's own role for work that
+     stopped rather than failed. */
+  .lane.green {
+    color: var(--green);
+  }
+
+  .lane.red {
+    color: var(--red);
+  }
+
+  .lane.crashed {
+    color: var(--peach);
+  }
+
+  .what {
+    font-size: var(--text-small);
+    color: var(--muted);
+    flex: 1 1 16rem;
+  }
+
+  .ok {
+    color: var(--green);
+  }
+
+  figcaption {
+    margin-block-start: var(--space-s);
+    font-size: var(--text-small);
+    color: var(--muted);
+    max-inline-size: var(--measure);
+  }
+</style>

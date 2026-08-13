@@ -19,6 +19,7 @@ import { glob } from "astro/loaders";
 import {
   articleSchema,
   conceptSchema,
+  conductorPageSchema,
   homePageSchema,
   reportSchema,
   sectionPageSchema
@@ -27,6 +28,14 @@ import {
 const homePage = defineCollection({
   loader: glob({ pattern: "home.yaml", base: "./src/content/pages" }),
   schema: homePageSchema
+});
+
+/* The machine's own page (owner's call, 2026-08-13): one entry, same pattern
+   as the home page — the split is what let the front page become the field
+   guide's and this page become the tool's. */
+const conductorPage = defineCollection({
+  loader: glob({ pattern: "conductor.yaml", base: "./src/content/pages" }),
+  schema: conductorPageSchema
 });
 
 /* The three collections of SPEC Part III. One file per entry, and the file
@@ -67,4 +76,4 @@ const sectionPages = defineCollection({
   schema: sectionPageSchema
 });
 
-export const collections = { homePage, sectionPages, concepts, articles, reports };
+export const collections = { homePage, conductorPage, sectionPages, concepts, articles, reports };

@@ -1,0 +1,141 @@
+---
+/* One rolled-over session, told twice — for "The ledger that lied".
+   ---------------------------------------------------------------------------
+   Two rails for the same stretch of time: what git recorded, and what the
+   run's own ledger wrote. The article's subject is the gap between them — a
+   session killed at its ceiling returned before the pass that records commits
+   and claims, so the ledger holds a zero that is indistinguishable from a
+   measurement. The drawing's job is to make the gap visible as a *shape*: the
+   same events on both rails until the kill, then one rail keeps the truth and
+   the other writes a zero.
+
+   Same idiom as FigureLoop: panes, hairlines, mono labels, arrows that are
+   characters, semantic colour for status only. */
+---
+
+<figure class="fig-ledger">
+  <div
+    class="rails"
+    role="img"
+    aria-label="The same rolled-over session on two rails. On the git rail: the session works, commits, and is killed at the ceiling — the commits exist. On the ledger rail: the session is killed before its verdict pass runs, so nothing records its commits or claims, and the commit column holds a zero that looks like a measurement."
+  >
+    <div class="rail" aria-hidden="true">
+      <p class="r-label">what git recorded</p>
+      <div class="row">
+        <span class="box">works</span>
+        <span class="arrow">→</span>
+        <span class="box">commits <span class="ok">✓</span></span>
+        <span class="arrow">→</span>
+        <span class="box kill">killed at the ceiling</span>
+      </div>
+      <p class="r-note">the work is on the branch — history, in the only place history is kept</p>
+    </div>
+
+    <div class="rail" aria-hidden="true">
+      <p class="r-label">what the ledger wrote</p>
+      <div class="row">
+        <span class="box">works</span>
+        <span class="arrow">→</span>
+        <span class="box kill">killed at the ceiling</span>
+        <span class="arrow">→</span>
+        <span class="box gap">verdict pass never runs</span>
+      </div>
+      <p class="r-note gap-note">
+        commits recorded: a zero — written by the return path, not measured from anything
+      </p>
+    </div>
+  </div>
+
+  <figcaption>
+    A population whose history was never written looks identical to one that
+    did nothing. The zero is the dangerous kind of wrong: it has the shape of
+    a measurement, and only ground truth — git — can contradict it.
+  </figcaption>
+</figure>
+
+<style>
+  .fig-ledger {
+    margin: 0;
+    margin-block-start: var(--space-l);
+    inline-size: min(100%, var(--measure-wide));
+  }
+
+  .rails {
+    display: grid;
+    gap: var(--space-m);
+  }
+
+  .rail {
+    background: var(--mantle);
+    border: var(--rule);
+    padding: var(--space-m) var(--space-m) var(--space-s);
+  }
+
+  .r-label {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-block-end: var(--space-m);
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs);
+  }
+
+  .box {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border: var(--rule);
+    background: var(--base);
+    padding-block: var(--space-2xs);
+    padding-inline: var(--space-xs);
+    color: var(--text);
+  }
+
+  .arrow {
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+
+  .ok {
+    color: var(--green);
+  }
+
+  /* The kill is status, so it is allowed the colour. */
+  .box.kill {
+    color: var(--red);
+  }
+
+  /* The gap is the subject: the box for the pass that never ran is dashed —
+     present in the layout, absent in fact. Muted, not a quiet role: the
+     quiet roles sit below the site's own legibility bar for reading text,
+     and the border already says "not really here". */
+  .box.gap {
+    color: var(--muted);
+    border-style: dashed;
+  }
+
+  .r-note {
+    margin-block-start: var(--space-s);
+    font-size: var(--text-small);
+    color: var(--muted);
+  }
+
+  .gap-note {
+    color: var(--red);
+  }
+
+  figcaption {
+    margin-block-start: var(--space-s);
+    font-size: var(--text-small);
+    color: var(--muted);
+    max-inline-size: var(--measure);
+  }
+</style>

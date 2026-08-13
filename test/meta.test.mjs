@@ -29,6 +29,7 @@ import assert from "node:assert/strict";
 import {
   articleSchema,
   conceptSchema,
+  conductorPageSchema,
   homePageSchema,
   meta,
   reportSchema,
@@ -58,6 +59,7 @@ test("a head that is written passes, and every collection uses the same one", ()
      for — and the pages that render these all read the same fields. */
   for (const [name, schema] of Object.entries({
     homePageSchema,
+    conductorPageSchema,
     sectionPageSchema,
     conceptSchema,
     articleSchema,
@@ -176,16 +178,18 @@ test("every page showing a content entry says which entry, and can be edited on 
     );
   }
 
-  /* The site's seven content-bearing routes: the home page, the three section
-     indexes and the three entry templates. 404.astro is deliberately not one —
-     it shows no entry, so the layout's editor gate finds no collection and
-     stops, which is the right answer rather than a wrong guess. Spelled out
-     because the failure this test is for is a page dropping OFF this list. */
+  /* The site's eight content-bearing routes: the home page, the machine's
+     page, the three section indexes and the three entry templates. 404.astro
+     is deliberately not one — it shows no entry, so the layout's editor gate
+     finds no collection and stops, which is the right answer rather than a
+     wrong guess. Spelled out because the failure this test is for is a page
+     dropping OFF this list. */
   assert.deepEqual(showing.sort(), [
     "src/pages/articles/[entry].astro",
     "src/pages/articles/index.astro",
     "src/pages/concepts/[entry].astro",
     "src/pages/concepts/index.astro",
+    "src/pages/conductor.astro",
     "src/pages/index.astro",
     "src/pages/runs/[entry].astro",
     "src/pages/runs/index.astro"

@@ -5,20 +5,18 @@
    The shape of this page is an argument, so it is worth stating. A front page
    for a site like this has two obvious forms and both are wrong. One is the
    pitch, which this site's whole subject rules out. The other is a contents
-   page — the ten concepts as a list — which is what was here before, and which
-   tells a reader what *subjects* exist without telling them a single thing that
-   was learned. A stranger reads it and leaves knowing nothing.
+   page — the ten concepts as a list — which tells a reader what *subjects*
+   exist without telling them a single thing that was learned.
 
-   So the order is the one the owner set on 2026-08-13, written for the reader
-   who has never heard of Conductor: the cover says what this is and who ran
-   it, the machine is drawn before it is named, then the ten concepts — the
-   spine — then where the work goes next, then three doors for the reader
-   wondering where people like them start, then the four longer pieces. The
-   record comes last and on purpose: the corpus in numbers, the six findings
-   and the three runs in depth are the site's evidence, and evidence belongs
-   after the reader knows what it is evidence of. A stranger who leaves at the
-   fold leaves knowing what Conductor is; one who reaches the foot leaves
-   knowing what a month of it actually did.
+   The order is the one the owner set on 2026-08-13, when the guide and the
+   tool stopped sharing a page: the front page is the field guide's — the
+   cover says what this is and who ran it, then the ten concepts, then the
+   four longer pieces, then three doors for the reader wondering where people
+   like them start. The machine — the drawings, the concept map, the corpus
+   figures, the findings and the runs in depth — moved to /conductor/, and the
+   one section here that names it is a door to that page rather than a pitch.
+   A stranger who leaves at the fold leaves knowing what the guide covers; one
+   who wants the tool itself is one click from all of it.
 
    The dress was the page's own — ink on paper, scoped to the cover like a
    jacket — until 2026-08-13, when the owner asked for one unified look and
@@ -40,12 +38,7 @@ import { Font } from "astro:assets";
 import { getEntry } from "astro:content";
 import { isVisible } from "@shaahink/sitekit/visibility";
 import EntryList from "../components/EntryList.astro";
-import EvidenceStrip from "../components/EvidenceStrip.astro";
 import FigureEvidence from "../components/FigureEvidence.astro";
-import FigureLoop from "../components/FigureLoop.astro";
-import FigureRun from "../components/FigureRun.astro";
-import Findings from "../components/Findings.astro";
-import RunCards from "../components/RunCards.astro";
 import TagList from "../components/TagList.astro";
 import Base from "../layouts/Base.astro";
 import { findingTarget, hrefOf, ordered } from "../lib/collections.js";
@@ -53,8 +46,7 @@ import { allTags } from "../lib/tags.js";
 
 const page = await getEntry("homePage", "home");
 if (!page) throw new Error("src/content/pages/home.yaml is missing");
-const { meta, hero, evidence, findings, machine, orient, spine, reading, runs, next, ways, notes } =
-  page.data;
+const { meta, hero, spine, reading, orient, conductor, ways, notes } = page.data;
 
 /* The same lists the section indexes show, read from the same place in the same
    order. Not hand-kept copies of them. */
@@ -72,37 +64,14 @@ const articles = (await ordered("articles")).map((entry) => ({
   summary: entry.data.standfirst
 }));
 
-/* Run label → its report, which is what `RunCards` filters the corpus by. Built
-   from the reports collection, so a fourth report appears on the front page by
-   existing rather than by being added here. A report's id IS its run's
-   published label — that is what makes the join possible, and `corpusIndex`
-   fails the build if a label it needs is missing. */
-const reports = Object.fromEntries(
-  (await ordered("reports")).map((entry) => [
-    entry.id,
-    { href: hrefOf("reports", entry.id), title: entry.data.title }
-  ])
-);
-
-/* Each finding's destination resolved against the real collections — a finding
-   pointing at a renamed page fails the build here rather than publishing a dead
-   link on the one page nobody re-reads. */
-const items = await Promise.all(
-  findings.items.map(async (item) => ({
-    figure: item.figure,
-    claim: item.claim,
-    ...(await findingTarget(item.where))
-  }))
-);
-
-/* The doors resolve the same way a finding does, for the same reason: a door
-   is a promise about where a reader ends up, and a promise the build cannot
-   check is a dead link waiting for a rename. */
+/* The doors resolve against the real collections, same as a finding does: a
+   door is a promise about where a reader ends up, and a promise the build
+   cannot check is a dead link waiting for a rename. */
 const doors = await Promise.all(
   orient.doors.map(async (entry) => ({
     eyebrow: entry.eyebrow,
     blurb: entry.blurb,
-    links: await Promise.all(entry.where.map(findingTarget))
+    links: await Promise.all(entry.where.map((where) => findingTarget(where)))
   }))
 );
 
@@ -114,15 +83,13 @@ const doors = await Promise.all(
    the rail cannot drift from the page it lists. */
 type RailEntry = { no: string; href: string; label: string };
 const rail: RailEntry[] = [];
-if (isVisible(page.data, "machine")) rail.push({ no: "01", href: "#machine", label: machine.title });
-rail.push({ no: "02", href: "#spine", label: spine.title });
-if (isVisible(page.data, "next")) rail.push({ no: "03", href: "#next", label: next.title });
-if (isVisible(page.data, "orient")) rail.push({ no: "04", href: "#orient", label: orient.title });
-rail.push({ no: "05", href: "#reading", label: reading.title });
-if (isVisible(page.data, "findings")) rail.push({ no: "06", href: "#findings", label: findings.title });
-rail.push({ no: "07", href: "#runs", label: runs.title });
-rail.push({ no: "08", href: "#ways", label: ways.title });
-if (isVisible(page.data, "notes")) rail.push({ no: "09", href: "#notes", label: notes.title });
+rail.push({ no: "01", href: "#spine", label: spine.title });
+rail.push({ no: "02", href: "#reading", label: reading.title });
+if (isVisible(page.data, "orient")) rail.push({ no: "03", href: "#orient", label: orient.title });
+if (isVisible(page.data, "conductor"))
+  rail.push({ no: "04", href: "#conductor", label: conductor.title });
+rail.push({ no: "05", href: "#ways", label: ways.title });
+if (isVisible(page.data, "notes")) rail.push({ no: "06", href: "#notes", label: notes.title });
 ---
 
 <Base
@@ -190,65 +157,27 @@ if (isVisible(page.data, "notes")) rail.push({ no: "09", href: "#notes", label: 
       </nav>
     </header>
 
-    {/* The two drawings — the Face's own idiom carried onto the page: panes,
-        hairlines, mono labels, arrows that are characters. They open the page
-        because the reader this order serves has never heard of Conductor: a
-        reader who can see where "session" and "gate" live needs less courage
-        for the ten concepts that use them. */}
-    {
-      isVisible(page.data, "machine") && (
-        <section id="machine">
-          <p class="secnum" aria-hidden="true">01</p>
-          <h2 data-sk-edit="machine.title">{machine.title}</h2>
-          <p data-sk-edit="machine.intro">{machine.intro}</p>
-          <div class="figures">
-            <FigureLoop />
-            <FigureRun />
-          </div>
-          <p class="more">
-            Every word in a box is defined, in reading order, in{" "}
-            <a href="/glossary/">the glossary</a>.
-          </p>
-        </section>
-      )
-    }
-
     <section id="spine">
-      <p class="secnum" aria-hidden="true">02</p>
+      <p class="secnum" aria-hidden="true">01</p>
       <h2 data-sk-edit="spine.title">{spine.title}</h2>
       <p data-sk-edit="spine.intro">{spine.intro}</p>
       <EntryList items={concepts} ordinalLabel="Concept" />
     </section>
 
-    {/* The one section allowed to face forward, and it faces forward early:
-        the owner wants the direction visible beside the concepts, not filed
-        at the foot. Its copy carries its own caveat — intent, not measurement
-        — and the detail lives on /roadmap/, where every item names what it
-        waits on. */}
-    {
-      isVisible(page.data, "next") && (
-        <section id="next">
-          <p class="secnum" aria-hidden="true">03</p>
-          <h2 data-sk-edit="next.title">{next.title}</h2>
-          {next.body.map((para, index) => (
-            <p data-sk-edit={`next.body[${index}]`}>{para}</p>
-          ))}
-          <p class="more">
-            <a href="/roadmap/">The roadmap, with what each item waits on</a>
-          </p>
-        </section>
-      )
-    }
+    <section id="reading">
+      <p class="secnum" aria-hidden="true">02</p>
+      <h2 data-sk-edit="reading.title">{reading.title}</h2>
+      <p data-sk-edit="reading.intro">{reading.intro}</p>
+      <EntryList items={articles} ordinalLabel="Article" />
+    </section>
 
     {/* The doors: a band, because it is a different kind of thing from the
         sections around it — furniture rather than writing — and the mantle
-        says so without a box or a shadow. The glossary line under the grid is
-        arrangement, not content, same as "All the runs, with their figures"
-        below. */}
+        says so without a box or a shadow. */}
     {
       isVisible(page.data, "orient") && (
         <section id="orient">
-          <p class="secnum" aria-hidden="true">04</p>
+          <p class="secnum" aria-hidden="true">03</p>
           <h2 data-sk-edit="orient.title">{orient.title}</h2>
           <p data-sk-edit="orient.intro">{orient.intro}</p>
           <ul class="doors">
@@ -277,46 +206,27 @@ if (isVisible(page.data, "notes")) rail.push({ no: "09", href: "#notes", label: 
       )
     }
 
-    <section id="reading">
-      <p class="secnum" aria-hidden="true">05</p>
-      <h2 data-sk-edit="reading.title">{reading.title}</h2>
-      <p data-sk-edit="reading.intro">{reading.intro}</p>
-      <EntryList items={articles} ordinalLabel="Article" />
-    </section>
-
-    {/* The record, closing the page — the owner's 2026-08-13 order. The strip
-        used to open the page (SPEC Part VII wanted the numbers above the
-        fold); it now opens the record instead, because the numbers are the
-        report's own first line, and a reader who has just met Conductor five
-        sections ago finally knows what they are numbers *of*. Inline rather
-        than the foot variant for the same reason as before: here it is the
-        argument, not a citation. Unguarded, outside the findings toggle — the
-        corpus figures stay on the front page even on a day the findings are
-        switched off. */}
-    <EvidenceStrip where="pages/home.yaml" evidence={evidence} variant="inline" />
-
+    {/* The machine's door. One paragraph and a link, and that restraint is
+        the section: the record moved to /conductor/ with the tool that wrote
+        it, so the front page mentions the machine the way a field guide
+        mentions its instruments — in passing, with a pointer. */}
     {
-      isVisible(page.data, "findings") && (
-        <section id="findings">
-          <p class="secnum" aria-hidden="true">06</p>
-          <h2 data-sk-edit="findings.title">{findings.title}</h2>
-          <p data-sk-edit="findings.intro">{findings.intro}</p>
-          <Findings items={items} path="findings.items" />
+      isVisible(page.data, "conductor") && (
+        <section id="conductor">
+          <p class="secnum" aria-hidden="true">04</p>
+          <h2 data-sk-edit="conductor.title">{conductor.title}</h2>
+          {conductor.body.map((para, index) => (
+            <p data-sk-edit={`conductor.body[${index}]`}>{para}</p>
+          ))}
+          <p class="more">
+            <a href="/conductor/">Conductor — the machine, and the record it kept</a>
+          </p>
         </section>
       )
     }
 
-    <section id="runs">
-      <p class="secnum" aria-hidden="true">07</p>
-      <h2 data-sk-edit="runs.title">{runs.title}</h2>
-      <p data-sk-edit="runs.intro">{runs.intro}</p>
-      <RunCards reports={reports} />
-      <p class="corpus" data-sk-edit="runs.corpus">{runs.corpus}</p>
-      <p class="more"><a href="/runs/">All the runs, with their figures</a></p>
-    </section>
-
     <section id="ways">
-      <p class="secnum" aria-hidden="true">08</p>
+      <p class="secnum" aria-hidden="true">05</p>
       <h2 data-sk-edit="ways.title">{ways.title}</h2>
       <p data-sk-edit="ways.intro">{ways.intro}</p>
       <TagList tags={allTags()} label="" />
@@ -338,7 +248,7 @@ if (isVisible(page.data, "notes")) rail.push({ no: "09", href: "#notes", label: 
     {
       isVisible(page.data, "notes") && (
         <section id="notes">
-          <p class="secnum" aria-hidden="true">09</p>
+          <p class="secnum" aria-hidden="true">06</p>
           <h2 data-sk-edit="notes.title">{notes.title}</h2>
           <p data-sk-edit="notes.body">{notes.body}</p>
           <div class="figures">
@@ -501,9 +411,9 @@ if (isVisible(page.data, "notes")) rail.push({ no: "09", href: "#notes", label: 
 
     /* `:global(*)`, not `*`: a scoped universal selector only matches elements
        carrying this page's scope attribute, and half of a section's children
-       are component roots — the findings ledger, the entry lists — which do
-       not. Scoped, they fall out of this rule and auto-place into the 6rem
-       number column. The .secnum rule below still wins on specificity. */
+       are component roots — the entry lists, the tag list — which do not.
+       Scoped, they fall out of this rule and auto-place into the 6rem number
+       column. The .secnum rule below still wins on specificity. */
     .home section > :global(*) {
       grid-column: 2;
     }
@@ -536,10 +446,6 @@ if (isVisible(page.data, "notes")) rail.push({ no: "09", href: "#notes", label: 
     inline-size: min(100%, var(--measure));
   }
 
-  .corpus {
-    margin-block-start: var(--space-l);
-  }
-
   .more {
     margin-block-start: var(--space-s);
   }
@@ -550,12 +456,11 @@ if (isVisible(page.data, "notes")) rail.push({ no: "09", href: "#notes", label: 
     gap: var(--space-xl);
   }
 
-  /* The doors are a band, like the evidence strip and for the same reason:
-     mantle behind them says "a different kind of thing" without reaching for
-     a box or a shadow, and the two bands give the page a rhythm — reading
-     surface, band, reading surface — instead of nine sections cut by nine
-     identical rules. Same inline padding as the strip, so the two bands
-     share an inner edge. */
+  /* The doors are a band, like the evidence strip was and for the same
+     reason: mantle behind them says "a different kind of thing" without
+     reaching for a box or a shadow, and the band gives the page a rhythm —
+     reading surface, band, reading surface — instead of six sections cut by
+     six identical rules. */
   #orient {
     background: var(--mantle);
     border-block-end: var(--rule);
@@ -617,8 +522,9 @@ if (isVisible(page.data, "notes")) rail.push({ no: "09", href: "#notes", label: 
     font-size: var(--text-small);
   }
 
-  /* The same link idiom as a finding's destination, because it is the same
-     kind of promise: underlined in the accent, heavier on hover. */
+  /* The same link idiom as a door's destination everywhere on the site,
+     because it is the same kind of promise: underlined in the accent, heavier
+     on hover. */
   .destinations .dest {
     color: var(--accent);
     text-decoration: underline;
@@ -629,16 +535,6 @@ if (isVisible(page.data, "notes")) rail.push({ no: "09", href: "#notes", label: 
   .destinations a:hover .dest,
   .destinations a:focus-visible .dest {
     text-decoration-thickness: 2px;
-  }
-
-  /* The record's opening line of figures sits inside the page's rhythm the
-     way the sections do: the same air above it, because it now follows a
-     whole section rather than the cover, and none below — the findings
-     section that closes over it brings its own. The strip's own
-     `.evidence.inline` margin is written at two classes, so this is stated at
-     three and with the child combinator rather than left to source order. */
-  .home > :global(.evidence.inline) {
-    margin-block: var(--space-3xl) 0;
   }
 
   #ways :global(.tags) {
@@ -654,9 +550,9 @@ if (isVisible(page.data, "notes")) rail.push({ no: "09", href: "#notes", label: 
 
   /* The ten concepts are the spine and they earn the page's width: two columns
      of five on a laptop, so the whole spine is one eyeful instead of a scroll.
-     One column below the site's one breakpoint, same as the findings above it.
-     `align-items: start` so a short one-liner does not stretch and hang its
-     neighbour's rule in mid-air. */
+     One column below the site's one breakpoint. `align-items: start` so a
+     short one-liner does not stretch and hang its neighbour's rule in
+     mid-air. */
   #spine :global(.entries) {
     align-items: start;
   }

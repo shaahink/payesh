@@ -48,12 +48,13 @@ export const GET: APIRoute = async ({ site }) => {
     }
   }
 
-  /* The two orientation pages, between the sections and the tags: furniture
-     rather than shape, which is also why they live in the footer and not the
-     bar. Standalone pages are not derivable from any collection, so each one
-     is a line here — and scripts/seo.mjs fails the build if a built page is
-     missing from this file, which is what catches the next one being added
-     without its line. */
+  /* The machine's page, then the two orientation pages, between the sections
+     and the tags. Standalone pages are not derivable from any collection, so
+     each one is a line here — and scripts/seo.mjs fails the build if a built
+     page is missing from this file, which is what catches the next one being
+     added without its line. `/conductor/` is content-backed but a single
+     entry, so its canonical is read rather than spelled. */
+  paths.push((await getCollection("conductorPage"))[0]!.data.meta.canonical);
   paths.push("/glossary/", "/roadmap/");
 
   /* The tags last, because they are a second way through the site rather than

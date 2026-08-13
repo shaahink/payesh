@@ -8,6 +8,7 @@
    The table of contents is built from the same `sections` array the page
    renders, so the two cannot disagree about what is on the page. */
 import type { CollectionEntry } from "astro:content";
+import type { AstroComponentFactory } from "astro/runtime/server/index.js";
 import EvidenceStrip from "../components/EvidenceStrip.astro";
 import Prose from "../components/Prose.astro";
 import ReadNext, { type Destination } from "../components/ReadNext.astro";
@@ -21,9 +22,17 @@ interface Props {
   entry: CollectionEntry<"articles"> | CollectionEntry<"reports">;
   collection: "articles" | "reports";
   next: Destination[];
+  /** A drawing the page places after one of the sections — arrangement, not
+      content, exactly like the front page's figures: the component is the
+      furniture and `after` is the section index whose argument it draws. The
+      pages that pass one keep the map beside the route (articles/[entry]),
+      so a renamed entry drops its figure loudly in review rather than
+      silently in the layout. */
+  figure?: { component: AstroComponentFactory; after: number };
 }
 
-const { entry, collection, next } = Astro.props;
+const { entry, collection, next, figure } = Astro.props;
+const Figure = figure?.component;
 const { meta, title, standfirst, sections, evidence, tags } = entry.data;
 const scenario = "scenario" in entry.data ? entry.data.scenario : undefined;
 
@@ -74,6 +83,7 @@ const linking = pageContext(hrefOf(collection, entry.id));
             context={linking}
             path={`sections[${index}].body`}
           />
+          {Figure && figure!.after === index && <Figure />}
         </Fragment>
       ))
     }

@@ -32,13 +32,15 @@ interface Props {
   items: Finding[];
   /** `data-sk-edit` path prefix for the claims — `findings.items`. */
   path: string;
+  /** The entry the findings came from, so a bad key names its own file. */
+  where?: string;
 }
 
-const { items, path } = Astro.props;
+const { items, path, where = "pages/home.yaml findings" } = Astro.props;
 
 const resolved = items.map((item) => ({
   ...item,
-  value: corpusFigure("pages/home.yaml findings", item.figure)
+  value: corpusFigure(where, item.figure)
 }));
 ---
 

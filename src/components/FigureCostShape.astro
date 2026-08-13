@@ -1,0 +1,176 @@
+---
+/* The shape of the bill — for "What an autonomous run actually costs".
+   ---------------------------------------------------------------------------
+   Two bands, two of the article's arguments. The first: the lanes — nearly
+   the whole bill is the one agent doing the work, the advisor lane is
+   pennies, the gates a rounding line. The second: what a token even is — the
+   corpus's tokens are overwhelmingly cache reads, the session re-reading what
+   it already knew, which is why session length dominates every knob an
+   orchestrator can turn.
+
+   The bar widths are schematic on purpose and the caption says so: drawing
+   them to the corpus's proportions would make the drawing a figure, and every
+   figure on this site has to come out of the strip, where it is recomputed.
+   Same idiom as FigureLoop: panes, hairlines, mono labels; the quiet roles do
+   the work here, because the subject is how much of the bill is quiet. */
+---
+
+<figure class="fig-cost">
+  <div
+    class="bands"
+    role="img"
+    aria-label="Two bands. The lanes: the agent doing the work is nearly the whole bill; the advisor lane on a smaller model is pennies; the gate battery is a rounding line. The tokens: almost everything the corpus moved was cache reads — the session re-reading what it already knew — with fresh tokens in and out a thin slice."
+  >
+    <div class="band" aria-hidden="true">
+      <p class="b-label">the lanes — who spent it</p>
+      <div class="bars">
+        <div class="bar agent">
+          <span class="name">agent</span>
+          <span class="note">the one doing the work — nearly the whole bill</span>
+        </div>
+        <div class="bar advisor">
+          <span class="name">advisor</span>
+          <span class="note">a smaller model, reading and commenting — pennies</span>
+        </div>
+        <div class="bar gates">
+          <span class="name">gates</span>
+          <span class="note">the battery — a rounding line</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="band" aria-hidden="true">
+      <p class="b-label">the tokens — what was actually moved</p>
+      <div class="split">
+        <span class="cache">cache reads — the session re-reading what it already knew</span>
+        <span class="fresh">fresh in and out</span>
+      </div>
+      <p class="b-note">
+        which is why session length dominates every other variable: a longer
+        session re-reads a longer past, every turn, at the meter's pace
+      </p>
+    </div>
+  </div>
+
+  <figcaption>
+    The shape of the bill, not its figures — the widths here are schematic,
+    and the measured shares are in the strip. An orchestrator is not many
+    expensive models in a trench coat; it is one expensive model, a cheap
+    second opinion, and a great deal of re-reading.
+  </figcaption>
+</figure>
+
+<style>
+  .fig-cost {
+    margin: 0;
+    margin-block-start: var(--space-l);
+    inline-size: min(100%, var(--measure-wide));
+  }
+
+  .bands {
+    display: grid;
+    gap: var(--space-m);
+  }
+
+  .band {
+    background: var(--mantle);
+    border: var(--rule);
+    padding: var(--space-m) var(--space-m) var(--space-s);
+  }
+
+  .b-label {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-block-end: var(--space-m);
+  }
+
+  .bars {
+    display: grid;
+    gap: var(--space-2xs);
+  }
+
+  .bar {
+    border: var(--rule);
+    background: var(--base);
+    padding: var(--space-2xs) var(--space-xs);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2xs) var(--space-xs);
+  }
+
+  /* Schematic widths: an order, not a measurement. The agent lane runs the
+     full measure; the advisor and gate lanes are visibly slivers without
+     pretending to be percentages of anything. */
+  .bar.advisor {
+    inline-size: min(100%, 14rem);
+  }
+
+  .bar.gates {
+    inline-size: min(100%, 18rem);
+  }
+
+  .bar .name {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text);
+  }
+
+  .bar .note {
+    font-size: var(--text-small);
+    color: var(--muted);
+  }
+
+  /* The token split: one strip, two segments. The cache segment wears the
+     quiet surface role because the subject is how much of the bill is the
+     quiet part; the fresh slice is the accent, being the only part a reader
+     would have guessed was the bill. */
+  .split {
+    display: flex;
+    gap: var(--space-3xs);
+  }
+
+  .cache {
+    flex: 1 1 auto;
+    border: var(--rule);
+    background: var(--surface);
+    padding: var(--space-2xs) var(--space-xs);
+    font-size: var(--text-small);
+    color: var(--text);
+  }
+
+  .fresh {
+    flex: 0 0 auto;
+    border: var(--rule);
+    background: var(--base);
+    padding: var(--space-2xs) var(--space-xs);
+    font-size: var(--text-micro);
+    color: var(--current);
+    writing-mode: vertical-rl;
+  }
+
+  @media (min-width: 40rem) {
+    .fresh {
+      writing-mode: horizontal-tb;
+      font-size: var(--text-small);
+    }
+  }
+
+  .b-note {
+    margin-block-start: var(--space-s);
+    font-size: var(--text-small);
+    color: var(--muted);
+  }
+
+  figcaption {
+    margin-block-start: var(--space-s);
+    font-size: var(--text-small);
+    color: var(--muted);
+    max-inline-size: var(--measure);
+  }
+</style>
