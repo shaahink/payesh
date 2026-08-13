@@ -1,0 +1,39 @@
+---
+/* The site's mark: a ring for the watching, a dot for the record being kept.
+   ---------------------------------------------------------------------------
+   The same two shapes the favicon has always drawn, promoted to the page — one
+   drawing, three sizes: the tab, the top bar, and the cover's plate. It took
+   over the plate when the owner retired the Persian-script covermark
+   (2026-08-13) and asked for a mark instead.
+
+   Inline SVG rather than an <img> of the favicon, because the favicon cannot
+   read the page's tokens and this can: the ring is `currentColor` — the ink of
+   wherever it sits — and the dot is the accent role, so the mark follows both
+   schemes and the theme toggle for free. The favicon repeats the two accent
+   hexes by hand for exactly this reason; this file never has to.
+
+   No intrinsic size. The caller sizes it in its own stylesheet
+   (`:global(svg)` from the parent scope), because 1em in a top bar and a
+   plate on a cover are layout facts about those places, not about the mark.
+
+   aria-hidden always: everywhere it appears, text beside it already names the
+   site, and a screen reader announcing "image" between the name and its gloss
+   would be decoration read aloud. */
+---
+
+<svg viewBox="0 0 64 64" aria-hidden="true">
+  <circle class="ring" cx="32" cy="32" r="25" stroke-width="7" />
+  <circle class="dot" cx="32" cy="32" r="9" />
+</svg>
+
+<style>
+  .ring {
+    fill: none;
+    stroke: currentColor;
+  }
+
+  .dot {
+    fill: var(--accent);
+    stroke: none;
+  }
+</style>

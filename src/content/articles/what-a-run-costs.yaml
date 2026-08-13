@@ -6,6 +6,7 @@ meta:
   ogDescription: "The whole bill for a corpus of autonomous runs, including the
     money that bought nothing."
   canonical: "/articles/what-a-run-costs/"
+  ogType: "article"
 
 slug: "what-a-run-costs"
 order: 1

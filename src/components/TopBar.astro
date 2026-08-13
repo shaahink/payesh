@@ -6,6 +6,7 @@
    index page's own copy — and a section whose collection is still empty is
    left out. A section that exists and a section that is linked can no longer
    disagree, because there is only one list. */
+import Mark from "./Mark.astro";
 import { navSections } from "../lib/collections.js";
 
 const sections = await navSections();
@@ -30,16 +31,20 @@ const isCurrent = (href: string) => path === href || path.startsWith(href);
 ---
 
 <header class="topbar">
-  {/* The name, and then what the name means — because "Payesh" tells an
-      English reader nothing on its own, and a wordmark that has to be looked up
-      is a wordmark that gets ignored. پایش is Persian for monitoring: watching
-      something over time and keeping the record. It is what this site is.
+  {/* The mark, the name, and then what the name means — because "Payesh"
+      tells an English reader nothing on its own, and a wordmark that has to be
+      looked up is a wordmark that gets ignored. Payesh is Persian for
+      monitoring: watching something over time and keeping the record. It is
+      what this site is. The mark draws the same two facts — a ring for the
+      watching, a dot for the record — and it is the favicon's own drawing, so
+      the tab and the bar agree.
 
       The gloss is hidden below the phone breakpoint, where the bar has room
       for a name and a theme button and nothing else. It stays in the accessible
       name at every width, so it is the screen-reader label rather than a
       decoration that disappears. */}
   <a class="wordmark" href="/">
+    <Mark />
     <span class="name">Payesh</span>
     <span class="gloss">watching the work</span>
   </a>
@@ -123,6 +128,19 @@ const isCurrent = (href: string) => path === href || path.startsWith(href);
     font-weight: var(--weight-bold);
   }
 
+  /* The mark rides the bar at the name's own size. `align-self: center`
+     rather than the row's baseline: an SVG has no baseline of its own, and
+     left to the flex default it would hang from the line like a dropped
+     letter. The colour is set so the ring follows the wordmark's hover the
+     way the name does — the mark and the name are one link, and half a link
+     changing colour on hover reads as two. */
+  .wordmark :global(svg) {
+    inline-size: 1em;
+    block-size: 1em;
+    align-self: center;
+    color: inherit;
+  }
+
   /* Quiet, and set in the small size the rest of the site's captions use: it is
      a translation, not a tagline, and it should read as one. */
   .gloss {
@@ -143,7 +161,8 @@ const isCurrent = (href: string) => path === href || path.startsWith(href);
     }
   }
 
-  .wordmark:hover .name {
+  .wordmark:hover .name,
+  .wordmark:hover :global(svg) {
     color: var(--current);
   }
 

@@ -1,16 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <!-- Payesh: watching, and the record. A ring for the watching, a dot for the
-       record being kept. The two colours are the accent role's exact values
-       from src/styles/tokens.css — mocha's mauve by default, latte's when the
-       tab's OS is light. A favicon cannot read CSS custom properties, so the
-       hexes are repeated here on purpose; if tokens.css ever changes its
-       accents, change these with it. -->
+       record being kept — the same drawing src/components/Mark.astro sets in
+       the top bar and on the cover. The two colours are the accent role's
+       exact values from src/styles/tokens.css — soot's vermilion by default,
+       paper's when the tab's OS is light. A favicon cannot read CSS custom
+       properties, so the hexes are repeated here on purpose; if tokens.css
+       ever changes its accents, change these with it. -->
   <style>
-    circle { fill: none; stroke: #cba6f7; }
-    .dot { fill: #cba6f7; stroke: none; }
+    circle { fill: none; stroke: #ff6a3c; }
+    .dot { fill: #ff6a3c; stroke: none; }
     @media (prefers-color-scheme: light) {
-      circle { stroke: #8839ef; }
-      .dot { fill: #8839ef; }
+      circle { stroke: #b02f10; }
+      .dot { fill: #b02f10; }
     }
   </style>
   <circle cx="32" cy="32" r="25" stroke-width="7" />

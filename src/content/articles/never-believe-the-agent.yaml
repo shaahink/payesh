@@ -6,6 +6,7 @@ meta:
   ogDescription: "A green battery proves nothing on its own. The red gates are the
     evidence a checking system works."
   canonical: "/articles/never-believe-the-agent/"
+  ogType: "article"
 
 slug: "never-believe-the-agent"
 order: 2

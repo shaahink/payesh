@@ -4,7 +4,7 @@
 [![Gates](https://github.com/shaahink/payesh/actions/workflows/gates.yml/badge.svg)](https://github.com/shaahink/payesh/actions/workflows/gates.yml)
 [![Live](https://img.shields.io/badge/live-payesh.vercel.app-b02f10)](https://payesh.vercel.app)
 
-The source for **<https://payesh.vercel.app>** (*پایش*, Persian for *monitoring*) — an Astro site,
+The source for **<https://payesh.vercel.app>** (*Payesh*, Persian for *monitoring*) — an Astro site,
 statically built, deployed on Vercel. Content is YAML validated by Zod; every figure on every page
 is read from a corpus recomputed from a run store, never typed into the prose.
 

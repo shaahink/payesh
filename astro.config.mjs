@@ -145,7 +145,7 @@ export default defineConfig({
       fallbacks: ["ui-monospace", "SFMono-Regular", "Consolas", "monospace"]
     },
 
-    /* The site's other two faces. Both still route through a cssVariable that
+    /* The site's third face. It still routes through a cssVariable that
        type.css consumes, same trap, same rule as the two above.
 
        Fraunces is the display serif: the site dresses as print — ink on
@@ -155,14 +155,11 @@ export default defineConfig({
        every heading. Display and heading sizes only; body copy stays in the
        sans.
 
-       Vazirmatn is for one word: پایش, the site's own name, set large on the
-       cover in the script it is actually written in — still the front page's
-       own, injected through its head slot so twenty inner pages download
-       nothing for it. The fallback chain would render it in whatever Arabic
-       face the visitor's system carries, which is a different mark on every
-       machine — for a decorative glyph in a footnote that would be fine, for
-       the wordmark it is not. Arabic subset only; the Latin never comes from
-       this face. */
+       There used to be a fourth: Vazirmatn, for the Persian-script covermark
+       on the cover. The owner retired that mark (2026-08-13) in favour of the
+       drawn one (src/components/Mark.astro), and the face went with it —
+       test/tokens.test.mjs would rightly fail a family that is downloaded and
+       never consumed. */
     {
       provider: fontProviders.google(),
       name: "Fraunces",
@@ -171,15 +168,6 @@ export default defineConfig({
       styles: ["normal", "italic"],
       subsets: ["latin"],
       fallbacks: ["Georgia", "Times New Roman", "serif"]
-    },
-    {
-      provider: fontProviders.google(),
-      name: "Vazirmatn",
-      cssVariable: "--font-farsi",
-      weights: [400],
-      styles: ["normal"],
-      subsets: ["arabic"],
-      fallbacks: ["Segoe UI", "Tahoma", "sans-serif"]
     }
   ],
 

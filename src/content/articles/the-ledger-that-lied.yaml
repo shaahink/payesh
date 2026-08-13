@@ -6,6 +6,7 @@ meta:
   ogDescription: "How a telemetry defect produced a complete, consistent,
     confident table that was wrong about one population of sessions."
   canonical: "/articles/the-ledger-that-lied/"
+  ogType: "article"
 
 slug: "the-ledger-that-lied"
 order: 4

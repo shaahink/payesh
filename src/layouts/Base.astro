@@ -15,11 +15,14 @@ import "../styles/styles.css";
 
 /** The site's name, for the tab and the social card.
     ---------------------------------------------------------------------------
-    پایش — Persian for monitoring: watching something over time and keeping the
-    record of it, which is what this site is made of. Chosen because the shorter
-    words that were wanted first were gone: a bare `.vercel.app` label is
-    claimed globally and first come, and `conductor-site`, `karvan` (caravan)
-    and `rasad` (observation) were each already a stranger's project.
+    Payesh — Persian for monitoring: watching something over time and keeping
+    the record of it, which is what this site is made of. Latin script
+    everywhere it renders, since the owner retired the Persian-script covermark
+    (2026-08-13); the top bar's gloss carries what the name means. Chosen
+    because the shorter words that were wanted first were gone: a bare
+    `.vercel.app` label is claimed globally and first come, and
+    `conductor-site`, `karvan` (caravan) and `rasad` (observation) were each
+    already a stranger's project.
 
     Here rather than in content, because it is the site's identity rather than
     its copy — renaming it is a decision about the whole thing, not a sentence
@@ -66,6 +69,40 @@ const canonicalUrl = absolute(Astro.site!, canonical);
    rather than a default in the schema — a schema default is a value fourteen
    content files would each carry a copy of. src/lib/seo.ts. */
 const ogImageUrl = absolute(Astro.site!, ogImage ?? ogCardFor(canonical));
+
+/* Structured data for the JSON-LD block in the head. Assembled from the same
+   props the meta tags print, so the two cannot disagree. No author or person:
+   the corpus is anonymised and the site publishes work, not a byline —
+   inventing a Person node here would be the one "SEO improvement" that
+   contradicts the site. The `<` escape is the standard defence for JSON
+   printed into HTML: a title containing `</script>` must not close the tag. */
+const jsonLd = JSON.stringify(
+  canonical === "/"
+    ? {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: SITE_NAME,
+        description,
+        url: canonicalUrl
+      }
+    : ogType === "article"
+      ? {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: title,
+          description,
+          url: canonicalUrl,
+          image: ogImageUrl,
+          publisher: { "@type": "Organization", name: SITE_NAME, url: String(Astro.site) }
+        }
+      : {
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          name: title,
+          description,
+          url: canonicalUrl
+        }
+).replace(/</g, "\\u003c");
 
 /* ── two notes that belong beside the markup and cannot live there ─────────
 
@@ -116,9 +153,7 @@ const ogImageUrl = absolute(Astro.site!, ogImage ?? ogCardFor(canonical));
         wordmark and the evidence figures beside it, and the display serif
         carries every heading — site-wide since the print dress was unified,
         not the cover's alone. astro.config's `fonts` block assembles each
-        cssVariable; nothing here or in the CSS names a family. The Farsi face
-        stays the front page's own, injected through the head slot: it exists
-        for one word on the cover. */}
+        cssVariable; nothing here or in the CSS names a family. */}
     <Font cssVariable="--font-sans" preload />
     <Font cssVariable="--font-mono" preload />
     <Font cssVariable="--font-display" preload />
@@ -133,13 +168,25 @@ const ogImageUrl = absolute(Astro.site!, ogImage ?? ogCardFor(canonical));
     <link rel="canonical" href={canonicalUrl} />
 
     <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={SITE_NAME} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={ogDescription} />
     <meta property="og:image" content={ogImageUrl} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={ogDescription} />
     <meta name="twitter:image" content={ogImageUrl} />
+
+    {/* Structured data, one block per page: the home page is the WebSite,
+        anything published as an article is an Article, and the rest are plain
+        WebPages. Every value is a fact the head above already states — no
+        field here can disagree with a tag a scraper reads, because both come
+        from the same props. JSON-LD is inert data, not a JavaScript MIME
+        type: browsers never execute it, so the same-origin CSP has nothing to
+        block and no hash to pin — and test/csp.test.mjs counts only bare
+        `is:inline` tags, so this one does not trip the one-script rule. */}
+    <script is:inline type="application/ld+json" set:html={jsonLd} />
 
     {/* Two things that have to happen before first paint. The `js` class
         enables progressive-enhancement styles. The second half reads a theme

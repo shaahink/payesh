@@ -6,6 +6,7 @@ meta:
   ogDescription: "The run that ended one checkpoint short, published with the
     shortfall as the subject."
   canonical: "/runs/the-long-build/"
+  ogType: "article"
 
 slug: "the-long-build"
 order: 2

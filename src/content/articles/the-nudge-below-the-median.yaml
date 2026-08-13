@@ -5,6 +5,7 @@ meta:
   ogDescription: "How to measure a session token budget instead of guessing it,
     and why a cap censors its own evidence."
   canonical: "/articles/the-nudge-below-the-median/"
+  ogType: "article"
 
 slug: "the-nudge-below-the-median"
 order: 3

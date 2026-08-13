@@ -23,8 +23,8 @@
    the jacket became the suit: soot and paper are now the whole site's schemes
    (tokens.css) and the display serif carries every heading (styles.css). What
    this page keeps for itself: the heavy ink rules, the vermilion section
-   numbers in the serif's italic, the contents rail, and پایش set large in its
-   own script. What does NOT change with the dress: mono still means
+   numbers in the serif's italic, the contents rail, and the site's mark set
+   large as the plate. What does NOT change with the dress: mono still means
    "recomputed from a run store" and nothing else, the semantic colours still
    mark status only, and every rule is still a rule rather than a shadow.
 
@@ -34,11 +34,12 @@
    — a rule this repo has already paid for once, when SPEC Part VII's front page
    requirement was owned by no checkpoint and shipped as a stub with every gate
    green on it. */
-import { Font } from "astro:assets";
 import { getEntry } from "astro:content";
 import { isVisible } from "@shaahink/sitekit/visibility";
 import EntryList from "../components/EntryList.astro";
 import FigureEvidence from "../components/FigureEvidence.astro";
+import FigureLoop from "../components/FigureLoop.astro";
+import Mark from "../components/Mark.astro";
 import TagList from "../components/TagList.astro";
 import Base from "../layouts/Base.astro";
 import { findingTarget, hrefOf, ordered } from "../lib/collections.js";
@@ -102,13 +103,6 @@ if (isVisible(page.data, "notes")) rail.push({ no: "06", href: "#notes", label: 
   editCollection="homePage"
   editEntry="home"
 >
-  {/* The cover's one face of its own, injected through the head slot so the
-      twenty inner pages download nothing for it: Vazirmatn exists for پایش
-      and nothing else. Preloaded — the mark paints above the fold. The
-      display serif is no longer injected here; since the print dress went
-      site-wide, Base.astro carries it for every page. */}
-  <Font cssVariable="--font-farsi" preload slot="head" />
-
   <main id="main" class="page wide home">
     {/* `data-sk-edit` names the content path the element is showing, and sits
         beside the binding it names so it is easy to write and obvious when it
@@ -122,12 +116,12 @@ if (isVisible(page.data, "notes")) rail.push({ no: "06", href: "#notes", label: 
           <p class="tagline" data-sk-edit="hero.tagline">{hero.tagline}</p>
         </div>
 
-        {/* The site's name in the script it is actually written in, set as the
-            cover's plate. aria-hidden and out of the reading order: the top
-            bar already carries the name and its gloss for every reader, and a
-            screen reader announcing an Arabic-script word between the headline
-            and the standfirst would be decoration read aloud. */}
-        <p class="mark" lang="fa" dir="rtl" aria-hidden="true">پایش</p>
+        {/* The site's mark, set as the cover's plate — the ring for the
+            watching, the vermilion dot for the record being kept. It replaced
+            the Persian-script covermark on the owner's ask (2026-08-13).
+            Decorative and out of the reading order: the top bar already
+            carries the name and its gloss for every reader. */}
+        <div class="mark" aria-hidden="true"><Mark /></div>
       </div>
 
       {
@@ -206,10 +200,13 @@ if (isVisible(page.data, "notes")) rail.push({ no: "06", href: "#notes", label: 
       )
     }
 
-    {/* The machine's door. One paragraph and a link, and that restraint is
-        the section: the record moved to /conductor/ with the tool that wrote
-        it, so the front page mentions the machine the way a field guide
-        mentions its instruments — in passing, with a pointer. */}
+    {/* The machine's door. One paragraph, one drawing and a link: the record
+        moved to /conductor/ with the tool that wrote it, so the front page
+        mentions the machine the way a field guide mentions its instruments —
+        in passing, with a pointer. The drawing is the loop-in-a-ring the
+        machine's own page opens with (owner's ask, 2026-08-13: the front page
+        should carry its arguments visually too) — the same component, so the
+        preview and the page it previews cannot drift apart. */}
     {
       isVisible(page.data, "conductor") && (
         <section id="conductor">
@@ -218,6 +215,9 @@ if (isVisible(page.data, "notes")) rail.push({ no: "06", href: "#notes", label: 
           {conductor.body.map((para, index) => (
             <p data-sk-edit={`conductor.body[${index}]`}>{para}</p>
           ))}
+          <div class="figures">
+            <FigureLoop />
+          </div>
           <p class="more">
             <a href="/conductor/">Conductor — the machine, and the record it kept</a>
           </p>
@@ -307,14 +307,17 @@ if (isVisible(page.data, "notes")) rail.push({ no: "06", href: "#notes", label: 
     max-inline-size: 16ch;
   }
 
-  /* پایش — the plate. Decorative (the top bar names the site for every
+  /* The mark — the plate. Decorative (the top bar names the site for every
      reader), so it is allowed the accent, which on this page is the vermilion
-     a printer would have mixed once and spent carefully. */
-  .mark {
-    font-family: var(--farsi);
-    font-size: var(--text-covermark);
-    line-height: 1;
-    color: var(--accent);
+     a printer would have mixed once and spent carefully: the ring takes the
+     page's ink and the dot takes the vermilion. Sized like the covermark type
+     it replaced — fluid over the same 360→1200 range, in rem because it is a
+     drawing rather than a line of text. */
+  .mark :global(svg) {
+    display: block;
+    inline-size: clamp(5.5rem, 3.5rem + 8vi, 9rem);
+    block-size: auto;
+    color: var(--text);
   }
 
   .tagline {

@@ -6,6 +6,7 @@ meta:
   ogDescription: "The run whose release gate was an evaluation suite, and the red
     gates that came with it."
   canonical: "/runs/the-engine-run/"
+  ogType: "article"
 
 slug: "the-engine-run"
 order: 3

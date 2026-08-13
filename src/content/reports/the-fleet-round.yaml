@@ -6,6 +6,7 @@ meta:
   ogDescription: "A four-site web fleet, one shared component library, one round
     of coordinated changes."
   canonical: "/runs/the-fleet-round/"
+  ogType: "article"
 
 slug: "the-fleet-round"
 order: 1
