@@ -16,6 +16,7 @@
 
    Copy lives in this file, like /tags/ — the page is hand-arranged furniture
    rather than a collection entry, and there are no placeholders to gate. */
+import FigureLoop from "../components/FigureLoop.astro";
 import Base from "../layouts/Base.astro";
 import { findingTarget, hrefOf, ordered } from "../lib/collections.js";
 
@@ -195,6 +196,11 @@ const market = (await ordered("concepts"))
       loop, and a record of what happened.
     </p>
 
+    {/* The map the definitions below are the legend for. */}
+    <div class="map">
+      <FigureLoop />
+    </div>
+
     <dl class="terms">
       {
         entries.map((entry) => (
@@ -249,6 +255,10 @@ const market = (await ordered("concepts"))
     font-size: var(--text-lead);
     color: var(--muted);
     margin-block-start: var(--space-s);
+  }
+
+  .map {
+    margin-block-start: var(--space-xl);
   }
 
   .terms {

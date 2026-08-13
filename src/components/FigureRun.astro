@@ -1,0 +1,152 @@
+---
+/* The second drawing: one run, from the plan to the record.
+   ---------------------------------------------------------------------------
+   Five stations, drawn the same way as FigureLoop — panes, hairlines, mono
+   eyebrow labels, arrows that are characters. A column on a phone and a row
+   from the site's one breakpoint, which is why every arrow is two glyphs with
+   only one ever displayed.
+
+   The two colours in it are status, which is the only job semantic colour has
+   on this site: the engine's confirm tick is green, and the word for a gate
+   that failed is red. Nothing else is decorated. */
+---
+
+<figure class="fig-run">
+  <div
+    class="flow"
+    role="img"
+    aria-label="One run: a plan states stages, checkpoints and limits. Sessions run the agent loop under a ceiling; at the ceiling, work rolls over to the next session. Gates — commands with exit codes — check the work; a red gate leaves the checkpoint open for another session. A checkpoint is claimed done by the agent but confirmed by the engine. Everything lands in the record: the store, the tracker, and this site's corpus."
+  >
+    <div class="station" aria-hidden="true">
+      <span class="s-label">plan</span>
+      <span class="s-note">stages · checkpoints · limits, written before anything runs</span>
+    </div>
+
+    <span class="arrow" aria-hidden="true"><span class="h">→</span><span class="v">↓</span></span>
+
+    <div class="station" aria-hidden="true">
+      <span class="s-label">session</span>
+      <span class="s-note">the loop above, under a ceiling</span>
+      <span class="s-branch">at the ceiling it rolls over to the next session</span>
+    </div>
+
+    <span class="arrow" aria-hidden="true"><span class="h">→</span><span class="v">↓</span></span>
+
+    <div class="station" aria-hidden="true">
+      <span class="s-label">gates</span>
+      <span class="s-note">commands with exit codes — nobody asks the agent</span>
+      <span class="s-branch"><span class="red">red</span> → the checkpoint stays open; another session takes it</span>
+    </div>
+
+    <span class="arrow" aria-hidden="true"><span class="h">→</span><span class="v">↓</span></span>
+
+    <div class="station" aria-hidden="true">
+      <span class="s-label">done <span class="ok">✓</span></span>
+      <span class="s-note">claimed by the agent, confirmed by the engine</span>
+    </div>
+
+    <span class="arrow" aria-hidden="true"><span class="h">→</span><span class="v">↓</span></span>
+
+    <div class="station" aria-hidden="true">
+      <span class="s-label">record</span>
+      <span class="s-note">store · tracker · the corpus this site is built from</span>
+    </div>
+  </div>
+
+  <figcaption>
+    A run is the whole journey, across as many sessions as it takes. The plan
+    is written first and enforced rather than re-decided; the record is what
+    is left when the machine stops.
+  </figcaption>
+</figure>
+
+<style>
+  .fig-run {
+    margin: 0;
+  }
+
+  .flow {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-2xs);
+  }
+
+  .station {
+    border: var(--rule);
+    background: var(--mantle);
+    padding: var(--space-s);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3xs);
+  }
+
+  .s-label {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text);
+  }
+
+  .s-note {
+    font-size: var(--text-small);
+    color: var(--muted);
+  }
+
+  /* The exception path, one step quieter than the note above it — it is the
+     part of the drawing most readers meet in their own runs first. */
+  .s-branch {
+    font-size: var(--text-micro);
+    color: var(--muted);
+    border-block-start: var(--rule);
+    padding-block-start: var(--space-3xs);
+    margin-block-start: var(--space-3xs);
+  }
+
+  .ok {
+    color: var(--green);
+  }
+
+  .red {
+    color: var(--red);
+  }
+
+  .arrow {
+    font-family: var(--mono);
+    color: var(--muted);
+    align-self: center;
+  }
+
+  .arrow .h {
+    display: none;
+  }
+
+  /* The site's one breakpoint: the run turns to read left-to-right, the way a
+     pipeline is imagined, and the arrows turn with it. */
+  @media (min-width: 64rem) {
+    .flow {
+      flex-direction: row;
+      gap: var(--space-xs);
+    }
+
+    .station {
+      flex: 1 1 0;
+    }
+
+    .arrow .h {
+      display: inline;
+    }
+
+    .arrow .v {
+      display: none;
+    }
+  }
+
+  figcaption {
+    margin-block-start: var(--space-s);
+    font-size: var(--text-small);
+    color: var(--muted);
+    max-inline-size: var(--measure);
+  }
+</style>

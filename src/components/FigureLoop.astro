@@ -1,0 +1,121 @@
+---
+/* The site's first drawing: the loop that is an agent, inside the ring that is
+   the orchestrator.
+   ---------------------------------------------------------------------------
+   Drawn in HTML rather than shipped as an image, and the choice is the whole
+   design: the Face is a terminal UI — panes, hairlines, labels — so boxes made
+   of `--rule` borders with eyebrow labels ARE the tool's own face, they follow
+   both schemes for free because every colour is a role, and a screen reader
+   gets real text instead of an alt attribute doing its best. No gradients, no
+   shadows, no arrowheads drawn on a canvas: the arrows are the characters a
+   terminal would use.
+
+   One accent, where the thesis is: the return edge. The site's first concept
+   says the engineering is not in the model, it is in the loop around it — so
+   the loop's closing edge is the one thing here allowed to be `--current`.
+
+   The box labels are set in the mono eyebrow register the site already uses
+   for door eyebrows and link kinds — a label, not a claim of machine truth. */
+---
+
+<figure class="fig-loop">
+  <div class="ring">
+    <p class="ring-label">orchestrator · conductor — plan · limits · gates · record</p>
+
+    <div class="loop" role="img" aria-label="The agent loop: context goes to the model, the model acts, the action has a result, and the result becomes the next context. One stretch of this loop under a token ceiling is a session.">
+      <div class="row" aria-hidden="true">
+        <span class="box">context</span>
+        <span class="arrow">→</span>
+        <span class="box">model</span>
+        <span class="arrow">→</span>
+        <span class="box">action</span>
+        <span class="arrow">→</span>
+        <span class="box">result</span>
+      </div>
+      <p class="return" aria-hidden="true">
+        <span class="glyph">⟲</span> the result becomes the next context — the loop is the agent
+      </p>
+      <p class="session" aria-hidden="true">
+        one stretch of this loop, under a token ceiling, is a session
+      </p>
+    </div>
+  </div>
+
+  <figcaption>
+    The agent is the small loop. The orchestrator is the ring around it: it
+    starts sessions, stops them at their limits, runs the gates, and writes
+    down what happened.
+  </figcaption>
+</figure>
+
+<style>
+  .fig-loop {
+    margin: 0;
+    inline-size: min(100%, var(--measure-wide));
+  }
+
+  /* The ring is a pane, in the strip's own manner: mantle behind it, a
+     hairline around it, an eyebrow naming it. */
+  .ring {
+    background: var(--mantle);
+    border: var(--rule);
+    padding: var(--space-m) var(--space-m) var(--space-s);
+  }
+
+  .ring-label,
+  .box {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .ring-label {
+    color: var(--muted);
+    margin-block-end: var(--space-m);
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs);
+  }
+
+  .box {
+    border: var(--rule);
+    background: var(--base);
+    padding-block: var(--space-2xs);
+    padding-inline: var(--space-xs);
+    color: var(--text);
+  }
+
+  .arrow {
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+
+  /* The thesis edge. The one accent in the drawing. */
+  .return {
+    margin-block-start: var(--space-s);
+    font-size: var(--text-small);
+    color: var(--current);
+  }
+
+  .glyph {
+    font-family: var(--mono);
+  }
+
+  .session {
+    margin-block-start: var(--space-2xs);
+    font-size: var(--text-small);
+    color: var(--muted);
+  }
+
+  figcaption {
+    margin-block-start: var(--space-s);
+    font-size: var(--text-small);
+    color: var(--muted);
+    max-inline-size: var(--measure);
+  }
+</style>

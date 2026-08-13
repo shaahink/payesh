@@ -15,12 +15,12 @@ hero:
   # purpose: the corpus is one person's month, and a page that hides that reads
   # like a vendor's benchmark.
   standfirst:
-    - "For a month I pointed an orchestrator at my own repositories and let it
-      work unattended — planning, spawning agents, running gates, recording what
-      happened. Some of it went well, a good deal of it did not, and both are
-      published here — every figure recomputed from the record rather than typed
-      into a sentence, because a number nobody can check is an opinion with a
-      decimal point."
+    - "For a month I pointed an orchestrator I had built — Conductor — at my own
+      repositories and let it work unattended: planning, spawning agents,
+      running gates, recording what happened. Some of it went well, a good deal
+      of it did not, and both are published here — every figure recomputed from
+      the record rather than typed into a sentence, because a number nobody can
+      check is an opinion with a decimal point."
 
 # The corpus, above the fold. Keys, never values — these are recomputed from the
 # run store by `npm run harvest`, and naming one the corpus does not have fails
@@ -79,6 +79,13 @@ findings:
         work. An orchestrator is not many expensive models in a trench coat; it
         is one expensive model and a great deal of arithmetic."
       where: "concepts/multi-agent-orchestration"
+
+# The drawings. Only these words are content; the figures are arrangement.
+machine:
+  title: "The shape of the machine"
+  intro: "Half the vocabulary makes sense the moment you can see where a word
+    sits. Two drawings — the loop that is an agent, and the run wrapped around
+    it. Every word in a box is defined in the glossary."
 
 # The doors. Findings are for the reader who wants to know what the record
 # said; these are for the one who arrived cold. Sorted by the question they

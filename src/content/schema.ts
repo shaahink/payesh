@@ -362,6 +362,14 @@ export const homePageSchema = z.object({
     intro: z.string().meta({ title: "The line above the findings" }),
     items: z.array(finding).min(3).max(8)
   }),
+  /* The drawings. Only the words around them are content — the figures
+     themselves are arrangement (FigureLoop, FigureRun), because a drawing of
+     the machine is the page's furniture the same way a list's markup is. */
+  machine: z.object({
+    visible,
+    title: z.string(),
+    intro: z.string().meta({ title: "The line above the drawings" })
+  }),
   /* The doors. A reader who followed the findings knows what the record said;
      this is the section for the reader who arrived cold and wants to know
      where people like them start. Three doors is the shape — by question, not

@@ -1,0 +1,76 @@
+---
+/* The third drawing: the evidence rule, which is the site's own mechanism.
+   ---------------------------------------------------------------------------
+   Smaller than the other two because it illustrates one sentence — how a
+   number gets onto a page here — and sits under "How to read this" as the
+   picture of that section's paragraph. `corpus.json` is set in mono because
+   it is a real file's name, which is machine truth in the ordinary way; the
+   word "fails" is red because a failed build is a status, and status is the
+   only job semantic colour has here. */
+---
+
+<figure class="fig-evidence">
+  <div
+    class="chain"
+    role="img"
+    aria-label="How a figure reaches a page: the run store is harvested, the harvest recomputes corpus.json, a page names a key from it, and a key the corpus does not have fails the build. The sentence never contains the value."
+  >
+    <span class="box" aria-hidden="true">run store</span>
+    <span class="arrow" aria-hidden="true">→</span>
+    <span class="box" aria-hidden="true">harvest recomputes</span>
+    <span class="arrow" aria-hidden="true">→</span>
+    <span class="box mono" aria-hidden="true">corpus.json</span>
+    <span class="arrow" aria-hidden="true">→</span>
+    <span class="box" aria-hidden="true">a page names a key</span>
+    <span class="arrow" aria-hidden="true">→</span>
+    <span class="box" aria-hidden="true">a missing key <span class="red">fails</span> the build</span>
+  </div>
+
+  <figcaption>
+    The sentence never contains the value, so the value cannot drift from the
+    store it came out of.
+  </figcaption>
+</figure>
+
+<style>
+  .fig-evidence {
+    margin: 0;
+  }
+
+  .chain {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs);
+  }
+
+  .box {
+    border: var(--rule);
+    background: var(--mantle);
+    padding-block: var(--space-3xs);
+    padding-inline: var(--space-2xs);
+    font-size: var(--text-small);
+    color: var(--text);
+  }
+
+  .mono {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+  }
+
+  .red {
+    color: var(--red);
+  }
+
+  .arrow {
+    font-family: var(--mono);
+    color: var(--muted);
+  }
+
+  figcaption {
+    margin-block-start: var(--space-s);
+    font-size: var(--text-small);
+    color: var(--muted);
+    max-inline-size: var(--measure);
+  }
+</style>

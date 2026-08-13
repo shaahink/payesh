@@ -28,6 +28,9 @@ import { getEntry } from "astro:content";
 import { isVisible } from "@shaahink/sitekit/visibility";
 import EntryList from "../components/EntryList.astro";
 import EvidenceStrip from "../components/EvidenceStrip.astro";
+import FigureEvidence from "../components/FigureEvidence.astro";
+import FigureLoop from "../components/FigureLoop.astro";
+import FigureRun from "../components/FigureRun.astro";
 import Findings from "../components/Findings.astro";
 import RunCards from "../components/RunCards.astro";
 import TagList from "../components/TagList.astro";
@@ -37,7 +40,7 @@ import { allTags } from "../lib/tags.js";
 
 const page = await getEntry("homePage", "home");
 if (!page) throw new Error("src/content/pages/home.yaml is missing");
-const { meta, hero, evidence, findings, orient, spine, reading, runs, next, ways, notes } =
+const { meta, hero, evidence, findings, machine, orient, spine, reading, runs, next, ways, notes } =
   page.data;
 
 /* The same lists the section indexes show, read from the same place in the same
@@ -130,9 +133,32 @@ const doors = await Promise.all(
     {
       isVisible(page.data, "findings") && (
         <section id="findings">
+          <p class="secnum" aria-hidden="true">01</p>
           <h2 data-sk-edit="findings.title">{findings.title}</h2>
           <p data-sk-edit="findings.intro">{findings.intro}</p>
           <Findings items={items} path="findings.items" />
+        </section>
+      )
+    }
+
+    {/* The two drawings — the Face's own idiom carried onto the page: panes,
+        hairlines, mono labels, arrows that are characters. They sit before the
+        doors because a reader who can see where "session" and "gate" live
+        needs less courage to open a page that uses them. */}
+    {
+      isVisible(page.data, "machine") && (
+        <section id="machine">
+          <p class="secnum" aria-hidden="true">02</p>
+          <h2 data-sk-edit="machine.title">{machine.title}</h2>
+          <p data-sk-edit="machine.intro">{machine.intro}</p>
+          <div class="figures">
+            <FigureLoop />
+            <FigureRun />
+          </div>
+          <p class="more">
+            Every word in a box is defined, in reading order, in{" "}
+            <a href="/glossary/">the glossary</a>.
+          </p>
         </section>
       )
     }
@@ -145,6 +171,7 @@ const doors = await Promise.all(
     {
       isVisible(page.data, "orient") && (
         <section id="orient">
+          <p class="secnum" aria-hidden="true">03</p>
           <h2 data-sk-edit="orient.title">{orient.title}</h2>
           <p data-sk-edit="orient.intro">{orient.intro}</p>
           <ul class="doors">
@@ -169,28 +196,26 @@ const doors = await Promise.all(
               </li>
             ))}
           </ul>
-          <p class="more">
-            If the words themselves are new — agent, model, harness, gate —{" "}
-            <a href="/glossary/">the glossary</a> defines every one of them in
-            plain language.
-          </p>
         </section>
       )
     }
 
     <section id="spine">
+      <p class="secnum" aria-hidden="true">04</p>
       <h2 data-sk-edit="spine.title">{spine.title}</h2>
       <p data-sk-edit="spine.intro">{spine.intro}</p>
       <EntryList items={concepts} ordinalLabel="Concept" />
     </section>
 
     <section id="reading">
+      <p class="secnum" aria-hidden="true">05</p>
       <h2 data-sk-edit="reading.title">{reading.title}</h2>
       <p data-sk-edit="reading.intro">{reading.intro}</p>
       <EntryList items={articles} ordinalLabel="Article" />
     </section>
 
     <section id="runs">
+      <p class="secnum" aria-hidden="true">06</p>
       <h2 data-sk-edit="runs.title">{runs.title}</h2>
       <p data-sk-edit="runs.intro">{runs.intro}</p>
       <RunCards reports={reports} />
@@ -204,6 +229,7 @@ const doors = await Promise.all(
     {
       isVisible(page.data, "next") && (
         <section id="next">
+          <p class="secnum" aria-hidden="true">07</p>
           <h2 data-sk-edit="next.title">{next.title}</h2>
           {next.body.map((para, index) => (
             <p data-sk-edit={`next.body[${index}]`}>{para}</p>
@@ -216,6 +242,7 @@ const doors = await Promise.all(
     }
 
     <section id="ways">
+      <p class="secnum" aria-hidden="true">08</p>
       <h2 data-sk-edit="ways.title">{ways.title}</h2>
       <p data-sk-edit="ways.intro">{ways.intro}</p>
       <TagList tags={allTags()} label="" />
@@ -237,8 +264,12 @@ const doors = await Promise.all(
     {
       isVisible(page.data, "notes") && (
         <section id="notes">
+          <p class="secnum" aria-hidden="true">09</p>
           <h2 data-sk-edit="notes.title">{notes.title}</h2>
           <p data-sk-edit="notes.body">{notes.body}</p>
+          <div class="figures">
+            <FigureEvidence />
+          </div>
         </section>
       )
     }
@@ -303,6 +334,23 @@ const doors = await Promise.all(
 
   .more {
     margin-block-start: var(--space-s);
+  }
+
+  /* The Face numbers its tabs; the page numbers its sections the same way.
+     Mono because a position in a sequence is the one kind of number the
+     arrangement is allowed to write — the EntryList ordinals' own rule. */
+  .secnum {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-block-end: var(--space-2xs);
+  }
+
+  .figures {
+    margin-block-start: var(--space-l);
+    display: grid;
+    gap: var(--space-xl);
   }
 
   /* The doors are a band, like the evidence strip and for the same reason:
