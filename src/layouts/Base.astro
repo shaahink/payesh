@@ -39,11 +39,6 @@ interface Props {
      entries rather than a wrong guess about which one to write to. */
   editCollection?: string;
   editEntry?: string;
-  /* Names the page on <body data-page> so tokens.css can dress one page
-     differently — today only the front page ("home"), which wears ink on
-     paper while every inner page keeps the Face's two schemes. A page that
-     omits it gets no attribute and no override, which is the right default. */
-  pageId?: string;
 }
 
 const {
@@ -54,8 +49,7 @@ const {
   ogImage,
   canonical,
   editCollection,
-  editEntry,
-  pageId
+  editEntry
 } = Astro.props;
 
 /* Content states paths; the head publishes absolute URLs resolved against
@@ -117,12 +111,17 @@ const ogImageUrl = absolute(Astro.site!, ogImage ?? ogCardFor(canonical));
         guide to agentic engineering · Payesh" is the site's name twice. */}
     <title>{title === SITE_NAME || title.includes(SITE_NAME) ? title : `${title} · ${SITE_NAME}`}</title>
 
-    {/* The two faces, built same-origin. Both preload: the sans carries the
-        body from the first paint and the mono carries the wordmark and the
-        evidence figures beside it. astro.config's `fonts` block assembles
-        each cssVariable; nothing here or in the CSS names a family. */}
+    {/* The three faces every page wears, built same-origin. All preload: the
+        sans carries the body from the first paint, the mono carries the
+        wordmark and the evidence figures beside it, and the display serif
+        carries every heading — site-wide since the print dress was unified,
+        not the cover's alone. astro.config's `fonts` block assembles each
+        cssVariable; nothing here or in the CSS names a family. The Farsi face
+        stays the front page's own, injected through the head slot: it exists
+        for one word on the cover. */}
     <Font cssVariable="--font-sans" preload />
     <Font cssVariable="--font-mono" preload />
+    <Font cssVariable="--font-display" preload />
 
     {/* One SVG, both schemes: the mark carries its own prefers-color-scheme
         media query, which is the only theming a favicon gets — it cannot read
@@ -165,7 +164,6 @@ const ogImageUrl = absolute(Astro.site!, ogImage ?? ogCardFor(canonical));
   </head>
 
   <body
-    data-page={pageId}
     data-sk-collection={editCollection}
     data-sk-entry={editEntry}
     data-sk-editor-path="/edit"

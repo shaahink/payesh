@@ -2,9 +2,11 @@
 
    Conductor refuses to ship a terminal scheme whose roles cannot be read on
    its own base — `face-go/internal/widgets/theme_test.go:44`, and the
-   thresholds below are that file's, copied with its reasoning. This site
-   wears the same two schemes, so it inherits the same bar. If it did not, the
-   site could publish a theme the tool it documents would reject.
+   thresholds below are that file's, copied with its reasoning. Since
+   2026-08-13 the site wears its own two print schemes — soot and paper —
+   rather than the Face's mocha and latte, but it keeps the Face's bar: the
+   status hues are still the Face's values, and a site about a tool that
+   refuses illegible themes should not publish one the tool would reject.
 
    What is tested is `src/styles/tokens.css` itself, parsed, not a second copy
    of the palette living in this file. A test that re-declares the colours it
@@ -112,9 +114,9 @@ function mixSrgb(aHex, bHex, percentOfA) {
 const css = readFileSync(TOKENS, "utf8");
 const blocks = parseSchemes(css);
 
-test("tokens.css declares both of the Face's default schemes", () => {
+test("tokens.css declares both of the site's schemes", () => {
   const names = new Set(blocks.map((b) => b.name));
-  assert.deepEqual([...names].sort(), ["latte", "mocha"]);
+  assert.deepEqual([...names].sort(), ["paper", "soot"]);
 });
 
 test("every block declares all sixteen roles, and no role the Face does not have", () => {
@@ -127,15 +129,15 @@ test("every block declares all sixteen roles, and no role the Face does not have
   }
 });
 
-/* Latte is declared twice — once under prefers-color-scheme, once under the
+/* Paper is declared twice — once under prefers-color-scheme, once under the
    toggle's explicit attribute — because CSS cannot express "either of these"
    in one rule. Duplication drifts, so the drift is what is tested. */
-test("the repeated latte blocks are identical", () => {
-  const latte = blocks.filter((b) => b.name === "latte");
-  assert.ok(latte.length >= 2, "expected latte to be declared for both the media query and the toggle");
-  for (const block of latte.slice(1)) {
-    assert.deepEqual(block.roles, latte[0].roles, "the latte blocks have drifted apart");
-    assert.equal(block.mutedMix, latte[0].mutedMix, "the latte blocks' --muted mixes have drifted apart");
+test("the repeated paper blocks are identical", () => {
+  const paper = blocks.filter((b) => b.name === "paper");
+  assert.ok(paper.length >= 2, "expected paper to be declared for both the media query and the toggle");
+  for (const block of paper.slice(1)) {
+    assert.deepEqual(block.roles, paper[0].roles, "the paper blocks have drifted apart");
+    assert.equal(block.mutedMix, paper[0].mutedMix, "the paper blocks' --muted mixes have drifted apart");
   }
 });
 
@@ -170,14 +172,14 @@ test("the quiet ladder is ordered: pending recedes furthest", () => {
    that motivated the bar must fail it, and the shipped replacement must pass.
    theme_test.go:94. */
 test("the bar bites: stock Catppuccin Latte yellow fails it, the shipped yellow passes", () => {
-  const latte = blocks.find((b) => b.name === "latte");
-  const stock = contrast(STOCK_LATTE.yellow, latte.roles.base);
+  const paper = blocks.find((b) => b.name === "paper");
+  const stock = contrast(STOCK_LATTE.yellow, paper.roles.base);
   assert.ok(
     stock < MIN_SEMANTIC,
-    `stock Latte yellow is ${stock.toFixed(2)}:1 on latte base — if this now passes, the bar has been weakened`
+    `stock Latte yellow is ${stock.toFixed(2)}:1 on paper base — if this now passes, the bar has been weakened`
   );
-  const shipped = contrast(latte.roles.yellow, latte.roles.base);
-  assert.ok(shipped >= MIN_SEMANTIC, `shipped latte yellow is ${shipped.toFixed(2)}:1, want >= ${MIN_SEMANTIC}:1`);
+  const shipped = contrast(paper.roles.yellow, paper.roles.base);
+  assert.ok(shipped >= MIN_SEMANTIC, `shipped paper yellow is ${shipped.toFixed(2)}:1, want >= ${MIN_SEMANTIC}:1`);
 });
 
 /* ── the derived muted token ───────────────────────────────────────────────
@@ -247,16 +249,18 @@ test("the bar bites: --overlay, which used to carry this text, fails it", () => 
   );
 });
 
-/* Provenance. If latte were re-copied from the Catppuccin website — the one
-   mistake this site's brief calls out by name — these five roles would match
-   stock again and the page would go quietly unreadable in light mode. */
-test("latte's five darkened roles are the Face's values, not upstream Catppuccin's", () => {
-  const latte = blocks.find((b) => b.name === "latte");
+/* Provenance. Paper's status hues are latte's darkened set, inherited when
+   the print dress went site-wide. If they were ever re-copied from the
+   Catppuccin website — the one mistake this site's brief calls out by name —
+   these five roles would match stock again and the page would go quietly
+   unreadable in light mode. */
+test("paper's five darkened status roles are the Face's values, not upstream Catppuccin's", () => {
+  const paper = blocks.find((b) => b.name === "paper");
   for (const [role, stockHex] of Object.entries(STOCK_LATTE)) {
     assert.notEqual(
-      latte.roles[role],
+      paper.roles[role],
       stockHex,
-      `latte ${role} is stock Catppuccin ${stockHex} — take it from face-go/internal/widgets/style.go instead`
+      `paper ${role} is stock Catppuccin ${stockHex} — take it from face-go/internal/widgets/style.go instead`
     );
   }
 });

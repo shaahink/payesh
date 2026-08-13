@@ -10,8 +10,8 @@
    And two this site adds, because it is a site about traceable claims and
    should be able to survive its own gate:
 
-   - Every colour is a role from tokens.css, never a hex. `#CBA6F7` is right
-     in mocha and wrong in latte.
+   - Every colour is a role from tokens.css, never a hex. `#b02f10` is right
+     in paper and wrong in soot.
    - Every size is a step from type.css, never a literal.
 
    test/tokens.test.mjs enforces both, and `npm run check` runs it. */
@@ -61,6 +61,20 @@ h4 {
   font-weight: var(--weight-bold);
   line-height: var(--leading-tight);
   text-wrap: balance;
+}
+
+/* The display serif carries every heading, site-wide. It was the cover's
+   alone until 2026-08-13, when the owner asked for one unified dress; now the
+   same face that opens the site heads its pages, and the sans stays for what
+   it was chosen for — long-form body reading. Weight is the medium: Fraunces
+   ships 400 and 600 here, and a synthetic 700 is exactly what
+   `font-synthesis-weight: none` exists to refuse. h4 stays in the sans — at
+   body size a serif heading reads as a first line, not a heading. */
+h1,
+h2,
+h3 {
+  font-family: var(--display);
+  font-weight: var(--weight-medium);
 }
 
 h1 {

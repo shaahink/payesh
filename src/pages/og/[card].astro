@@ -23,10 +23,10 @@
      manifest written when the PNGs were taken, so a corpus that moves under a
      card is caught before the stale picture is shared again.
 
-   Mocha, not latte: a card is one image and cannot follow a reader's scheme,
-   and mocha is what `conductor-face` shows out of the box (SPEC Part II). The
-   `data-theme="dark"` below pins it, because a renderer on a machine set to
-   light would otherwise be served latte through `prefers-color-scheme`.
+   Soot, not paper: a card is one image and cannot follow a reader's scheme,
+   and soot is the site's default. The `data-theme="dark"` below pins it,
+   because a renderer on a machine set to light would otherwise be served
+   paper through `prefers-color-scheme`.
 
    Not for readers: `/og/` is disallowed in robots.txt and appears in no
    sitemap. It is a rendering surface, and the thing that gets shared is the
@@ -112,6 +112,7 @@ const host = new URL(Astro.site!).host;
     <meta name="robots" content="noindex" />
     <Font cssVariable="--font-sans" preload />
     <Font cssVariable="--font-mono" preload />
+    <Font cssVariable="--font-display" preload />
   </head>
 
   <body>
@@ -199,10 +200,14 @@ const host = new URL(Astro.site!).host;
     gap: var(--space-s);
   }
 
+  /* The display serif, like every heading on the site — the card is the
+     site's face in a feed, and it should wear the site's own dress. Medium,
+     not bold: Fraunces ships 400 and 600 here. */
   h1 {
     margin: 0;
+    font-family: var(--display);
     font-size: var(--text-card-title);
-    font-weight: var(--weight-bold);
+    font-weight: var(--weight-medium);
     line-height: var(--leading-tight);
     letter-spacing: -0.02em;
     /* The card is wider than a reading column and the title is a headline, so

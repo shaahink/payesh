@@ -9,24 +9,26 @@
    tells a reader what *subjects* exist without telling them a single thing that
    was learned. A stranger reads it and leaves knowing nothing.
 
-   So the order is: what this is and who ran it, the corpus in numbers, then six
-   findings — the things the month actually turned up, each with the figure
-   behind it and a route to where it is argued. Then three doors, because the
-   findings serve the reader who wants to know what the record said and the
-   doors serve the one who arrived cold and wants to know where people like
-   them start. Only after that does the page become a contents page, and by
-   then the reader has a reason to use it. Near the foot, the one section
-   allowed to face forward — labelled as intent, detailed on /roadmap/.
+   So the order is the one the owner set on 2026-08-13, written for the reader
+   who has never heard of Conductor: the cover says what this is and who ran
+   it, the machine is drawn before it is named, then the ten concepts — the
+   spine — then where the work goes next, then three doors for the reader
+   wondering where people like them start, then the four longer pieces. The
+   record comes last and on purpose: the corpus in numbers, the six findings
+   and the three runs in depth are the site's evidence, and evidence belongs
+   after the reader knows what it is evidence of. A stranger who leaves at the
+   fold leaves knowing what Conductor is; one who reaches the foot leaves
+   knowing what a month of it actually did.
 
-   The dress is the page's own (2026-08-13, the owner asked for a front page
-   that looks like nothing inside): ink on paper — tokens.css's soot and paper
-   blocks, scoped to `data-page="home"` — a display serif for the cover and the
-   section heads, and پایش set large in its own script. The inner pages keep
-   the Face's two schemes untouched; this page is the jacket around them, the
-   way a field guide's cover is cloth while its plates are paper. What does NOT
-   change with the dress: mono still means "recomputed from a run store" and
-   nothing else, the semantic colours still mark status only, and every rule is
-   still a rule rather than a shadow.
+   The dress was the page's own — ink on paper, scoped to the cover like a
+   jacket — until 2026-08-13, when the owner asked for one unified look and
+   the jacket became the suit: soot and paper are now the whole site's schemes
+   (tokens.css) and the display serif carries every heading (styles.css). What
+   this page keeps for itself: the heavy ink rules, the vermilion section
+   numbers in the serif's italic, the contents rail, and پایش set large in its
+   own script. What does NOT change with the dress: mono still means
+   "recomputed from a run store" and nothing else, the semantic colours still
+   mark status only, and every rule is still a rule rather than a shadow.
 
    Every section below reads its list from the collections rather than from a
    copy kept here. Ten titles typed onto the front page are ten titles that go
@@ -112,13 +114,13 @@ const doors = await Promise.all(
    the rail cannot drift from the page it lists. */
 type RailEntry = { no: string; href: string; label: string };
 const rail: RailEntry[] = [];
-if (isVisible(page.data, "findings")) rail.push({ no: "01", href: "#findings", label: findings.title });
-if (isVisible(page.data, "machine")) rail.push({ no: "02", href: "#machine", label: machine.title });
-if (isVisible(page.data, "orient")) rail.push({ no: "03", href: "#orient", label: orient.title });
-rail.push({ no: "04", href: "#spine", label: spine.title });
+if (isVisible(page.data, "machine")) rail.push({ no: "01", href: "#machine", label: machine.title });
+rail.push({ no: "02", href: "#spine", label: spine.title });
+if (isVisible(page.data, "next")) rail.push({ no: "03", href: "#next", label: next.title });
+if (isVisible(page.data, "orient")) rail.push({ no: "04", href: "#orient", label: orient.title });
 rail.push({ no: "05", href: "#reading", label: reading.title });
-rail.push({ no: "06", href: "#runs", label: runs.title });
-if (isVisible(page.data, "next")) rail.push({ no: "07", href: "#next", label: next.title });
+if (isVisible(page.data, "findings")) rail.push({ no: "06", href: "#findings", label: findings.title });
+rail.push({ no: "07", href: "#runs", label: runs.title });
 rail.push({ no: "08", href: "#ways", label: ways.title });
 if (isVisible(page.data, "notes")) rail.push({ no: "09", href: "#notes", label: notes.title });
 ---
@@ -132,12 +134,12 @@ if (isVisible(page.data, "notes")) rail.push({ no: "09", href: "#notes", label: 
   canonical={meta.canonical}
   editCollection="homePage"
   editEntry="home"
-  pageId="home"
 >
-  {/* The cover's two faces, injected through the head slot so the twenty inner
-      pages download nothing for them. Both preloaded: both paint above the
-      fold — the headline immediately, the mark beside it. */}
-  <Font cssVariable="--font-display" preload slot="head" />
+  {/* The cover's one face of its own, injected through the head slot so the
+      twenty inner pages download nothing for it: Vazirmatn exists for پایش
+      and nothing else. Preloaded — the mark paints above the fold. The
+      display serif is no longer injected here; since the print dress went
+      site-wide, Base.astro carries it for every page. */}
   <Font cssVariable="--font-farsi" preload slot="head" />
 
   <main id="main" class="page wide home">
@@ -188,32 +190,15 @@ if (isVisible(page.data, "notes")) rail.push({ no: "09", href: "#notes", label: 
       </nav>
     </header>
 
-    {/* SPEC Part VII requirement 2: a cold reader has to be able to see, above
-        the fold, what makes this different from every other page on the topic
-        — and that is the numbers, not the sentence above them. Inline rather
-        than the foot variant for the same reason: at the foot it would be a
-        citation, and here it is the argument. */}
-    <EvidenceStrip where="pages/home.yaml" evidence={evidence} variant="inline" />
-
-    {
-      isVisible(page.data, "findings") && (
-        <section id="findings">
-          <p class="secnum" aria-hidden="true">01</p>
-          <h2 data-sk-edit="findings.title">{findings.title}</h2>
-          <p data-sk-edit="findings.intro">{findings.intro}</p>
-          <Findings items={items} path="findings.items" />
-        </section>
-      )
-    }
-
     {/* The two drawings — the Face's own idiom carried onto the page: panes,
-        hairlines, mono labels, arrows that are characters. They sit before the
-        doors because a reader who can see where "session" and "gate" live
-        needs less courage to open a page that uses them. */}
+        hairlines, mono labels, arrows that are characters. They open the page
+        because the reader this order serves has never heard of Conductor: a
+        reader who can see where "session" and "gate" live needs less courage
+        for the ten concepts that use them. */}
     {
       isVisible(page.data, "machine") && (
         <section id="machine">
-          <p class="secnum" aria-hidden="true">02</p>
+          <p class="secnum" aria-hidden="true">01</p>
           <h2 data-sk-edit="machine.title">{machine.title}</h2>
           <p data-sk-edit="machine.intro">{machine.intro}</p>
           <div class="figures">
@@ -228,15 +213,42 @@ if (isVisible(page.data, "notes")) rail.push({ no: "09", href: "#notes", label: 
       )
     }
 
-    {/* The doors: a band, like the evidence strip, because it is a different
-        kind of thing from the sections around it — furniture rather than
-        writing — and the mantle says so without a box or a shadow. The
-        glossary line under the grid is arrangement, not content, same as
-        "All the runs, with their figures" below. */}
+    <section id="spine">
+      <p class="secnum" aria-hidden="true">02</p>
+      <h2 data-sk-edit="spine.title">{spine.title}</h2>
+      <p data-sk-edit="spine.intro">{spine.intro}</p>
+      <EntryList items={concepts} ordinalLabel="Concept" />
+    </section>
+
+    {/* The one section allowed to face forward, and it faces forward early:
+        the owner wants the direction visible beside the concepts, not filed
+        at the foot. Its copy carries its own caveat — intent, not measurement
+        — and the detail lives on /roadmap/, where every item names what it
+        waits on. */}
+    {
+      isVisible(page.data, "next") && (
+        <section id="next">
+          <p class="secnum" aria-hidden="true">03</p>
+          <h2 data-sk-edit="next.title">{next.title}</h2>
+          {next.body.map((para, index) => (
+            <p data-sk-edit={`next.body[${index}]`}>{para}</p>
+          ))}
+          <p class="more">
+            <a href="/roadmap/">The roadmap, with what each item waits on</a>
+          </p>
+        </section>
+      )
+    }
+
+    {/* The doors: a band, because it is a different kind of thing from the
+        sections around it — furniture rather than writing — and the mantle
+        says so without a box or a shadow. The glossary line under the grid is
+        arrangement, not content, same as "All the runs, with their figures"
+        below. */}
     {
       isVisible(page.data, "orient") && (
         <section id="orient">
-          <p class="secnum" aria-hidden="true">03</p>
+          <p class="secnum" aria-hidden="true">04</p>
           <h2 data-sk-edit="orient.title">{orient.title}</h2>
           <p data-sk-edit="orient.intro">{orient.intro}</p>
           <ul class="doors">
@@ -265,13 +277,6 @@ if (isVisible(page.data, "notes")) rail.push({ no: "09", href: "#notes", label: 
       )
     }
 
-    <section id="spine">
-      <p class="secnum" aria-hidden="true">04</p>
-      <h2 data-sk-edit="spine.title">{spine.title}</h2>
-      <p data-sk-edit="spine.intro">{spine.intro}</p>
-      <EntryList items={concepts} ordinalLabel="Concept" />
-    </section>
-
     <section id="reading">
       <p class="secnum" aria-hidden="true">05</p>
       <h2 data-sk-edit="reading.title">{reading.title}</h2>
@@ -279,32 +284,36 @@ if (isVisible(page.data, "notes")) rail.push({ no: "09", href: "#notes", label: 
       <EntryList items={articles} ordinalLabel="Article" />
     </section>
 
+    {/* The record, closing the page — the owner's 2026-08-13 order. The strip
+        used to open the page (SPEC Part VII wanted the numbers above the
+        fold); it now opens the record instead, because the numbers are the
+        report's own first line, and a reader who has just met Conductor five
+        sections ago finally knows what they are numbers *of*. Inline rather
+        than the foot variant for the same reason as before: here it is the
+        argument, not a citation. Unguarded, outside the findings toggle — the
+        corpus figures stay on the front page even on a day the findings are
+        switched off. */}
+    <EvidenceStrip where="pages/home.yaml" evidence={evidence} variant="inline" />
+
+    {
+      isVisible(page.data, "findings") && (
+        <section id="findings">
+          <p class="secnum" aria-hidden="true">06</p>
+          <h2 data-sk-edit="findings.title">{findings.title}</h2>
+          <p data-sk-edit="findings.intro">{findings.intro}</p>
+          <Findings items={items} path="findings.items" />
+        </section>
+      )
+    }
+
     <section id="runs">
-      <p class="secnum" aria-hidden="true">06</p>
+      <p class="secnum" aria-hidden="true">07</p>
       <h2 data-sk-edit="runs.title">{runs.title}</h2>
       <p data-sk-edit="runs.intro">{runs.intro}</p>
       <RunCards reports={reports} />
       <p class="corpus" data-sk-edit="runs.corpus">{runs.corpus}</p>
       <p class="more"><a href="/runs/">All the runs, with their figures</a></p>
     </section>
-
-    {/* The one section allowed to face forward. Its copy carries its own
-        caveat — intent, not measurement — and the detail lives on /roadmap/,
-        where every item names what it waits on. */}
-    {
-      isVisible(page.data, "next") && (
-        <section id="next">
-          <p class="secnum" aria-hidden="true">07</p>
-          <h2 data-sk-edit="next.title">{next.title}</h2>
-          {next.body.map((para, index) => (
-            <p data-sk-edit={`next.body[${index}]`}>{para}</p>
-          ))}
-          <p class="more">
-            <a href="/roadmap/">The roadmap, with what each item waits on</a>
-          </p>
-        </section>
-      )
-    }
 
     <section id="ways">
       <p class="secnum" aria-hidden="true">08</p>
@@ -377,12 +386,11 @@ if (isVisible(page.data, "notes")) rail.push({ no: "09", href: "#notes", label: 
     }
   }
 
-  /* The headline, in the display serif — the one place besides the section
-     heads the face appears. Capped in ch of its own size so two lines break
-     where a cover's lines should, not where the grid happens to end. */
+  /* The headline. The display serif comes from the global heading rule now;
+     what is the cover's own is the size — a branch of the scale, not a bigger
+     h1 — and the cap in ch of that size, so two lines break where a cover's
+     lines should, not where the grid happens to end. */
   .cover h1 {
-    font-family: var(--display);
-    font-weight: var(--weight-medium);
     font-size: var(--text-cover);
     line-height: var(--leading-tight);
     letter-spacing: -0.02em;
@@ -519,9 +527,6 @@ if (isVisible(page.data, "notes")) rail.push({ no: "09", href: "#notes", label: 
   }
 
   .home section > h2 {
-    font-family: var(--display);
-    font-weight: var(--weight-medium);
-    letter-spacing: -0.01em;
     inline-size: min(100%, var(--measure));
   }
 
@@ -626,6 +631,16 @@ if (isVisible(page.data, "notes")) rail.push({ no: "09", href: "#notes", label: 
     text-decoration-thickness: 2px;
   }
 
+  /* The record's opening line of figures sits inside the page's rhythm the
+     way the sections do: the same air above it, because it now follows a
+     whole section rather than the cover, and none below — the findings
+     section that closes over it brings its own. The strip's own
+     `.evidence.inline` margin is written at two classes, so this is stated at
+     three and with the child combinator rather than left to source order. */
+  .home > :global(.evidence.inline) {
+    margin-block: var(--space-3xl) 0;
+  }
+
   #ways :global(.tags) {
     margin-block-start: var(--space-m);
   }
@@ -653,15 +668,7 @@ if (isVisible(page.data, "notes")) rail.push({ no: "09", href: "#notes", label: 
     }
   }
 
-  /* On this page the shared lists dress to match the cover: titles in the
-     display serif, ordinals in the vermilion. Inner index pages keep the sans
-     — this is the jacket, not a new rule. */
-  .home :global(.entries .entry-title) {
-    font-family: var(--display);
-    font-weight: var(--weight-medium);
-  }
-
-  .home :global(.entries .ordinal) {
-    color: var(--accent);
-  }
+  /* The shared lists' dress — serif titles, vermilion ordinals — used to be
+     re-stated here as the jacket's own; it lives in EntryList itself now that
+     the whole site wears it. */
 </style>

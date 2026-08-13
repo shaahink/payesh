@@ -86,11 +86,14 @@ const numbered = items.some((item) => item.order !== undefined);
   }
 
   /* Mono, because the number is a position in a sequence rather than a word —
-     the same reason every other machine fact on this site is mono. */
+     the same reason every other machine fact on this site is mono. The accent,
+     because in the print dress the accent's job is to mark what a scanning eye
+     should catch — numbers, questions, destinations — and the ordinals are the
+     spine's own numbering. */
   .ordinal {
     font-family: var(--mono);
     font-size: var(--text-small);
-    color: var(--muted);
+    color: var(--accent);
   }
 
   /* The section label on a mixed list is the site's `.eyebrow` — this used to
@@ -105,9 +108,12 @@ const numbered = items.some((item) => item.order !== undefined);
     margin-block-end: var(--space-3xs);
   }
 
+  /* The display serif, like every heading on the site: an entry's title is
+     the heading of the page it opens, worn a size early. */
   .entry-title {
+    font-family: var(--display);
     font-size: var(--text-h3);
-    font-weight: var(--weight-bold);
+    font-weight: var(--weight-medium);
   }
 
   .entries a:hover .entry-title {

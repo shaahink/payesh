@@ -1,22 +1,28 @@
-/* The sixteen colour roles, in both of Conductor's default schemes.
+/* The sixteen colour roles, in the site's two schemes: soot and paper.
 
-   These are not "a palette inspired by Catppuccin". They are the exact values
-   Conductor's terminal Face ships, lifted from its theme registry —
-   `face-go/internal/widgets/style.go`, mocha at :58 and latte at :84 — so the
-   site and the tool are visibly one thing. (The plan's brief says `color.go`;
-   that file holds only the Hex/Luminance helpers. The palettes are in
-   style.go.)
+   Until 2026-08-13 these blocks carried the Face's mocha and latte, and the
+   front page wore a scoped "jacket" of ink on paper. The owner then asked for
+   one unified dress, so the jacket became the suit: the print palette that was
+   `body[data-page="home"]` is now the whole site — soot when the site is dark,
+   paper when it is light — and the mocha/latte blocks are gone rather than
+   shadowed, because a palette the tests verify and the pages never paint is a
+   test lying about the site.
 
-   **Latte is not stock Catppuccin Latte.** Green, yellow, peach, teal and sky
-   are darkened in-hue, because Catppuccin tunes those for syntax highlighting
-   where ~2.5:1 on a near-white base is accepted, and this Face paints them as
-   status text and as a fill with Base on top. Stock Latte's yellow gives
-   2.3:1 there — an invisible search match. Take latte from the Face, never
-   from the Catppuccin website. `test/contrast.test.mjs` proves the difference
-   rather than trusting this comment.
+   What the print dress did NOT take from the Face:
 
-   **Name the role, never the hex.** `#CBA6F7` is correct in mocha and wrong in
-   latte. Every rule in this site's CSS reads `var(--accent)`; the only hex
+   - The seven status hues (blue, green, red, yellow, peach, teal, sky) are
+     still the Face's own — mocha's in soot, the darkened latte set in paper —
+     because status keeps its meaning across the site and the two drawings.
+     **Paper's five darkened roles are the Face's values, never stock
+     Catppuccin's**: stock tunes them for syntax highlighting at ~2.5:1 on a
+     near-white base, and this site paints them as status text. The provenance
+     test still pins that.
+   - The legibility bars are still the Face's (`theme_test.go`), enforced by
+     test/contrast.test.mjs against this file as parsed, plus the web's own
+     4.5:1 bar on `--muted`.
+
+   **Name the role, never the hex.** `#b02f10` is correct in paper and wrong in
+   soot. Every rule in this site's CSS reads `var(--accent)`; the only hex
    literals in the repo are the two tables below.
 
    The roles, and what each one is for:
@@ -24,7 +30,7 @@
      base       the page                 surface    hairline rules, panels
      mantle     bars that recede         selection  a selected row
      text       body copy                overlay    muted text
-     accent     the current thing        blue       links, references
+     accent     the current thing        blue       a status hue, not a link
      green      success                  red        failure
      yellow     attention                peach      a warning that is not red
      teal       a second success hue     sky        information
@@ -32,116 +38,34 @@
 
    Semantic colours are for status only, never decoration (SPEC Part II).
 
-   **The seventeenth token is not a role.** Three of the sixteen recede on
-   purpose: the Face holds `--overlay` to 3:1 and the quiet ladder —
-   `--pending`, `--skipped` — to 1.5:1. Both bars are right for a terminal
-   frame. Neither is the bar for a sentence on a web page, which is 4.5:1
-   below 24px, and this site had spent all three on things a reader is meant
-   to read. Measured on the built site: `--overlay` 3.36:1 on base and 3.59:1
-   on the top bar's mantle, `--skipped` 4.44:1, `--pending` 2.46:1 — on
-   standfirsts, nav links, captions, the "also known as" line, the denominator
-   under a rate, the harvest timestamp.
-
-   The fix is not to move a Face role; the Face is right about its own frames.
-   It is to stop using them for reading text, and to have one token for the
-   layer they were standing in for. `--muted` is `--text` mixed toward
-   `--base`, so it stays inside the scheme by construction and cannot be a hex
-   that is correct in one and wrong in the other. The three quiet roles keep
-   rules, borders, fills and card-size type; `test/tokens.test.mjs` fails the
-   build if any of them is set as a colour anywhere else, and
-   `test/contrast.test.mjs` recomputes the mix and holds it to 4.5:1 against
-   both `--base` and `--mantle`.
-
-   This does cost the page a layer. There were four greys for reading text and
-   there are now two, because a layer nobody can read is not a layer — and a
-   second muted token four hundredths of a ratio above the first would be a
-   distinction only a spreadsheet could see.
-
-   The two percentages differ because the two palettes do: mocha's text is
-   11.34:1 on its base and latte's is 7.06:1, so the same mix that mutes mocha
-   visibly would leave latte illegible. One number would have been tidier and
-   wrong for one of the two schemes.
+   **The seventeenth token is not a role.** The quiet three — `--overlay`,
+   `--pending`, `--skipped` — are held to frame bars (3:1 and 1.5:1), which is
+   right for rules, borders and fills and wrong for a sentence under 24px.
+   Reading text that recedes is `--muted`: `--text` mixed toward `--base`, so
+   it stays inside the scheme by construction. The two mix percentages differ
+   because the two palettes do — soot's text is 14.7:1 on its base and paper's
+   15.1:1, but their mantles sit differently, and each mix is chosen so the
+   result clears 4.5:1 on both surfaces muted text is ever set on.
+   test/tokens.test.mjs fails the build if a quiet role is spent as text
+   anywhere but the 24px social cards; test/contrast.test.mjs recomputes the
+   mixes and holds them to the bar.
 
    Each palette block opens with a bang-comment naming its scheme; that marker
-   is what test/contrast.test.mjs parses. Do not remove it, and keep each
-   block's declarations in role order. */
+   is what test/contrast.test.mjs parses — a block runs from its marker to the
+   next marker or to the end of file. Keep each block's declarations in role
+   order, keep hex-shaped declarations out of comments inside marked blocks,
+   and keep the derived tokens at the foot free of hex literals. */
 
-/* ── the front page's dress: ink on paper ──────────────────────────────────
-   The cover wears print where the rest of the site wears the terminal. The
-   inner pages are the Face's own two schemes — that identity stands — and the
-   front page is the jacket around them: warm paper and ink with one vermilion,
-   in the same two-scheme structure (soot when the site is dark, paper when it
-   is light), scoped to `body[data-page="home"]`, which only Base.astro's
-   `pageId` prop ever sets. Nothing outside the front page resolves these.
-
-   Placement is load-bearing: these blocks sit ABOVE the first `scheme` marker
-   because test/contrast.test.mjs slices this file from each marker to the next
-   marker or to the end of file — a hex added after the final latte block would
-   be parsed as latte's and fail the sixteen-role check. Above the first marker
-   is the region the parser deliberately ignores. Keep it that way, and keep
-   bang-comments out of this section.
-
-   Only the reading roles are re-dressed. The semantic roles (green, red,
-   yellow, peach, teal, sky, blue) stay the Face's: they mark status in the two
-   drawings, and status keeps its meaning across the whole site. Measured with
-   the contrast test's own math on both new bases: text 14.7:1 and 15.1:1,
-   muted 4.7–5.2:1 on base and mantle, accent 5.1–6.6:1, and every inherited
-   semantic role ≥ 3.9:1 — all above the bars the marked blocks are held to.
-
-   --muted, --link and --current are re-derived here and not merely inherited,
-   because a custom property substitutes its var()s where it is *declared*: the
-   :root versions have already been mixed from mocha or latte by the time body
-   could inherit them. */
-body[data-page="home"] {
-  /* soot — the dark jacket */
+/* ── soot — the default: ink's own dark, a lamp-lit desk ─────────────────── */
+:root {
+  /*! scheme:soot */
   --base: #141110;
   --mantle: #1c1815;
   --surface: #38322a;
   --selection: #4a4238;
+  --overlay: #7b7365;
   --text: #ece3d1;
   --accent: #ff6a3c;
-  --muted: color-mix(in srgb, var(--text) 55%, var(--base));
-  --link: var(--accent);
-  --current: color-mix(in srgb, var(--accent) 70%, var(--text));
-}
-
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme="dark"]) body[data-page="home"] {
-    /* paper — the light jacket; duplicated below for the toggle, same as latte */
-    --base: #f5f0e6;
-    --mantle: #ece5d4;
-    --surface: #d8cfba;
-    --selection: #c8bda2;
-    --text: #211b10;
-    --accent: #b02f10;
-    --muted: color-mix(in srgb, var(--text) 66%, var(--base));
-    --link: var(--accent);
-    --current: color-mix(in srgb, var(--accent) 70%, var(--text));
-  }
-}
-
-:root[data-theme="light"] body[data-page="home"] {
-  --base: #f5f0e6;
-  --mantle: #ece5d4;
-  --surface: #d8cfba;
-  --selection: #c8bda2;
-  --text: #211b10;
-  --accent: #b02f10;
-  --muted: color-mix(in srgb, var(--text) 66%, var(--base));
-  --link: var(--accent);
-  --current: color-mix(in srgb, var(--accent) 70%, var(--text));
-}
-
-/* ── mocha — the default, and what `conductor-face` shows out of the box ─── */
-:root {
-  /*! scheme:mocha */
-  --base: #1e1e2e;
-  --mantle: #181825;
-  --surface: #313244;
-  --selection: #45475a;
-  --overlay: #6c7086;
-  --text: #cdd6f4;
-  --accent: #cba6f7;
   --blue: #89b4fa;
   --green: #a6e3a1;
   --red: #f38ba8;
@@ -149,31 +73,31 @@ body[data-page="home"] {
   --peach: #fab387;
   --teal: #94e2d5;
   --sky: #89dceb;
-  --pending: #585b70;
-  --skipped: #7f849c;
+  --pending: #57503f;
+  --skipped: #837a6b;
 
-  /* Derived, not a role — see the header. 60% lands 4.94:1 on base and 5.29:1
-     on mantle, against text's own 11.34:1, so it still reads as receding. */
-  --muted: color-mix(in srgb, var(--text) 60%, var(--base));
+  /* Derived, not a role — see the header. 55% lands 5.13:1 on base and 4.81:1
+     on mantle, against text's own 14.74:1, so it still reads as receding. */
+  --muted: color-mix(in srgb, var(--text) 55%, var(--base));
 
   color-scheme: dark;
 }
 
-/* ── latte — the light companion ───────────────────────────────────────────
+/* ── paper — the light scheme: warm stock and one vermilion ────────────────
    Two selectors, identical declarations: the visitor's system preference
    unless the toggle has said otherwise, and the toggle saying light. CSS
    cannot express "either of these" in one rule across a media query, so the
    block appears twice and the test fails if the two ever drift apart. */
 @media (prefers-color-scheme: light) {
   :root:not([data-theme="dark"]) {
-    /*! scheme:latte */
-    --base: #eff1f5;
-    --mantle: #e6e9ef;
-    --surface: #ccd0da;
-    --selection: #bcc0cc;
-    --overlay: #7c7f93;
-    --text: #4c4f69;
-    --accent: #8839ef;
+    /*! scheme:paper */
+    --base: #f5f0e6;
+    --mantle: #ece5d4;
+    --surface: #d8cfba;
+    --selection: #c8bda2;
+    --overlay: #837a68;
+    --text: #211b10;
+    --accent: #b02f10;
     --blue: #1e66f5;
     --green: #2f7d1f;
     --red: #d20f39;
@@ -181,28 +105,28 @@ body[data-page="home"] {
     --peach: #b54f08;
     --teal: #12787e;
     --sky: #0272a8;
-    --pending: #9ca0b0;
-    --skipped: #6c6f85;
+    --pending: #a1977f;
+    --skipped: #6f6757;
 
-    /* 85%, not 60%: latte's text is 7.06:1 on its own base where mocha's is
-       11.34:1, so there is far less room to spend. This lands 4.91:1 on base
-       and 4.56:1 on mantle — the tightest number on the site, and the reason
-       the test checks mantle and not only base. */
-    --muted: color-mix(in srgb, var(--text) 85%, var(--base));
+    /* 66%, not 55%: paper's mantle is closer to its base than soot's is, so
+       the mix spends more of the text to land 5.24:1 on base and 4.74:1 on
+       mantle — the tightest number on the site, and the reason the test
+       checks mantle and not only base. */
+    --muted: color-mix(in srgb, var(--text) 66%, var(--base));
 
     color-scheme: light;
   }
 }
 
 :root[data-theme="light"] {
-  /*! scheme:latte */
-  --base: #eff1f5;
-  --mantle: #e6e9ef;
-  --surface: #ccd0da;
-  --selection: #bcc0cc;
-  --overlay: #7c7f93;
-  --text: #4c4f69;
-  --accent: #8839ef;
+  /*! scheme:paper */
+  --base: #f5f0e6;
+  --mantle: #ece5d4;
+  --surface: #d8cfba;
+  --selection: #c8bda2;
+  --overlay: #837a68;
+  --text: #211b10;
+  --accent: #b02f10;
   --blue: #1e66f5;
   --green: #2f7d1f;
   --red: #d20f39;
@@ -210,28 +134,28 @@ body[data-page="home"] {
   --peach: #b54f08;
   --teal: #12787e;
   --sky: #0272a8;
-  --pending: #9ca0b0;
-  --skipped: #6c6f85;
+  --pending: #a1977f;
+  --skipped: #6f6757;
 
-  /* Kept identical to the media-query block above; the drift test now covers
+  /* Kept identical to the media-query block above; the drift test covers
      `--muted` too, so the two cannot come apart. */
-  --muted: color-mix(in srgb, var(--text) 85%, var(--base));
+  --muted: color-mix(in srgb, var(--text) 66%, var(--base));
 
   color-scheme: light;
 }
 
 /* ── two more derived roles, for the same reason as `--muted` ──────────────
-   A hue the Face holds to 3:1 is a hue that fails a sentence. Latte is where
-   it bit: `--blue` is 4.34:1 on base and `--accent` 4.45:1 on the top bar's
-   mantle, both of them link text at 18px, both a near miss and therefore a
-   miss. Mixed one fifth of the way toward `--text` they land 4.89:1 and
-   5.34:1 in latte and stay above 8:1 in mocha, and they are still recognisably
-   the blue and the accent.
+   In print's dress a link is set in the ink the printer mixed once and spent
+   carefully: the accent, not the blue — `--blue` is a status hue here, and in
+   paper it sits at 4.33:1, under the web's bar for link-sized text anyway.
+   The accent clears it in both schemes: 6.60:1 on soot's base and 5.67:1 on
+   paper's, 6.20:1 and 5.13:1 on the two mantles. `--current` leans the accent
+   toward the text so hover reads as "warmer", not "brighter", and lands above
+   7.9:1 in both schemes.
 
-   One percentage rather than two, and one rule rather than one per scheme: the
-   mix names roles, so it resolves against whichever palette has won. `--muted`
-   needs a block each only because its two percentages differ. */
+   One rule rather than one per scheme: the mix names roles, so it resolves
+   against whichever palette has won. */
 :root {
-  --link: color-mix(in srgb, var(--blue) 80%, var(--text));
-  --current: color-mix(in srgb, var(--accent) 80%, var(--text));
+  --link: var(--accent);
+  --current: color-mix(in srgb, var(--accent) 70%, var(--text));
 }
