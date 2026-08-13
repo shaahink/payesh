@@ -68,7 +68,7 @@ sections:
       - "Almost nobody measures either number. A ceiling gets set to something
         round, or to a multiple of the cheapest session the repo has ever run,
         which sounds like method and is a guess wearing method's clothes. The
-        strip below is what happened when the ledger was asked instead, across
+        strip above is what happened when the ledger was asked instead, across
         every window in this corpus where a ceiling could be measured at all."
       - "A window is one stretch of consecutive sessions under one ceiling. It
         matters because the interesting runs changed their ceiling halfway
@@ -87,8 +87,9 @@ sections:
         break sits well clear of the floor."
       - "Now read along to the median session that actually closed a checkpoint
         in that window. It is larger than the break point, and the strip prints
-        that comparison directly. It is below one. The engine was interrupting
-        the typical session that finished something, not the outsized one."
+        that comparison directly: the nudge against the median closer, as a
+        ratio, and the ratio is below one. The engine was interrupting the
+        typical session that finished something, not the outsized one."
       - "The rollover rate says what that cost. Close to a third of the sessions
         in that window ended by being killed at the ceiling. Not slowed, not
         trimmed. Killed, with their closing steps still ahead of them."
