@@ -4,54 +4,70 @@
 [![Gates](https://github.com/shaahink/payesh/actions/workflows/gates.yml/badge.svg)](https://github.com/shaahink/payesh/actions/workflows/gates.yml)
 [![Live](https://img.shields.io/badge/live-payesh.vercel.app-b02f10)](https://payesh.vercel.app)
 
-**A field guide to agentic engineering** — ten concepts the market is hiring for, each one worked
-end to end in a real orchestrator, with what it cost.
+The source for **<https://payesh.vercel.app>** (*پایش*, Persian for *monitoring*) — an Astro site,
+statically built, deployed on Vercel. Content is YAML validated by Zod; every figure on every page
+is read from a corpus recomputed from a run store, never typed into the prose.
 
-Live at **<https://payesh.vercel.app>**.
+| `/concepts` — ten entries, in reading order | a concept — the idea, what breaks without it, how Conductor does it, then the evidence |
+| --- | --- |
+| ![The concepts index in the light scheme: a numbered list of ten concepts, each with a one-line statement](docs/assets/concepts.png) | ![A concept page in the dark scheme: title, the market's other names for it, tags, an on-this-page rail, and the opening argument](docs/assets/concept-page.png) |
+
+| a report — the evidence strip, every number read from the corpus | `/runs` — the anonymised corpus, published as shapes of work |
+| --- | --- |
+| ![A run report in the light scheme, with an evidence panel showing sessions, checkpoints closed, spend, rollovers, soft breaks, approvals, bugs filed and ledger entries](docs/assets/run-report.png) | ![The runs index in the dark scheme: three reports, each titled and described by the shape of the work rather than the client](docs/assets/runs.png) |
+
+## The content
+
+| Section | What |
+| --- | --- |
+| `/` | The findings — each with the figure behind it and a route to where it is argued |
+| `/concepts` | Ten concepts — agentic engineering, multi-agent orchestration, context engineering, token economics, evals and gates, independent verification, durable execution, human-in-the-loop, agent observability, agent memory |
+| `/articles` | Four longer pieces, each carrying at least one number nobody else publishes |
+| `/runs` | Three anonymised reports from real autonomous runs — each run's dates, how long the machine actually worked, and how long it took on a calendar |
+| `/tags` | Eight cross-cutting subjects, each gathering the concepts, articles and reports that share it |
+| `/glossary` | The terms, defined once |
+| `/roadmap` | What is built and what is intended, labelled as intent |
+| `/edit` | The editor route — see [`CMS.md`](CMS.md) |
+
+### The content model
+
+One file per entry, YAML, and the file name is the entry id — so `context-engineering.yaml` is both
+the segment its URL ends in and the name another concept's `readNext` refers to.
+
+```
+src/content/
+  pages/home.yaml         the front page's findings
+  concepts/*.yaml         10   src/content/schema.ts   the Zod schemas
+  articles/*.yaml          4   src/content.config.ts   the loaders
+  reports/*.yaml           3
+  sections/*.yaml          3   the three index pages' own copy
+```
+
+The schemas and the loaders are deliberately in separate files: `astro:content` and `astro/loaders`
+only exist inside Astro's build, so keeping the schemas on Zod alone lets the editor's Vercel
+function validate against the very same definitions the build does. Adding a collection touches
+three places — the schema, the loader, and the `editable` map — and `test/collections.test.mjs`
+holds the lists against each other so the third cannot be missed silently.
+
+### The prose links itself
+
+Every concept contributes its title, the market's other names for it, and the phrases this site's
+own paragraphs use (`linkAs`) to a term index. The first mention of any of them on any other page
+becomes a link — so adding a name to a concept wires that phrase site-wide, including into pages
+written before the concept existed. `src/lib/links.ts` holds the five rules that keep it from
+becoming a sea of blue.
+
+## The look
 
 | paper — the light scheme | soot — the dark scheme |
 | --- | --- |
 | ![The front page in paper: a cream cover, an ink display headline, پایش set large in vermilion, and a contents rail](docs/assets/front-page-paper.png) | ![The same cover in soot: warm near-black, a cream headline, the vermilion brighter](docs/assets/front-page-soot.png) |
 
-*پایش* is Persian for **monitoring**: watching something over time and keeping the record of it,
-which is what this site is made of. The repo was `conductor-site` until 2026-08-07; GitHub
-redirects the old path and the old `conductor-site-virid.vercel.app` is still attached to the
-Vercel project, so nothing published before the rename has broken.
-
-The site explains concepts, not a product. Each concept page states the idea in plain language
-you can use anywhere, then shows how [Conductor](https://github.com/shaahink/conductor)
-implements it, then points at a real run and what it cost.
-[Conductor](https://github.com/shaahink/conductor) is the worked example and the evidence — not
-the pitch.
-
-It was itself built by Conductor driving this repository, unattended, one stage at a time —
-[`TRACKER.md`](TRACKER.md) is the board that run wrote, and [`docs/SPEC.md`](docs/SPEC.md) is the
-design it was given.
-
-## What is on it
-
-| Section | What |
-| --- | --- |
-| `/` | The findings — what a month of this actually showed, each with the figure behind it and a route to where it is argued |
-| `/concepts` | Ten concepts — agentic engineering, multi-agent orchestration, context engineering, token economics, evals and gates, independent verification, durable execution, human-in-the-loop, agent observability, agent memory |
-| `/articles` | Four longer pieces, each carrying at least one number nobody else publishes |
-| `/runs` | Anonymised reports from real autonomous runs, and the corpus they come from — with each run's dates, how long the machine actually worked, and how long it took on a calendar |
-| `/tags` | Eight cross-cutting subjects, each gathering concepts, articles and reports that share it |
-
-The prose links itself. Every concept contributes its title, the market's other names for it and
-the phrases this site's own paragraphs use (`linkAs`) to a term index; the first mention of any of
-them on any other page becomes a link. Adding a name to a concept wires that phrase site-wide,
-including into pages written before the concept existed. See `src/lib/links.ts` for the five rules
-that keep it from becoming a sea of blue.
-
-## The look
-
 The inner pages wear Conductor's terminal Face: the sixteen colour roles in `src/styles/tokens.css`
 are the exact values the Face ships in its mocha and latte schemes, so the site and the tool are
-visibly one thing. The front page is the one exception — it dresses as print (warm paper and ink
-with a single vermilion, in both a light and a dark cut), with a display serif for the cover and
-پایش set in its own script. That dress is scoped to the front page alone; step into any concept and
-you are back in the Face's own palette.
+visibly one thing. The front page is the one exception — it dresses as print, warm paper and ink
+with a single vermilion, with a display serif for the cover and پایش set in its own script. That
+dress is scoped to `data-page="home"`; step into any concept and you are back in the Face's palette.
 
 Every colour is a role and every size is a step: `test/tokens.test.mjs` fails the build on a hex or
 a font-size literal outside the two token files, and `test/contrast.test.mjs` recomputes the
@@ -64,12 +80,9 @@ contrast of the shipped palette against the same thresholds the Face's own theme
 citing a key that is not in the corpus fails the build, and the `evidence` gate goes red when the
 corpus is stale.
 
-That is the site keeping its own first rule: every number is traceable, or it does not ship.
-
-The reports are **generalised into scenarios** — "a four-site web fleet with a shared component
-library" rather than a client's name. That is for the reader as much as for privacy: you should be
-able to map your own situation onto a report. Runs absent from `anonymise.json` are excluded, never
-published under their real name — the rule fails closed.
+The reports are generalised into scenarios — "a four-site web fleet with a shared component
+library" rather than a client's name. Runs absent from `anonymise.json` are excluded, never
+published under their real name: the rule fails closed.
 
 ## Development
 
@@ -115,6 +128,21 @@ Two workflows, on purpose:
   sources. Six sites were carrying byte-similar copies of that before it moved.
 - **`gates.yml`** runs the four above, which the shared pipeline cannot know about. Two run whole;
   two run the half that needs no run store, and say on every run which half they did not do.
+
+Fonts are fetched from Google at build time. That fetch is the one non-hermetic step in the build
+and it has failed on Vercel while passing in CI on the same commit — see
+[`docs/dev/fonts.md`](docs/dev/fonts.md).
+
+## Provenance
+
+The repo was `conductor-site` until 2026-08-07; GitHub redirects the old path and the old
+`conductor-site-virid.vercel.app` alias is still attached to the Vercel project, so nothing
+published before the rename has broken.
+
+The site was built by [Conductor](https://github.com/shaahink/conductor) driving this repository
+unattended, one stage at a time — which is why [`conductor.plan.json`](conductor.plan.json) and
+[`TRACKER.md`](TRACKER.md) are in the tree. [`docs/SPEC.md`](docs/SPEC.md) is the design that run
+was given.
 
 ## Licence
 
