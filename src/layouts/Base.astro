@@ -118,6 +118,12 @@ const ogImageUrl = absolute(Astro.site!, ogImage ?? ogCardFor(canonical));
     <Font cssVariable="--font-sans" preload />
     <Font cssVariable="--font-mono" preload />
 
+    {/* One SVG, both schemes: the mark carries its own prefers-color-scheme
+        media query, which is the only theming a favicon gets — it cannot read
+        the page's tokens and does not follow the toggle. Without this line
+        every tab shows the browser's blank-page glyph (bug #8). */}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />
 

@@ -11,8 +11,12 @@
 
    So the order is: what this is and who ran it, the corpus in numbers, then six
    findings — the things the month actually turned up, each with the figure
-   behind it and a route to where it is argued. Only after that does the page
-   become a contents page, and by then the reader has a reason to use it.
+   behind it and a route to where it is argued. Then three doors, because the
+   findings serve the reader who wants to know what the record said and the
+   doors serve the one who arrived cold and wants to know where people like
+   them start. Only after that does the page become a contents page, and by
+   then the reader has a reason to use it. Near the foot, the one section
+   allowed to face forward — labelled as intent, detailed on /roadmap/.
 
    Every section below reads its list from the collections rather than from a
    copy kept here. Ten titles typed onto the front page are ten titles that go
@@ -33,7 +37,8 @@ import { allTags } from "../lib/tags.js";
 
 const page = await getEntry("homePage", "home");
 if (!page) throw new Error("src/content/pages/home.yaml is missing");
-const { meta, hero, evidence, findings, spine, reading, runs, ways, notes } = page.data;
+const { meta, hero, evidence, findings, orient, spine, reading, runs, next, ways, notes } =
+  page.data;
 
 /* The same lists the section indexes show, read from the same place in the same
    order. Not hand-kept copies of them. */
@@ -71,6 +76,17 @@ const items = await Promise.all(
     figure: item.figure,
     claim: item.claim,
     ...(await findingTarget(item.where))
+  }))
+);
+
+/* The doors resolve the same way a finding does, for the same reason: a door
+   is a promise about where a reader ends up, and a promise the build cannot
+   check is a dead link waiting for a rename. */
+const doors = await Promise.all(
+  orient.doors.map(async (entry) => ({
+    eyebrow: entry.eyebrow,
+    blurb: entry.blurb,
+    links: await Promise.all(entry.where.map(findingTarget))
   }))
 );
 ---
@@ -121,6 +137,47 @@ const items = await Promise.all(
       )
     }
 
+    {/* The doors: a band, like the evidence strip, because it is a different
+        kind of thing from the sections around it — furniture rather than
+        writing — and the mantle says so without a box or a shadow. The
+        glossary line under the grid is arrangement, not content, same as
+        "All the runs, with their figures" below. */}
+    {
+      isVisible(page.data, "orient") && (
+        <section id="orient">
+          <h2 data-sk-edit="orient.title">{orient.title}</h2>
+          <p data-sk-edit="orient.intro">{orient.intro}</p>
+          <ul class="doors">
+            {doors.map((door, index) => (
+              <li>
+                <p class="eyebrow" data-sk-edit={`orient.doors[${index}].eyebrow`}>
+                  {door.eyebrow}
+                </p>
+                <p class="blurb" data-sk-edit={`orient.doors[${index}].blurb`}>
+                  {door.blurb}
+                </p>
+                <ul class="destinations">
+                  {door.links.map((link) => (
+                    <li>
+                      <a href={link.href}>
+                        <span class="kind">{link.kind}</span>
+                        <span class="dest">{link.title}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ul>
+          <p class="more">
+            If the words themselves are new — agent, model, harness, gate —{" "}
+            <a href="/glossary/">the glossary</a> defines every one of them in
+            plain language.
+          </p>
+        </section>
+      )
+    }
+
     <section id="spine">
       <h2 data-sk-edit="spine.title">{spine.title}</h2>
       <p data-sk-edit="spine.intro">{spine.intro}</p>
@@ -140,6 +197,23 @@ const items = await Promise.all(
       <p class="corpus" data-sk-edit="runs.corpus">{runs.corpus}</p>
       <p class="more"><a href="/runs/">All the runs, with their figures</a></p>
     </section>
+
+    {/* The one section allowed to face forward. Its copy carries its own
+        caveat — intent, not measurement — and the detail lives on /roadmap/,
+        where every item names what it waits on. */}
+    {
+      isVisible(page.data, "next") && (
+        <section id="next">
+          <h2 data-sk-edit="next.title">{next.title}</h2>
+          {next.body.map((para, index) => (
+            <p data-sk-edit={`next.body[${index}]`}>{para}</p>
+          ))}
+          <p class="more">
+            <a href="/roadmap/">The roadmap, with what each item waits on</a>
+          </p>
+        </section>
+      )
+    }
 
     <section id="ways">
       <h2 data-sk-edit="ways.title">{ways.title}</h2>
@@ -231,15 +305,118 @@ const items = await Promise.all(
     margin-block-start: var(--space-s);
   }
 
+  /* The doors are a band, like the evidence strip and for the same reason:
+     mantle behind them says "a different kind of thing" without reaching for
+     a box or a shadow, and the two bands give the page a rhythm — reading
+     surface, band, reading surface — instead of nine sections cut by nine
+     identical hairlines. Same inline padding as the strip, so the two bands
+     share an inner edge. */
+  #orient {
+    background: var(--mantle);
+    border-block-end: var(--rule);
+    padding-inline: var(--space-s);
+    padding-block-end: var(--space-l);
+  }
+
+  .doors {
+    list-style: none;
+    padding: 0;
+    margin-block-start: var(--space-l);
+    display: grid;
+    gap: var(--space-l);
+    align-items: start;
+  }
+
+  @media (min-width: 64rem) {
+    .doors {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .doors > li {
+    border-block-start: var(--rule);
+    padding-block-start: var(--space-s);
+  }
+
+  /* The eyebrow is the door's question, set like every other eyebrow on the
+     site: mono, small, lettered out. It is who the door is for, which is the
+     one fact a scanning reader needs before the sentence. */
+  .doors .eyebrow {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  .doors .blurb {
+    margin-block-start: var(--space-2xs);
+  }
+
+  .destinations {
+    list-style: none;
+    padding: 0;
+    margin-block-start: var(--space-xs);
+    display: grid;
+    gap: var(--space-2xs);
+  }
+
+  .destinations a {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2xs);
+    text-decoration: none;
+    font-size: var(--text-small);
+  }
+
+  .destinations .kind {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  /* The same link idiom as a finding's destination, because it is the same
+     kind of promise: underlined in the accent, heavier on hover. */
+  .destinations .dest {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+
+  .destinations a:hover .dest,
+  .destinations a:focus-visible .dest {
+    text-decoration-thickness: 2px;
+  }
+
   #ways :global(.tags) {
     margin-block-start: var(--space-m);
   }
 
-  /* The concept and article lists are prose in a list's clothing — a title and
-     a sentence — so they read at the measure like everything else rather than
-     stretching a one-line summary across the whole page. */
-  #spine :global(.entries),
+  /* The article list is prose in a list's clothing — a title and a sentence —
+     so it reads at the measure like everything else rather than stretching a
+     one-line summary across the whole page. */
   #reading :global(.entries) {
     inline-size: min(100%, var(--measure));
+  }
+
+  /* The ten concepts are the spine and they earn the page's width: two columns
+     of five on a laptop, so the whole spine is one eyeful instead of a scroll,
+     and each entry reads as a block a reader can enter — which is what SPEC
+     Part VII asked the list to be. One column below the site's one breakpoint,
+     same as the findings above it. `align-items: start` so a short one-liner
+     does not stretch and hang its neighbour's rule in mid-air. */
+  #spine :global(.entries) {
+    align-items: start;
+  }
+
+  @media (min-width: 64rem) {
+    #spine :global(.entries) {
+      grid-template-columns: 1fr 1fr;
+      column-gap: var(--space-2xl);
+    }
   }
 </style>

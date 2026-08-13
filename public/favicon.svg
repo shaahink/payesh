@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Payesh: watching, and the record. A ring for the watching, a dot for the
+       record being kept. The two colours are the accent role's exact values
+       from src/styles/tokens.css — mocha's mauve by default, latte's when the
+       tab's OS is light. A favicon cannot read CSS custom properties, so the
+       hexes are repeated here on purpose; if tokens.css ever changes its
+       accents, change these with it. -->
+  <style>
+    circle { fill: none; stroke: #cba6f7; }
+    .dot { fill: #cba6f7; stroke: none; }
+    @media (prefers-color-scheme: light) {
+      circle { stroke: #8839ef; }
+      .dot { fill: #8839ef; }
+    }
+  </style>
+  <circle cx="32" cy="32" r="25" stroke-width="7" />
+  <circle class="dot" cx="32" cy="32" r="9" />
+</svg>

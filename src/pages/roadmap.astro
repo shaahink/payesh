@@ -1,0 +1,215 @@
+---
+/* /roadmap/ — the one page allowed to face forward, and the rules that let it.
+   ---------------------------------------------------------------------------
+   Everything else on this site is measurement: a figure recomputed from the
+   store or it does not get published. A roadmap cannot pass that test —
+   nothing here has happened yet — so it survives litmus test 1 the only way a
+   forward-looking page can: by being labelled as intent, by carrying no
+   figures at all, and by every item naming two checkable facts — where it is
+   written down (in the public conductor repository, which anyone can read)
+   and what it waits on. An item that ships leaves this page and enters the
+   corpus; the way off this page is through the record.
+
+   Copy lives in this file, like /tags/ and /glossary/ — hand-arranged
+   furniture, not a collection entry. No figures, and none of the plan's
+   numbers either: a checkpoint count quoted here would be the one number on
+   the site nothing recomputes. */
+import Base from "../layouts/Base.astro";
+
+interface Item {
+  title: string;
+  body: string[];
+  writtenIn: string;
+  waitsOn: string;
+}
+
+const ITEMS: Item[] = [
+  {
+    title: "Clean-tree discipline before anything else writes",
+    body: [
+      "The engine warns about branch hygiene today and enforces nothing. " +
+        "Before the more visible items below, the next plan starts by making " +
+        "the dull rule mechanical: a run that would write onto a dirty tree " +
+        "or the wrong branch stops and says so, instead of trusting the agent " +
+        "to have noticed."
+    ],
+    writtenIn: "plans/karvan/lanes.plan.json",
+    waitsOn: "the lanes plan launching — it is the plan's first stage"
+  },
+  {
+    title: "Several repositories under one plan",
+    body: [
+      "Today one plan drives one repository, and the others a run touches are " +
+        "verified but second-class. The authored next era makes the set of " +
+        "repositories first-class: one plan, one record, several trees — " +
+        "which is what a real piece of work usually is."
+    ],
+    writtenIn: "docs/history/CONDUCTOR-KARVAN.md",
+    waitsOn: "the clean-tree discipline above"
+  },
+  {
+    title: "Analysis running in lanes beside the session",
+    body: [
+      "Read-only work — review, measurement, advice — running parallel to the " +
+        "main session, each lane with its own cost line so the record can say " +
+        "what the second opinion cost. The plural in multi-agent stays where " +
+        "the corpus already put it: in the roles, not in a fleet."
+    ],
+    writtenIn: "plans/karvan/lanes.plan.json",
+    waitsOn: "the lanes plan launching"
+  },
+  {
+    title: "The board pushed to GitHub",
+    body: [
+      "The plan is declarative and the checkpoint board already exists in the " +
+        "run store; this mirrors it out — checkpoints as issues that open and " +
+        "close as the engine confirms them, and each run leaving one issue " +
+        "that reads as its diary, a comment per session with its outcome and " +
+        "its cost. A run becomes watchable from a phone, and the history " +
+        "outlives the machine that made it.",
+      "One direction only, by decision: the engine writes, GitHub shows. " +
+        "Dragging a card on the board changes nothing in the run, because the " +
+        "tracker is the verified contract and a mirror that talks back is how " +
+        "two records disagree."
+    ],
+    writtenIn: "docs/history/CONDUCTOR-KARVAN.md",
+    waitsOn: "the clean-tree discipline, and a token the engine can hold"
+  },
+  {
+    title: "The truthful read side",
+    body: [
+      "The researched era after that one, not yet authored into a plan: the " +
+        "event log becomes the single truth and every other surface — status, " +
+        "history, archive listings — becomes a view that reconciles against " +
+        "it. The direction exists because the record has already been caught " +
+        "disagreeing with itself, and the article about the ledger that lied " +
+        "is the measured half of this intention."
+    ],
+    writtenIn: "docs/dev/NEXT-ERA-FINDINGS-2026-08-04.md",
+    waitsOn: "being authored into a plan the engine can enforce"
+  },
+  {
+    title: "This site keeps eating its own record",
+    body: [
+      "Runs join the corpus as they finish, including the ones that fail — " +
+        "the harvest recomputes every figure from the store, so a new run " +
+        "changes the front page without anyone typing a number. Concepts get " +
+        "revised when the record contradicts them, which is the only kind of " +
+        "revision this site is allowed."
+    ],
+    writtenIn: "this repository's harvest and evidence gates",
+    waitsOn: "the next run finishing"
+  }
+];
+---
+
+<Base
+  title="Roadmap"
+  description="What is authored but not yet run, and what is researched but not yet authored — the engine's next era and this site's, each item naming what it waits on."
+  ogDescription="Intent, labelled as intent: the next era of the engine and of this site, and what each item waits on."
+  canonical="/roadmap/"
+>
+  <main id="main" class="roadmap">
+    <h1>Roadmap</h1>
+    <p class="standfirst">
+      The one page here with no figures on it, because nothing on it has
+      happened yet. This is intent, labelled as intent.
+    </p>
+    <p class="rules">
+      The rest of the site publishes nothing it cannot recompute, so a page
+      about the future has to earn its place differently: every item below
+      names where it is written down — the conductor repository is public, so
+      the plans and the research can be read, not taken on trust — and what it
+      honestly waits on. When one ships, it leaves this page and enters the
+      corpus. The way off this page is through the record.
+    </p>
+
+    <ol class="items">
+      {
+        ITEMS.map((item) => (
+          <li>
+            <h2>{item.title}</h2>
+            {item.body.map((para) => (
+              <p>{para}</p>
+            ))}
+            <p class="provenance">
+              <span class="fact">
+                written down in <span class="path">{item.writtenIn}</span>
+              </span>
+              <span class="fact">waits on {item.waitsOn}</span>
+            </p>
+          </li>
+        ))
+      }
+    </ol>
+
+    <p class="foot">
+      The record so far — what has already run, and what it cost — is{" "}
+      <a href="/runs/">the runs page</a>; the plans themselves are in{" "}
+      <a href="https://github.com/shaahink/conductor">the conductor repository</a>.
+    </p>
+  </main>
+</Base>
+
+<style>
+  .roadmap {
+    inline-size: min(100%, var(--measure));
+    margin-inline: auto;
+    padding-block: var(--space-2xl) var(--space-3xl);
+    padding-inline: var(--space-m);
+  }
+
+  .standfirst {
+    font-size: var(--text-lead);
+    color: var(--muted);
+    margin-block-start: var(--space-s);
+  }
+
+  .rules {
+    margin-block-start: var(--space-m);
+  }
+
+  .items {
+    list-style: none;
+    padding: 0;
+    margin-block-start: var(--space-xl);
+    display: grid;
+    gap: var(--space-xl);
+  }
+
+  .items li {
+    border-block-start: var(--rule);
+    padding-block-start: var(--space-s);
+  }
+
+  .items h2 {
+    font-size: var(--text-h3);
+  }
+
+  .items p {
+    margin-block-start: var(--space-2xs);
+  }
+
+  /* The two checkable facts, set apart from the prose: the file path is a
+     machine fact and reads in mono like every other machine fact here; the
+     line as a whole is the item's footer, not its argument. */
+  .provenance {
+    margin-block-start: var(--space-xs);
+    font-size: var(--text-micro);
+    color: var(--muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs) var(--space-m);
+  }
+
+  .path {
+    font-family: var(--mono);
+  }
+
+  .foot {
+    margin-block-start: var(--space-2xl);
+    border-block-start: var(--rule);
+    padding-block-start: var(--space-l);
+    color: var(--muted);
+  }
+</style>

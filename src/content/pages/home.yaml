@@ -17,11 +17,9 @@ hero:
   standfirst:
     - "For a month I pointed an orchestrator at my own repositories and let it
       work unattended — planning, spawning agents, running gates, recording what
-      happened. Some of it went well. A good deal of it did not, and the runs
-      that were abandoned are published here beside the ones that finished."
-    - "This is what the record says. Every figure below is recomputed from that
-      run store rather than typed into a sentence, which is the only reason any
-      of it is worth reading: a number nobody can check is an opinion with a
+      happened. Some of it went well, a good deal of it did not, and both are
+      published here — every figure recomputed from the record rather than typed
+      into a sentence, because a number nobody can check is an opinion with a
       decimal point."
 
 # The corpus, above the fold. Keys, never values — these are recomputed from the
@@ -82,6 +80,40 @@ findings:
         is one expensive model and a great deal of arithmetic."
       where: "concepts/multi-agent-orchestration"
 
+# The doors. Findings are for the reader who wants to know what the record
+# said; these are for the one who arrived cold. Sorted by the question they
+# came with, never by the site's own structure, and each destination is a
+# collection reference the build resolves — a renamed page fails here rather
+# than publishing a dead door.
+orient:
+  title: "Where to start"
+  intro: "The site reads in any order, so these are doors rather than chapters —
+    take the one that sounds like the question that brought you here."
+  doors:
+    - eyebrow: "new to all of this"
+      blurb: "What an agent actually is, and where the engineering genuinely lives —
+        in the loop around the model, not inside it. The first concept assumes
+        nothing and defines its words as it goes."
+      where:
+        - "concepts/agentic-engineering"
+        - "concepts/context-engineering"
+
+    - eyebrow: "deciding what to trust"
+      blurb: "An agent reporting that its work is done is not the work being done. How
+        checking gets separated from doing, and what a month of gate results
+        said about believing the agent."
+      where:
+        - "concepts/evals-and-gates"
+        - "articles/never-believe-the-agent"
+
+    - eyebrow: "here for the bill"
+      blurb: "What a month of autonomous runs actually cost, where the money went, and
+        why the length of a session dominates every other variable an
+        orchestrator can turn."
+      where:
+        - "articles/what-a-run-costs"
+        - "concepts/token-economics"
+
 spine:
   title: "The ten concepts"
   intro: "In order, but there is no wrong door — each page states the idea in
@@ -102,6 +134,21 @@ runs:
     page with the same figures beside them — including the false starts and the
     prototype that was abandoned where it stood. A corpus that shows only the
     runs worth writing up is a portfolio."
+
+# The one forward-looking section, and the copy carries its own caveat: none
+# of this has an evidence key behind it, so it is published as intent and says
+# so. The detail — and what each item waits on — is /roadmap/.
+next:
+  title: "Where this goes next"
+  body:
+    - "The corpus is one month, and it is still growing. The engine that
+      produced it is mid-life: the era after this one is already written down —
+      several repositories under one plan, analysis running in lanes beside the
+      main session, and the board pushed to GitHub so a run can be watched from
+      a phone without the machine opening a single inbound port."
+    - "None of that is measured yet, which is why it lives on its own page,
+      labelled as intent — the one page here with no figures on it. Runs join
+      the corpus as they finish."
 
 ways:
   title: "Or start from a subject"

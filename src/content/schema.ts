@@ -304,6 +304,30 @@ export const finding = z.object({
     .meta({ title: "The page it is worked out on" })
 });
 
+/** One door on the front page: who it is for, and where it leads.
+    ---------------------------------------------------------------------------
+    The findings tell a stranger what the record said; the doors tell them where
+    to go first, sorted by the question they arrived with rather than by the
+    site's own structure. Same discipline as a finding: the destination is a
+    `<collection>/<entry>` reference resolved against the real collections, so a
+    renamed page fails the build here rather than publishing a dead door. */
+export const door = z.object({
+  eyebrow: z.string().meta({ title: "Who this door is for" }),
+  blurb: z.string().min(20).meta({ title: "The sentence on the door" }),
+  where: z
+    .array(
+      z
+        .string()
+        .regex(
+          /^(concepts|articles|reports)\/[a-z0-9-]+$/,
+          'each destination is "<collection>/<entry>", as "concepts/evals-and-gates"'
+        )
+    )
+    .min(1)
+    .max(3)
+    .meta({ title: "The pages it leads to" })
+});
+
 export const homePageSchema = z.object({
   meta,
   hero: z.object({
@@ -338,6 +362,16 @@ export const homePageSchema = z.object({
     intro: z.string().meta({ title: "The line above the findings" }),
     items: z.array(finding).min(3).max(8)
   }),
+  /* The doors. A reader who followed the findings knows what the record said;
+     this is the section for the reader who arrived cold and wants to know
+     where people like them start. Three doors is the shape — by question, not
+     by collection — and each one resolves like a finding does. */
+  orient: z.object({
+    visible,
+    title: z.string(),
+    intro: z.string().meta({ title: "The line above the doors" }),
+    doors: z.array(door).min(2).max(4)
+  }),
   /* The way in. Ten concepts is too many for a paragraph and exactly right for
      a list, and a reader who already knows what context engineering is should
      be able to enter at the one they do not. The headings are content; the
@@ -360,6 +394,16 @@ export const homePageSchema = z.object({
        is content rather than markup because it is the one place the front page
        says *why* eighteen runs are published when three are written up. */
     corpus: z.string().meta({ title: "The line pointing at all the runs" })
+  }),
+  /* Where the work goes next. Deliberately the one section allowed to talk
+     about the future, and the copy has to say so itself: nothing here has an
+     evidence key behind it, which is why the detail lives on /roadmap/ where
+     every item names what it waits on. Intent, labelled as intent, is the only
+     way a forward-looking sentence survives litmus test 1. */
+  next: z.object({
+    visible,
+    title: z.string(),
+    body: paragraphs(1, 3).meta({ title: "Where this goes" })
   }),
   ways: z.object({
     title: z.string(),

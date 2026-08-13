@@ -27,6 +27,16 @@ const credit = creditsFor({ siteName: site.name, siteUrl: site.url });
 ---
 
 <footer>
+  {/* The orientation pages live here rather than in the top bar, on the same
+      reasoning /tags/ wrote down for itself: the three sections are the site's
+      shape, and a bar with five things in it would say the shape is five.
+      These are destinations — the words, the intent, the second way through —
+      and the footer is where a reader who has run out of page goes looking. */}
+  <nav aria-label="Also on this site">
+    <a href="/glossary/">Glossary</a>
+    <a href="/roadmap/">Roadmap</a>
+    <a href="/tags/">Tags</a>
+  </nav>
   <p>&copy; <span id="current-year"></span> {site.name} · <Fragment set:html={credit} /></p>
 </footer>
 
@@ -34,3 +44,33 @@ const credit = creditsFor({ siteName: site.name, siteUrl: site.url });
   const year = document.getElementById("current-year");
   if (year) year.textContent = String(new Date().getFullYear());
 </script>
+
+<style>
+  /* The footer had no face at all — a flush, unpadded line under whatever the
+     page ended with. A hairline and the same small-and-muted register as every
+     other caption on the site closes the page instead of stopping it. */
+  footer {
+    margin-block-start: var(--space-3xl);
+    border-block-start: var(--rule);
+    padding-block: var(--space-l);
+    padding-inline: var(--space-m);
+    font-size: var(--text-small);
+    color: var(--muted);
+  }
+
+  footer nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-m);
+    margin-block-end: var(--space-s);
+  }
+
+  footer nav a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  footer nav a:hover {
+    color: var(--text);
+  }
+</style>

@@ -1,0 +1,353 @@
+---
+/* /glossary/ — the words, defined before they are used on you.
+   ---------------------------------------------------------------------------
+   The rest of the site explains ten concepts to a reader assumed competent;
+   this page is for the reader one step earlier, who has met "agent",
+   "harness" and "gate" in the same sentence and would like them held still
+   long enough to look at. Definitions first, in a reading order rather than
+   alphabetical — model up to run, each term standing on the ones before it —
+   because a glossary is the one page where the order can teach.
+
+   Two rules carried over from everywhere else here. A term that one of the
+   ten concepts works out properly points at that page, and the pointer is a
+   `<collection>/<entry>` reference resolved through `findingTarget`, so a
+   renamed concept fails this build rather than publishing a dead "see". And
+   no figures: a glossary that quotes numbers is a glossary that goes stale.
+
+   Copy lives in this file, like /tags/ — the page is hand-arranged furniture
+   rather than a collection entry, and there are no placeholders to gate. */
+import Base from "../layouts/Base.astro";
+import { findingTarget, hrefOf, ordered } from "../lib/collections.js";
+
+interface Entry {
+  term: string;
+  def: string;
+  see?: string;
+}
+
+const ENTRIES: Entry[] = [
+  {
+    term: "model",
+    def:
+      "The neural network underneath everything else: text goes in, text comes " +
+      "out, and it remembers nothing between calls beyond what is sent to it " +
+      "again. Everything this site describes is machinery arranged around that " +
+      "one fact."
+  },
+  {
+    term: "token",
+    def:
+      "The unit a model reads and writes in — a short fragment of a word — and " +
+      "therefore the unit everything is billed in. Every cost figure on this " +
+      "site is, underneath, a count of these.",
+    see: "concepts/token-economics"
+  },
+  {
+    term: "context window",
+    def:
+      "How much a model can hold in front of itself at once, measured in " +
+      "tokens. Everything the agent knows on a given turn has to fit in it, is " +
+      "re-sent on every turn, and is paid for on every turn — which is why so " +
+      "much of the engineering here is about deciding what deserves the space.",
+    see: "concepts/context-engineering"
+  },
+  {
+    term: "agent",
+    def:
+      "A model run in a loop with tools: it reads, acts, sees what its action " +
+      "did, and acts again until something stops it. The model does the " +
+      "reasoning; the loop is what makes it an agent.",
+    see: "concepts/agentic-engineering"
+  },
+  {
+    term: "harness",
+    def:
+      "The program wrapped around the model that runs that loop — feeding it " +
+      "files and tool results, applying its edits, carrying its history. When " +
+      "a coding agent edits your repository, the harness is the thing actually " +
+      "touching the disk."
+  },
+  {
+    term: "orchestrator",
+    def:
+      "The layer above the agents: it decides what gets worked on next, starts " +
+      "and stops sessions, enforces the limits, runs the gates and keeps the " +
+      "record. Conductor, the tool whose record this site publishes, is one.",
+    see: "concepts/multi-agent-orchestration"
+  },
+  {
+    term: "session",
+    def:
+      "One continuous stretch of an agent working — from being handed a prompt " +
+      "to finishing, hitting a ceiling, or being stopped. The session is this " +
+      "site's unit of account: costs, outcomes and durations are all recorded " +
+      "per session."
+  },
+  {
+    term: "run",
+    def:
+      "The whole undertaking: one plan carried out across however many " +
+      "sessions it takes, over hours or days, surviving restarts. A run is " +
+      "what leaves a record worth publishing.",
+    see: "concepts/durable-execution"
+  },
+  {
+    term: "plan",
+    def:
+      "A declarative file stating the work before any of it starts: the " +
+      "stages, the checkpoints inside them, the gates that verify, the limits " +
+      "on money and tokens. The orchestrator enforces what is written rather " +
+      "than re-deciding it."
+  },
+  {
+    term: "checkpoint",
+    def:
+      "One deliberate break-point in the plan — a piece of work small enough " +
+      "to finish, verify and record before moving on. The tracker's table of " +
+      "checkpoints is the run's contract, and \"done\" is claimed by the agent " +
+      "but only confirmed by the engine."
+  },
+  {
+    term: "gate",
+    def:
+      "A command with an exit code, run by the orchestrator to check the work " +
+      "— a build, a test suite, a linter. It passes or it does not, and no one " +
+      "asks the agent's opinion. Everything else is an opinion with a schedule.",
+    see: "concepts/evals-and-gates"
+  },
+  {
+    term: "ceiling",
+    def:
+      "The cap on what one session may spend, set in tokens. The nudge — the " +
+      "polite request to wrap up as the ceiling approaches — is its cooperative " +
+      "half, and whether agents actually honour it is one of this site's " +
+      "measured questions.",
+    see: "articles/the-nudge-below-the-median"
+  },
+  {
+    term: "rollover",
+    def:
+      "A session that hit its ceiling with the work unfinished, its remainder " +
+      "handed to the next session. Cheap when the record survives the " +
+      "boundary; expensive when it does not.",
+    see: "articles/the-ledger-that-lied"
+  },
+  {
+    term: "handover",
+    def:
+      "The note one session leaves for the next: what was done, what is left, " +
+      "what to watch for. Continuity between sessions is written, not " +
+      "remembered — nothing else survives the boundary.",
+    see: "concepts/agent-memory"
+  },
+  {
+    term: "evidence",
+    def:
+      "An artifact recorded to prove a claim — a log, a screenshot, a figure " +
+      "recomputed from the store. On this site the rule is structural: prose " +
+      "names an evidence key and the build fetches the value, so a number can " +
+      "never be typed into a sentence.",
+    see: "concepts/agent-observability"
+  },
+  {
+    term: "owner",
+    def:
+      "The human the machine stops for. An owner gate is a place the run " +
+      "pauses on purpose and says exactly what it is waiting for and what " +
+      "would clear it — which is what \"human in the loop\" means once it is a " +
+      "mechanism rather than a slogan.",
+    see: "concepts/human-in-the-loop"
+  }
+];
+
+const entries = await Promise.all(
+  ENTRIES.map(async (entry) => ({
+    ...entry,
+    link: entry.see ? await findingTarget(entry.see) : undefined
+  }))
+);
+
+/* The market's words, read off the concepts rather than kept here: every
+   concept already lists the other names the job ads use for it, and this is
+   the page where a reader holding one of those names finds the heading it
+   lives under. */
+const market = (await ordered("concepts"))
+  .filter((entry) => entry.data.alsoKnownAs.length > 0)
+  .map((entry) => ({
+    title: entry.data.title,
+    names: entry.data.alsoKnownAs,
+    href: hrefOf("concepts", entry.id)
+  }));
+---
+
+<Base
+  title="Glossary"
+  description="Every word this site leans on, defined in plain language — model, agent, harness, gate, checkpoint and the rest — with the market's other names for the ten concepts beside them."
+  ogDescription="The words this site leans on, defined in plain language, with the market's names for them beside each one."
+  canonical="/glossary/"
+>
+  <main id="main" class="glossary">
+    <h1>Glossary</h1>
+    <p class="standfirst">
+      The words, before they are used on you. In reading order rather than
+      alphabetical — each one stands on the ones before it, so ten minutes here
+      reads as one story: a model, a loop around it, a program running the
+      loop, and a record of what happened.
+    </p>
+
+    <dl class="terms">
+      {
+        entries.map((entry) => (
+          <div class="entry">
+            <dt>{entry.term}</dt>
+            <dd>
+              <p>{entry.def}</p>
+              {entry.link && (
+                <p class="see">
+                  <a href={entry.link.href}>
+                    <span class="kind">{entry.link.kind}</span>
+                    <span class="dest">{entry.link.title}</span>
+                  </a>
+                </p>
+              )}
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+
+    <section class="market">
+      <h2>The market's words</h2>
+      <p>
+        The ten concepts go by other names in job ads and vendor pages. Each
+        line below is the same idea; the link is the heading it lives under
+        here.
+      </p>
+      <ul>
+        {
+          market.map((row) => (
+            <li>
+              <span class="names">{row.names.join(" · ")}</span>
+              <a href={row.href}>{row.title}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </main>
+</Base>
+
+<style>
+  .glossary {
+    inline-size: min(100%, var(--measure));
+    margin-inline: auto;
+    padding-block: var(--space-2xl) var(--space-3xl);
+    padding-inline: var(--space-m);
+  }
+
+  .standfirst {
+    font-size: var(--text-lead);
+    color: var(--muted);
+    margin-block-start: var(--space-s);
+  }
+
+  .terms {
+    margin-block-start: var(--space-xl);
+    display: grid;
+    gap: var(--space-l);
+  }
+
+  .entry {
+    border-block-start: var(--rule);
+    padding-block-start: var(--space-s);
+  }
+
+  /* The term is a word being defined, not machine truth, so it stays in the
+     reading face — bold, at the size every other list title on the site uses. */
+  .entry dt {
+    font-size: var(--text-h3);
+    font-weight: var(--weight-bold);
+  }
+
+  .entry dd {
+    margin-inline-start: 0;
+    margin-block-start: var(--space-3xs);
+  }
+
+  .see {
+    margin-block-start: var(--space-xs);
+  }
+
+  .see a {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2xs);
+    text-decoration: none;
+    font-size: var(--text-small);
+  }
+
+  .see .kind {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  .see .dest {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+
+  .see a:hover .dest,
+  .see a:focus-visible .dest {
+    text-decoration-thickness: 2px;
+  }
+
+  .market {
+    margin-block-start: var(--space-3xl);
+    border-block-start: var(--rule);
+    padding-block-start: var(--space-l);
+  }
+
+  .market > p {
+    color: var(--muted);
+    margin-block-start: var(--space-s);
+  }
+
+  .market ul {
+    list-style: none;
+    padding: 0;
+    margin-block-start: var(--space-l);
+    display: grid;
+    gap: var(--space-m);
+  }
+
+  .market li {
+    border-block-start: var(--rule);
+    padding-block-start: var(--space-s);
+  }
+
+  /* The market's names are quotes from elsewhere, so they read quiet; the
+     link under them is this site's own heading for the idea. */
+  .names {
+    display: block;
+    color: var(--muted);
+    font-size: var(--text-small);
+  }
+
+  .market a {
+    display: inline-block;
+    margin-block-start: var(--space-3xs);
+    font-weight: var(--weight-bold);
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .market a:hover {
+    color: var(--current);
+  }
+</style>
