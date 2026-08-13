@@ -1588,10 +1588,36 @@ export const readAnonymise = () => JSON.parse(readFileSync(anonymisePath, "utf8"
 /** Recompute the whole corpus from the store. */
 export function harvest() {
   const anonymise = readAnonymise();
-  const history = readHistory();
+  const listed = readHistory();
+
+  /* One row per run, whatever the verb printed. The engine's history verb
+     began listing the three runs of its own repo once per store copy
+     (observed 2026-08-13 — the legacy import copies and leaves the original
+     in place, so the same run exists in several databases). The same FULL id
+     twice is one run shown twice, not two runs, and collapsing identical rows
+     is reading the data; rows that share an id but disagree about the run are
+     refused, because nothing downstream could know which record to believe. */
+  const byId = new Map();
+  const history = [];
+  for (const run of listed) {
+    const before = byId.get(run.runId);
+    if (before) {
+      if (JSON.stringify(before) !== JSON.stringify(run)) {
+        throw new Error(
+          `The store lists run ${short(run.runId)} more than once, and the rows disagree. Two ` +
+            `records of one run cannot both be true — fix the store before anything is published.`
+        );
+      }
+      continue;
+    }
+    byId.set(run.runId, run);
+    history.push(run);
+  }
 
   /* Prefixes are what a person reads off `conductor history`, so they are what
-     the map is keyed by — but only while they are unambiguous. */
+     the map is keyed by — but only while they are unambiguous. This guard is
+     about two DIFFERENT runs colliding at eight characters, which lengthening
+     the keys genuinely fixes; the duplicate-listing case is handled above. */
   const seen = new Map();
   for (const run of history) {
     const prefix = short(run.runId);

@@ -324,7 +324,16 @@ const TEXT = /\.(?:html?|xml|txt|json|js|mjs|css|svg|webmanifest)$/i;
     and secret shapes are still looked for there, because a token or a path in a
     vendored bundle is a leak wherever it came from. Nothing is skipped silently:
     the run prints how many files got which treatment. */
-export const isVendor = (path) => path.startsWith("_astro/") || path.startsWith("edit/");
+export const isVendor = (path) =>
+  path.startsWith("_astro/") ||
+  path.startsWith("edit/") ||
+  /* The editor's stylesheets are the same class as `edit/` — kit code copied
+     verbatim into public/ by `npm run editor`, which this repo is forbidden
+     to hand-edit. No site content or store-derived text can enter them, and
+     "desktop" in a stylesheet matching a repository's name (2026-08-13) is
+     exactly the platform-variable noise this predicate exists for. Tokens
+     and paths are still looked for there, like the other vendor files. */
+  /^editor-(?:panel|inline)\.css$/.test(path);
 
 /** Every text file the build produced, as [relative path, contents]. */
 export function builtFiles(dir = distDir) {
