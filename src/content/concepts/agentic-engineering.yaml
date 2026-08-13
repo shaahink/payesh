@@ -16,10 +16,12 @@ tags:
 linkAs:
   - "autonomous run"
   - "autonomous runs"
+  - "harness"
 alsoKnownAs:
   - "AI-native development"
   - "autonomous software engineering"
   - "agent-driven development"
+  - "harness thinking"
 oneLine: "The engineering is not in the agent. It is in the loop around it."
 
 theIdea:
@@ -29,7 +31,10 @@ theIdea:
     happen while nobody is watching: something that decides what to work on
     next, starts an agent on it, watches while it runs, checks what it says it
     did, and writes down what happened. The model is one component of that, and
-    it is the only component you did not build."
+    it is the only component you did not build. Everything else — the loop and
+    all it hands the model — is the harness, and harness thinking is the
+    discipline of treating the harness, not the model, as the thing being
+    engineered."
   - "So the unit of the work is the cycle, not the prompt. Every turn makes the
     same handful of decisions, and each has a wrong answer that looks entirely
     reasonable. Pick: from the state the repository is actually in, or from the

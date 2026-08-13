@@ -1,0 +1,120 @@
+---
+/* How red gates arrive — for "Never believe the agent".
+   ---------------------------------------------------------------------------
+   The article's second section is a distribution, so the drawing is one: runs
+   as rows, gate results as cells in time order. Most rows never see a red at
+   all; the row with something structural wrong sees several, together; and
+   one row is red every time it ran — the false start, honestly labelled,
+   which without gates would be a portfolio piece with an asterisk.
+
+   The rows are schematic, not the corpus's: which runs, and how many, is in
+   the strip where it is recomputed. Shape and clustering are the argument.
+   Cells are colour as status — the one job semantic colour is allowed. */
+
+type Cell = "g" | "r";
+const ROWS: { label: string; note: string; cells: Cell[] }[] = [
+  {
+    label: "most runs",
+    note: "never a red at all — which proves nothing on its own",
+    cells: ["g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g"]
+  },
+  {
+    label: "another",
+    note: "the same, session after session",
+    cells: ["g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g"]
+  },
+  {
+    label: "something structural wrong",
+    note: "the reds arrive together — an environment that will not build, tests broken before any agent arrived",
+    cells: ["g", "g", "r", "r", "r", "r", "g", "r", "r", "g", "g", "g"]
+  },
+  {
+    label: "the false start",
+    note: "red every time it ran, and it closed nothing — the gates are why it is labelled honestly",
+    cells: ["r", "r", "r", "r", "r"]
+  }
+];
+---
+
+<figure class="fig fig-cluster">
+  <div
+    class="pane"
+    role="img"
+    aria-label="Four runs drawn as rows of gate results in time order. Two rows are green from end to end. One row holds a cluster of red results in the middle — a run with something structural wrong, like an environment that will not build. The last row is short and red in every cell: the false start, which closed nothing and is honestly labelled a failure only because the gates kept saying so."
+  >
+    <p class="fig-label">a corpus of gate results, run by run</p>
+    <ul class="runs" aria-hidden="true">
+      {
+        ROWS.map((row) => (
+          <li class="run">
+            <span class="r-label">{row.label}</span>
+            <span class="cells">
+              {row.cells.map((cell) => (
+                <span class={`cell ${cell === "r" ? "is-red" : "is-green"}`} />
+              ))}
+            </span>
+            <span class="r-note">{row.note}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <figcaption>
+    Agents do not fail continuously and they do not fail never — the reds
+    cluster in the runs where something structural is wrong. A checking system
+    earns its keep on the bottom two rows, and looks like overhead on the top
+    two.
+  </figcaption>
+</figure>
+
+<style>
+  .runs {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--space-s);
+  }
+
+  .run {
+    display: grid;
+    gap: var(--space-3xs);
+  }
+
+  .r-label {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text);
+  }
+
+  .cells {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3xs);
+  }
+
+  /* Small enough to read as a distribution, big enough to count. Bordered in
+     the hairline so a green cell and the mantle behind it stay separable in
+     both schemes. */
+  .cell {
+    inline-size: 1rem;
+    block-size: 1rem;
+    border: var(--rule);
+  }
+
+  .cell.is-green {
+    background: var(--green);
+  }
+
+  .cell.is-red {
+    background: var(--red);
+  }
+
+  .r-note {
+    font-size: var(--text-small);
+    color: var(--muted);
+  }
+</style>

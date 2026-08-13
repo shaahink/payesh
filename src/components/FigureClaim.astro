@@ -55,7 +55,7 @@
 </figure>
 
 <script>
-  import { wire } from "../scripts/figures.js";
+  import { spawn, wire } from "../scripts/figures.js";
 
   const MAX_ROWS = 4;
   /* The battery's scripted answers for rows 2, 3, 4: green, red, green. */
@@ -89,12 +89,10 @@
         status.textContent = "enough rows to see the shape — the gap is the number to keep";
         return;
       }
-      const row = document.createElement("li");
-      row.className = "row";
-      row.innerHTML =
-        `<span class="r-name">checkpoint ${all.length + 1}</span>` +
-        '<span class="r-claimed">✓</span>' +
-        '<span class="r-confirmed pending">·</span>';
+      const row = spawn(figure, "li", "row");
+      row.appendChild(spawn(figure, "span", "r-name", `checkpoint ${all.length + 1}`));
+      row.appendChild(spawn(figure, "span", "r-claimed", "✓"));
+      row.appendChild(spawn(figure, "span", "r-confirmed pending", "·"));
       rows.appendChild(row);
       paintGap();
       status.textContent =
@@ -136,9 +134,12 @@
     });
 
     figure.querySelector('[data-act="reset"]')!.addEventListener("click", () => {
-      rows.innerHTML =
-        '<li class="row"><span class="r-name">checkpoint 1</span>' +
-        '<span class="r-claimed">✓</span><span class="r-confirmed ok">✓</span></li>';
+      rows.textContent = "";
+      const first = spawn(figure, "li", "row");
+      first.appendChild(spawn(figure, "span", "r-name", "checkpoint 1"));
+      first.appendChild(spawn(figure, "span", "r-claimed", "✓"));
+      first.appendChild(spawn(figure, "span", "r-confirmed ok", "✓"));
+      rows.appendChild(first);
       collapse.setAttribute("aria-pressed", "false");
       figure.classList.remove("collapsed");
       paintGap();

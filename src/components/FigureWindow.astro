@@ -29,13 +29,18 @@ const USED = SEGMENTS.reduce((sum, s) => sum + s.units, 0);
     role="img"
     aria-label="A context window drawn as a bar under a fixed cap. The knowledge ledger and the open bugs are placed first, then the required reading and the last session's handoff, then the transcript. As turns are added the transcript grows toward the cap, and everything past the cap is cut from the end — so the transcript's tail is lost and the ledger survives. Reverse the order, with the knowledge appended last, and the same cap deletes the ledger instead."
   >
-    <div class="bar" data-bar aria-hidden="true" style={`--cap: ${CAP}`}>
+    {/* No style attribute carries a unit: the kit's CSP allows <style> by
+        hash and stylesheets by origin but never style *attributes*, so a
+        width written into one is silently zero in every real browser. The
+        still's units live in this component's own <style>; the script sets
+        them through the CSSOM, which CSP permits. */}
+    <div class="bar" data-bar aria-hidden="true">
       {SEGMENTS.map((segment) => (
-        <span class={`seg seg-${segment.key}`} style={`--u: ${segment.units}`}>
+        <span class={`seg seg-${segment.key}`}>
           {segment.label}
         </span>
       ))}
-      <span class="seg free" style={`--u: ${CAP - USED}`}>free</span>
+      <span class="seg free">free</span>
     </div>
     <p class="cap mono" aria-hidden="true">the cap — everything past it is cut, from the end</p>
   </div>
@@ -60,7 +65,7 @@ const USED = SEGMENTS.reduce((sum, s) => sum + s.units, 0);
 </figure>
 
 <script>
-  import { wire } from "../scripts/figures.js";
+  import { spawn, wire } from "../scripts/figures.js";
 
   /* The same shape the markup renders statically, re-rendered from data once
      the reader starts moving it. Units are arbitrary; the cap is what makes
@@ -95,27 +100,21 @@ const USED = SEGMENTS.reduce((sum, s) => sum + s.units, 0);
         const kept = Math.max(0, Math.min(segment.units, CAP - filled));
         const cut = segment.units - kept;
         if (kept > 0) {
-          const span = document.createElement("span");
-          span.className = `seg seg-${segment.key}`;
+          const span = spawn(figure, "span", `seg seg-${segment.key}`, segment.label);
           span.style.setProperty("--u", String(kept));
-          span.textContent = segment.label;
           bar.appendChild(span);
         }
         if (cut > 0) {
-          const span = document.createElement("span");
-          span.className = "seg cut";
+          const span = spawn(figure, "span", "seg cut", `${segment.label} · cut`);
           span.style.setProperty("--u", String(cut));
-          span.textContent = `${segment.label} · cut`;
           bar.appendChild(span);
           cutFell.push(segment.key);
         }
         filled += kept;
       }
       if (filled < CAP) {
-        const span = document.createElement("span");
-        span.className = "seg free";
+        const span = spawn(figure, "span", "seg free", "free");
         span.style.setProperty("--u", String(CAP - filled));
-        span.textContent = "free";
         bar.appendChild(span);
       }
       return cutFell;
@@ -172,6 +171,18 @@ const USED = SEGMENTS.reduce((sum, s) => sum + s.units, 0);
     gap: var(--space-3xs);
     min-block-size: 3.25rem;
   }
+
+  /* The still's units, mirroring SEGMENTS and CAP above — in the stylesheet
+     rather than in style attributes, because the kit's CSP silently zeroes
+     an attribute-borne width. The script's re-render overrides these through
+     the CSSOM, which wins over a class rule and is CSP-clean. A mismatch
+     with the frontmatter shows immediately as a wrong still. */
+  .seg-ledger { --u: 2; }
+  .seg-bugs { --u: 1; }
+  .seg-reading { --u: 3; }
+  .seg-handoff { --u: 1; }
+  .seg-transcript { --u: 3; }
+  .free { --u: 2; }
 
   .seg {
     flex: var(--u) var(--u) 0;

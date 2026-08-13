@@ -22,17 +22,18 @@ interface Props {
   entry: CollectionEntry<"articles"> | CollectionEntry<"reports">;
   collection: "articles" | "reports";
   next: Destination[];
-  /** A drawing the page places after one of the sections — arrangement, not
-      content, exactly like the front page's figures: the component is the
-      furniture and `after` is the section index whose argument it draws. The
-      pages that pass one keep the map beside the route (articles/[entry]),
-      so a renamed entry drops its figure loudly in review rather than
-      silently in the layout. */
-  figure?: { component: AstroComponentFactory; after: number };
+  /** The drawings the page places after its sections — arrangement, not
+      content, exactly like the front page's figures: each component is the
+      furniture and `after` is the section index whose argument it draws. A
+      list rather than one, because an article argues more than once (owner's
+      ask, 2026-08-13: the pieces should carry their arguments visually
+      throughout, not once). The pages that pass them keep the map beside the
+      route (articles/[entry]), so a renamed entry drops its figures loudly
+      in review rather than silently in the layout. */
+  figures?: { component: AstroComponentFactory; after: number }[];
 }
 
-const { entry, collection, next, figure } = Astro.props;
-const Figure = figure?.component;
+const { entry, collection, next, figures = [] } = Astro.props;
 const { meta, title, standfirst, sections, evidence, tags } = entry.data;
 const scenario = "scenario" in entry.data ? entry.data.scenario : undefined;
 
@@ -83,7 +84,11 @@ const linking = pageContext(hrefOf(collection, entry.id));
             context={linking}
             path={`sections[${index}].body`}
           />
-          {Figure && figure!.after === index && <Figure />}
+          {figures
+            .filter((fig) => fig.after === index)
+            .map((fig) => (
+              <fig.component />
+            ))}
         </Fragment>
       ))
     }

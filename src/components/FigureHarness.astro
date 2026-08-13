@@ -1,0 +1,269 @@
+---
+/* The whole guide, drawn once — the harness map on the front page.
+   ---------------------------------------------------------------------------
+   The site's working idea is harness thinking: the engineering lives in the
+   rings around the model, not inside it. So the front page draws the rings —
+   the loop that is an agent, the harness a session is handed, the
+   orchestrator that runs sessions back to back — and places the ten concepts
+   on the drawing as doors, each a link into its own page. A stranger gets
+   the territory in one eyeful and can enter it anywhere, which is what a
+   field guide's endpaper map is for (owner's ask, 2026-08-13: the front page
+   should invite, not only list).
+
+   The titles, numbers and routes are read from the collection, exactly like
+   the spine list beside it — ten names typed into a drawing are ten names
+   that go stale the day one is renamed. Only the *placement* is this file's
+   own: which ring a concept lives on is arrangement, and a concept this map
+   has no row for lands on the outer ring rather than falling off the page.
+
+   Real links, so no role="img" here — the drawing is furniture and nav at
+   once, and a screen reader walks the same doors a mouse does. */
+import { hrefOf, ordered } from "../lib/collections.js";
+
+const RING: Record<string, "loop" | "harness" | "run"> = {
+  "agentic-engineering": "loop",
+  "context-engineering": "harness",
+  "token-economics": "harness",
+  "agent-memory": "harness",
+  "multi-agent-orchestration": "run",
+  "evals-and-gates": "run",
+  "independent-verification": "run",
+  "durable-execution": "run",
+  "human-in-the-loop": "run",
+  "agent-observability": "run"
+};
+
+const concepts = (await ordered("concepts")).map((entry) => ({
+  href: hrefOf("concepts", entry.id),
+  no: String(entry.data.order).padStart(2, "0"),
+  title: entry.data.title,
+  ring: RING[entry.id] ?? "run"
+}));
+
+const on = (ring: "loop" | "harness" | "run") =>
+  concepts.filter((concept) => concept.ring === ring);
+---
+
+<figure class="fig fig-harness">
+  <div class="map">
+    <div class="ring run">
+      <p class="ring-head">
+        <span class="ring-name">the orchestrator</span>
+        <span class="ring-gloss">
+          runs sessions back to back while nobody watches — picks the work, runs the gates,
+          writes the record
+        </span>
+      </p>
+
+      <div class="ring harness">
+        <p class="ring-head">
+          <span class="ring-name">the harness</span>
+          <span class="ring-gloss">
+            what one session is handed — the window, the tools, the meter, what came before
+          </span>
+        </p>
+
+        <div class="core">
+          <p class="ring-head">
+            <span class="ring-name">the loop</span>
+            <span class="ring-gloss">one session — the loop is the agent</span>
+          </p>
+          <p class="looprow" aria-hidden="true">
+            <span class="box">context</span>
+            <span class="arrow">→</span>
+            <span class="box model">model</span>
+            <span class="arrow">→</span>
+            <span class="box">action</span>
+            <span class="arrow">→</span>
+            <span class="box">result</span>
+            <span class="arrow">⟲</span>
+          </p>
+          <p class="loopnote">the model is the one part you did not build — every other ring is yours</p>
+          <ul class="chips">
+            {
+              on("loop").map((concept) => (
+                <li>
+                  <a class="chip" href={concept.href}>
+                    <span class="no" aria-hidden="true">{concept.no}</span>
+                    <span class="c-name">{concept.title}</span>
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <ul class="chips">
+          {
+            on("harness").map((concept) => (
+              <li>
+                <a class="chip" href={concept.href}>
+                  <span class="no" aria-hidden="true">{concept.no}</span>
+                  <span class="c-name">{concept.title}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <ul class="chips">
+        {
+          on("run").map((concept) => (
+            <li>
+              <a class="chip" href={concept.href}>
+                <span class="no" aria-hidden="true">{concept.no}</span>
+                <span class="c-name">{concept.title}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+
+  <figcaption>
+    The territory of this guide, drawn once: the loop that is an agent, the
+    harness a session is handed, and the orchestrator that runs sessions while
+    nobody watches. Each concept is placed where it lives in that machine, and
+    each is a door — enter anywhere.
+  </figcaption>
+</figure>
+
+<style>
+  /* The map takes the section's full width — it is the spine's own endpaper,
+     not a marginal drawing. */
+  .fig-harness {
+    inline-size: 100%;
+  }
+
+  /* Ring borders step down in weight from the outside in, the way the home
+     page's own rules do: the outermost claim gets the ink. */
+  .ring.run {
+    border: 2px solid var(--text);
+    padding: var(--space-s);
+  }
+
+  .ring.harness {
+    border: var(--rule);
+    background: var(--mantle);
+    padding: var(--space-s);
+    margin-block-start: var(--space-s);
+  }
+
+  .core {
+    border: var(--rule);
+    background: var(--base);
+    padding: var(--space-s);
+    margin-block-start: var(--space-s);
+  }
+
+  .ring-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2xs) var(--space-xs);
+    margin: 0;
+  }
+
+  .ring-name {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text);
+  }
+
+  .ring-gloss {
+    font-size: var(--text-small);
+    color: var(--muted);
+  }
+
+  .looprow {
+    margin: 0;
+    margin-block-start: var(--space-s);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs);
+  }
+
+  .box {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border: var(--rule);
+    background: var(--mantle);
+    padding-block: var(--space-3xs);
+    padding-inline: var(--space-xs);
+    color: var(--text);
+  }
+
+  /* The one box that is not yours — quiet, because the guide's whole subject
+     is everything around it. */
+  .box.model {
+    color: var(--muted);
+    border-style: dashed;
+  }
+
+  .arrow {
+    font-family: var(--mono);
+    color: var(--muted);
+  }
+
+  .loopnote {
+    margin: 0;
+    margin-block-start: var(--space-2xs);
+    font-size: var(--text-small);
+    color: var(--muted);
+  }
+
+  /* The doors. A chip is a small promise of a page, so it dresses like the
+     destinations the front page already uses: the number in the accent, the
+     name underlined on approach. */
+  .chips {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    margin-block-start: var(--space-s);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+  }
+
+  .chip {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2xs);
+    border: var(--rule);
+    background: var(--base);
+    padding-block: var(--space-2xs);
+    padding-inline: var(--space-xs);
+    text-decoration: none;
+  }
+
+  .chip .no {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    color: var(--accent);
+  }
+
+  .chip .c-name {
+    font-size: var(--text-small);
+    color: var(--text);
+  }
+
+  .chip:hover,
+  .chip:focus-visible {
+    border-color: var(--accent);
+  }
+
+  .chip:hover .c-name,
+  .chip:focus-visible .c-name {
+    color: var(--current);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+</style>

@@ -57,7 +57,7 @@
 </figure>
 
 <script>
-  import { wire, stagger } from "../scripts/figures.js";
+  import { spawn, wire, stagger } from "../scripts/figures.js";
 
   /* What [work] appends, in order, cycling. Kept short: the drawing needs
      enough rows to fold, not a transcript. */
@@ -95,8 +95,7 @@
         status.textContent = "the process is gone — restart and replay first";
         return;
       }
-      const line = document.createElement("li");
-      line.textContent = WORK[worked % WORK.length] ?? "";
+      const line = spawn(figure, "li", "", WORK[worked % WORK.length] ?? "");
       worked += 1;
       events.appendChild(line);
       paintState();
@@ -158,9 +157,16 @@
     });
 
     figure.querySelector('[data-act="reset"]')!.addEventListener("click", () => {
-      events.innerHTML =
-        "<li>run started</li><li>session 1 started</li><li>checkpoint 1 claimed</li>" +
-        "<li>session 1 finished</li><li>session 2 started</li>";
+      events.textContent = "";
+      for (const fact of [
+        "run started",
+        "session 1 started",
+        "checkpoint 1 claimed",
+        "session 1 finished",
+        "session 2 started"
+      ]) {
+        events.appendChild(spawn(figure, "li", "", fact));
+      }
       worked = 0;
       dead = false;
       statePane.classList.remove("dead");

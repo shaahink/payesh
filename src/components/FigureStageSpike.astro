@@ -1,0 +1,180 @@
+---
+/* Where the waste sat — for "What an autonomous run actually costs".
+   ---------------------------------------------------------------------------
+   Two panes, one story. The first is the shape: runs do not waste money as a
+   uniform tax, they waste it in one stage that goes sideways while everything
+   around it behaves — so the run is drawn as stage columns with one spike.
+   The second is what the spike was made of: a session loop that was being
+   careful inside a vocabulary with no word for wait — orient at full price,
+   read the plan, run the gates, take a fresh reading of a clock that has not
+   moved, write a handoff saying what the last one said, exit honestly. And
+   under it, the fix: a verb, one line long.
+
+   Column heights are schematic — the dearest stage's measured cost, share,
+   sessions and checkpoints are in the strip, recomputed per run. */
+
+const STAGES = [
+  { units: 2, dear: false },
+  { units: 3, dear: false },
+  { units: 9, dear: true },
+  { units: 2, dear: false },
+  { units: 3, dear: false }
+];
+---
+
+<figure class="fig fig-spike">
+  <div
+    class="panes"
+    role="img"
+    aria-label="Two panes. First, a run drawn as stage columns: every stage short except one tall spike — waste concentrates in a single stage while the stages around it behave. Second, what the tall stage was made of: session after session paying full price to orient, read the plan, run the gates, take a fresh reading of a clock that had not moved, and write a handoff saying what the previous handoff said — honest sessions in a vocabulary with no word for wait. Under it, the fix: a session can declare itself blocked until a named future instant, and the run sleeps instead of paying for diligence."
+  >
+    <div class="pane shape" aria-hidden="true">
+      <p class="fig-label">one run, by stage — the waste is a spike, not a tax</p>
+      {/* No style attribute carries a height — the kit's CSP zeroes them
+          silently; the units live in this component's <style> below. */}
+      <div class="cols">
+        {
+          STAGES.map((stage) => (
+            <span class={`col${stage.dear ? " is-dear" : ""}`}>
+              <span class="fill" />
+              <span class="c-name">{stage.dear ? "the dear one" : "stage"}</span>
+            </span>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="pane loop" aria-hidden="true">
+      <p class="fig-label">inside the spike — careful, honest, and stuck</p>
+      <div class="row">
+        <span class="box orient">orient — full price</span>
+        <span class="arrow">→</span>
+        <span class="box">read the plan</span>
+        <span class="arrow">→</span>
+        <span class="box">gates — green</span>
+        <span class="arrow">→</span>
+        <span class="box">read the clock — unchanged</span>
+        <span class="arrow">→</span>
+        <span class="box">handoff — says what the last one said</span>
+        <span class="arrow">→</span>
+        <span class="box">exit</span>
+      </div>
+      <p class="repeat">⟲ session after session — ending was the honest move, so they kept making it</p>
+      <p class="fix">the fix is a verb: blocked until a named instant, with a reason — one line, and a nap</p>
+    </div>
+  </div>
+
+  <figcaption>
+    Waste does not arrive as a uniform tax on every session; it arrives as one
+    stage that eats a quarter or a third of a run. Which is why the stage
+    split is where to look, and the run total is where not to — the spike here
+    was sessions being careful inside a vocabulary that had no word for the
+    thing that was true.
+  </figcaption>
+</figure>
+
+<style>
+  .panes {
+    display: grid;
+    gap: var(--space-m);
+  }
+
+  /* The columns: a run's stages on one baseline. The spike wears the accent
+     border — it is the current thing, not a failure; every gate in it was
+     green, which is the article's point. */
+  .cols {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-xs);
+    border-block-end: var(--rule);
+  }
+
+  .col {
+    --step: 0.55rem;
+    flex: 1 1 0;
+    max-inline-size: 6rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: var(--space-3xs);
+  }
+
+  /* The still's heights, mirroring STAGES in the frontmatter — stylesheet
+     rules rather than style attributes, because the kit's CSP silently
+     zeroes an attribute-borne height. A mismatch shows immediately as the
+     spike moving stages. */
+  .col:nth-child(1) .fill { --u: 2; }
+  .col:nth-child(2) .fill { --u: 3; }
+  .col:nth-child(3) .fill { --u: 9; }
+  .col:nth-child(4) .fill { --u: 2; }
+  .col:nth-child(5) .fill { --u: 3; }
+
+  .fill {
+    display: block;
+    block-size: calc(var(--step) * var(--u));
+    background: var(--surface);
+    border: var(--rule);
+  }
+
+  .col.is-dear .fill {
+    outline: 2px solid var(--accent);
+    outline-offset: -1px;
+  }
+
+  .c-name {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    text-align: center;
+  }
+
+  .col.is-dear .c-name {
+    color: var(--current);
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs);
+  }
+
+  .box {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border: var(--rule);
+    background: var(--base);
+    padding-block: var(--space-2xs);
+    padding-inline: var(--space-xs);
+    color: var(--text);
+  }
+
+  .box.orient {
+    color: var(--current);
+  }
+
+  .arrow {
+    font-family: var(--mono);
+    color: var(--muted);
+  }
+
+  .repeat {
+    margin-block-start: var(--space-s);
+    font-size: var(--text-small);
+    color: var(--muted);
+  }
+
+  /* The fix is the one green sentence: it is the success state of this whole
+     story, and the strip above the article carries what the line is worth. */
+  .fix {
+    margin-block-start: var(--space-2xs);
+    font-size: var(--text-small);
+    color: var(--green);
+    border-block-start: var(--rule);
+    padding-block-start: var(--space-2xs);
+  }
+</style>

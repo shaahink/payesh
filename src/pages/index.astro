@@ -38,6 +38,7 @@ import { getEntry } from "astro:content";
 import { isVisible } from "@shaahink/sitekit/visibility";
 import EntryList from "../components/EntryList.astro";
 import FigureEvidence from "../components/FigureEvidence.astro";
+import FigureHarness from "../components/FigureHarness.astro";
 import FigureLoop from "../components/FigureLoop.astro";
 import Mark from "../components/Mark.astro";
 import TagList from "../components/TagList.astro";
@@ -155,6 +156,12 @@ if (isVisible(page.data, "notes")) rail.push({ no: "06", href: "#notes", label: 
       <p class="secnum" aria-hidden="true">01</p>
       <h2 data-sk-edit="spine.title">{spine.title}</h2>
       <p data-sk-edit="spine.intro">{spine.intro}</p>
+      {/* The endpaper map (owner's ask, 2026-08-13: the front page should
+          invite, not only list): the ten concepts placed on the machine they
+          describe, each a door. The list below stays — the map is for the
+          reader who thinks in territory, the list for the one who thinks in
+          contents, and both read from the same collection. */}
+      <FigureHarness />
       <EntryList items={concepts} ordinalLabel="Concept" />
     </section>
 

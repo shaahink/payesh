@@ -49,6 +49,17 @@ the editor and can never reach `astro:content`, so anything Astro-shaped in
 there — including `image()` — breaks it. Take the image type as a generic
 parameter instead; nimagiti shows the shape.
 
+**Inline `style=""` attributes are dead on this site, silently.** The built
+pages carry a meta CSP (the kit's build integration) whose `style-src` allows
+stylesheets and hashed `<style>` elements but never style *attributes* — so a
+width or height written into one renders as zero in every real browser while
+looking perfect in the HTML. Figure geometry lives in each component's own
+`<style>` (per-class or nth-child rules for the still); scripts change it
+through the CSSOM (`el.style.setProperty`), which CSP permits. Scripts that
+*create* elements must also stamp them with the component's scope attribute or
+they fall out of the scoped styles — `spawn()` in `src/scripts/figures.js`
+does both jobs; see FigureCensor.astro for the whole pattern.
+
 ## A pull request nobody should merge yet
 
 The fleet's `catchup.mjs` reads every open PR in this repo and merges the ones

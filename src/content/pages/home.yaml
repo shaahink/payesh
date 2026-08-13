@@ -16,15 +16,23 @@ hero:
   # like a vendor's benchmark. Since 2026-08-13 the front page is the guide's —
   # the concepts and the articles — and the machine that produced the record
   # has a page of its own, pointed at from the section below the doors.
+  # Two paragraphs since the owner's ask of the same day: the subject named
+  # first — harness thinking, not autonomy for its own sake — and the month
+  # that produced the evidence second.
   standfirst:
-    - "For a month I pointed an orchestrator I had built at my own repositories
-      and let it work unattended: planning, spawning agents, running gates,
-      recording what happened. This site is the field guide that came out of it
-      — ten concepts of agent-driven engineering, each stated so it is useful
-      anywhere, and four longer pieces built from what the record actually
-      showed. Some of it went well, a good deal of it did not, and both are
-      published, because a number nobody can check is an opinion with a decimal
-      point."
+    - "The subject here is harness thinking: the working idea that the
+      engineering lives in the rings around the model — the loop that runs it,
+      the context it is handed, the gates that check it, the record it leaves —
+      and not inside the model itself. The ten concepts are stated so they are
+      useful anywhere, whether your harness runs for a minute at your elbow or
+      all night on its own."
+    - "The evidence is one month: I pointed an orchestrator I had built at my
+      own repositories and let it work unattended — planning, spawning agents,
+      running gates, recording what happened. This site is the field guide that
+      came out of it, with four longer pieces built from what the record
+      actually showed. Some of it went well, a good deal of it did not, and both
+      are published, because a number nobody can check is an opinion with a
+      decimal point."
 
 spine:
   title: "The ten concepts"

@@ -19,6 +19,29 @@ export function wire(name, init) {
   }
 }
 
+/* Scoped styles reach an element because Astro's compiler stamped it with the
+   component's data-astro-cid-* attribute at build time. An element a script
+   creates afterwards was never seen by the compiler, so a rebuilt drawing
+   falls out of its own styles — the still is dressed and the moving version
+   is naked, which is the worst possible order to be wrong in. Every element
+   a figure's script makes goes through here, wearing the figure root's own
+   stamp. */
+/**
+ * @param {HTMLElement} figure
+ * @param {string} tag
+ * @param {string} className
+ * @param {string} [text]
+ */
+export function spawn(figure, tag, className, text) {
+  const el = document.createElement(tag);
+  el.className = className;
+  if (text !== undefined) el.textContent = text;
+  for (const { name } of figure.attributes) {
+    if (name.startsWith("data-astro-cid-")) el.setAttribute(name, "");
+  }
+  return el;
+}
+
 /* Asked at the moment of animating rather than cached at load: the visitor
    can change the setting mid-visit, and a stale answer would keep animating
    against their word. A figure that staggers its steps asks this first and

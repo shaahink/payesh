@@ -1,0 +1,137 @@
+---
+/* What a cap below the floor buys — for "The nudge that sat below the
+   median".
+   ---------------------------------------------------------------------------
+   The article's counterintuitive half: a too-low ceiling does not save
+   tokens, it buys the same expensive orientation again and again while the
+   checkpoint count stays where it was. Two rails, same work. On the first, a
+   ceiling with headroom: one start-up cost, then the cheap cached middle,
+   then the closing steps — and a checkpoint. On the second, a cap below the
+   floor: session after session pays full price to orient, is killed before
+   the closing steps, and hands the next session the same re-reading to do.
+
+   Same idiom as the other rails drawings: panes, mono labels, arrows that
+   are characters, semantic colour for status only. Nothing is to scale — the
+   measured tokens-per-checkpoint for every window is in the strip. */
+
+const KILLED_SESSIONS = ["first", "second", "third"];
+---
+
+<figure class="fig fig-churn">
+  <div
+    class="rails"
+    role="img"
+    aria-label="The same work on two rails. Under a ceiling with headroom, one session pays the start-up cost once — reading the tracker, the plan and the code at full price — then works in cheap cache reads and ends on its own terms: commit, handoff, checkpoint closed. Under a cap below the floor, three sessions in a row each pay the same full-price orientation, are killed at the ceiling before the closing steps, and close nothing — the ledger pays for the expensive tokens repeatedly while the checkpoint count stays where it was."
+  >
+    <div class="rail" aria-hidden="true">
+      <p class="r-label">a ceiling with headroom — the same work, once</p>
+      <div class="row">
+        <span class="box orient">orient — full price</span>
+        <span class="arrow">→</span>
+        <span class="box">work — cache reads</span>
+        <span class="arrow">→</span>
+        <span class="box close">commit · handoff · closed <span class="ok">✓</span></span>
+      </div>
+      <p class="r-note">one start-up cost, one checkpoint</p>
+    </div>
+
+    <div class="rail" aria-hidden="true">
+      <p class="r-label">a cap below the floor — the same work, over and over</p>
+      {
+        KILLED_SESSIONS.map((nth) => (
+          <div class="row">
+            <span class="box orient">orient — full price{nth === "first" ? "" : ", again"}</span>
+            <span class="arrow">→</span>
+            <span class="box">work</span>
+            <span class="arrow">→</span>
+            <span class="box kill">killed at the ceiling</span>
+          </div>
+        ))
+      }
+      <p class="r-note bad">
+        the expensive tokens, bought three times — and the checkpoint count has not moved
+      </p>
+    </div>
+  </div>
+
+  <figcaption>
+    Continuing a long session is cheap; starting a new one is not. A cap set
+    below the floor converts that arithmetic into churn: every kill sends the
+    next session back to page one at full price, which is why
+    tokens-per-checkpoint — the figure a cap is usually justified by — is the
+    one that rises.
+  </figcaption>
+</figure>
+
+<style>
+  .rails {
+    display: grid;
+    gap: var(--space-m);
+  }
+
+  .rail {
+    background: var(--mantle);
+    border: var(--rule);
+    padding: var(--space-m) var(--space-m) var(--space-s);
+  }
+
+  .r-label {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-block-end: var(--space-m);
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs);
+  }
+
+  .row + .row {
+    margin-block-start: var(--space-2xs);
+  }
+
+  .box {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border: var(--rule);
+    background: var(--base);
+    padding-block: var(--space-2xs);
+    padding-inline: var(--space-xs);
+    color: var(--text);
+  }
+
+  .arrow {
+    font-family: var(--mono);
+    color: var(--muted);
+  }
+
+  /* The repeated purchase is the subject, so orientation wears the accent. */
+  .box.orient {
+    color: var(--current);
+  }
+
+  .ok {
+    color: var(--green);
+  }
+
+  .box.kill {
+    color: var(--red);
+  }
+
+  .r-note {
+    margin-block-start: var(--space-s);
+    font-size: var(--text-small);
+    color: var(--muted);
+  }
+
+  .r-note.bad {
+    color: var(--red);
+  }
+</style>

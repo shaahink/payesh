@@ -22,12 +22,16 @@ const START_TURNS = 4;
     role="img"
     aria-label="A session's bill drawn one row per turn. Every turn re-sends the whole conversation so far and adds one new unit of work, so the rows stack into a triangle: by turn four, three units are re-sent to add one. Doubling the turns roughly quadruples the total sent. Pricing the re-read as cache reads makes each re-sent unit cheaper but the re-sending remains — cheaper is not free."
   >
+    {/* No style attribute carries a width: the kit's CSP zeroes attribute-
+        borne styles silently, so the still's units live in this component's
+        <style> as nth-child rules, and the script writes through the CSSOM,
+        which CSP permits. */}
     <div class="rows" data-rows aria-hidden="true">
       {Array.from({ length: START_TURNS }, (_, i) => (
         <div class="row">
           <span class="turn">t{i + 1}</span>
-          {i > 0 && <span class="resend" style={`--u: ${i}`}>re-sent</span>}
-          <span class="fresh" style="--u: 1">new</span>
+          {i > 0 && <span class="resend">re-sent</span>}
+          <span class="fresh">new</span>
         </div>
       ))}
     </div>
@@ -56,7 +60,7 @@ const START_TURNS = 4;
 </figure>
 
 <script>
-  import { wire } from "../scripts/figures.js";
+  import { spawn, wire } from "../scripts/figures.js";
 
   const START = 4;
   const MAX = 8;
@@ -71,23 +75,15 @@ const START_TURNS = 4;
     let turns = START;
 
     const addRow = (turn: number) => {
-      const row = document.createElement("div");
-      row.className = "row";
-      const label = document.createElement("span");
-      label.className = "turn";
-      label.textContent = `t${turn}`;
-      row.appendChild(label);
+      const row = spawn(figure, "div", "row");
+      row.appendChild(spawn(figure, "span", "turn", `t${turn}`));
       if (turn > 1) {
-        const resend = document.createElement("span");
-        resend.className = "resend";
+        const resend = spawn(figure, "span", "resend", "re-sent");
         resend.style.setProperty("--u", String(turn - 1));
-        resend.textContent = "re-sent";
         row.appendChild(resend);
       }
-      const fresh = document.createElement("span");
-      fresh.className = "fresh";
+      const fresh = spawn(figure, "span", "fresh", "new");
       fresh.style.setProperty("--u", "1");
-      fresh.textContent = "new";
       row.appendChild(fresh);
       rows.appendChild(row);
     };
@@ -155,6 +151,15 @@ const START_TURNS = 4;
     inline-size: 2ch;
     flex: none;
   }
+
+  /* The still's units, mirroring START_TURNS above — stylesheet rules rather
+     than style attributes, because the kit's CSP silently zeroes an
+     attribute-borne width. The script's rows write through the CSSOM, which
+     wins over these and is CSP-clean. */
+  .fresh { --u: 1; }
+  .row:nth-child(2) .resend { --u: 1; }
+  .row:nth-child(3) .resend { --u: 2; }
+  .row:nth-child(4) .resend { --u: 3; }
 
   /* Widths in shared units so the triangle is honest: a row's re-send is
      exactly the rows above it. The scale is the drawing's, not a datum. */

@@ -1,0 +1,190 @@
+---
+/* The branch that returned before the recorder — for "The ledger that lied".
+   ---------------------------------------------------------------------------
+   The article's cause is a few lines of control flow, so the drawing is the
+   control flow: a session ends, the ceiling branch is asked, and the two
+   lanes part. Every other ending walks down through the verdict pass and the
+   row gets written in full. The rolled-over lane marks the outcome, pulls a
+   summary, and returns — and everything that records what the session did
+   lives below that return, drawn dashed: present in the code, never reached.
+   The one box that survives on the rollover lane is the digest, because it is
+   written on the way out for the next session's benefit.
+
+   No exception, no crash, nothing a log would flag — a branch doing exactly
+   what it existed to do, taking the accounting out with it. Same idiom as
+   the site's other drawings: panes, hairlines, mono labels, arrows that are
+   characters, semantic colour for status only. */
+---
+
+<figure class="fig fig-return">
+  <div
+    class="flow"
+    role="img"
+    aria-label="A control-flow drawing. A session ends and the code asks: did it cross its token ceiling? On the no lane, the verdict pass runs — walk the repository history from the session's starting commit, read the tracker before and after, record gates and claims — and the session's row is written in full. On the yes lane, the code marks the outcome rolled over, pulls a result summary, and returns. Everything that records what the session did sits below that return and is drawn dashed, because it is present in the code and never reached. The digest survives on both lanes — it is written on the way out for the next session — and the rolled-over row ends up holding zeros with the shape of measurements."
+  >
+    <div class="head" aria-hidden="true">
+      <span class="box">a session ends</span>
+      <span class="darrow">↓</span>
+      <span class="box ask">crossed its token ceiling?</span>
+    </div>
+
+    <div class="lanes" aria-hidden="true">
+      <div class="lane">
+        <p class="l-label">no — every other ending</p>
+        <ol class="steps">
+          <li class="box">verdict pass</li>
+          <li class="darrow">↓</li>
+          <li class="box">walk the repo history from the session's own start</li>
+          <li class="darrow">↓</li>
+          <li class="box">read the tracker, before and after</li>
+          <li class="darrow">↓</li>
+          <li class="box">record commits · gates · claims</li>
+          <li class="darrow">↓</li>
+          <li class="box">write the digest, on the way out</li>
+        </ol>
+        <p class="l-end ok">the row is written, full — a record of the work</p>
+      </div>
+
+      <div class="lane">
+        <p class="l-label">yes — killed at the ceiling</p>
+        <ol class="steps">
+          <li class="box">mark the outcome: rolled over</li>
+          <li class="darrow">↓</li>
+          <li class="box">pull a summary from what the agent last said</li>
+          <li class="darrow">↓</li>
+          <li class="box ret">return</li>
+          <li class="darrow ghosted">┆</li>
+          <li class="box ghost">walk the repo history</li>
+          <li class="darrow ghosted">┆</li>
+          <li class="box ghost">read the tracker</li>
+          <li class="darrow ghosted">┆</li>
+          <li class="box ghost">record commits · gates · claims</li>
+          <li class="darrow">↓</li>
+          <li class="box">write the digest, on the way out</li>
+        </ol>
+        <p class="l-end bad">
+          three columns of zeros — written by the path, with the shape of measurements
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <figcaption>
+    Nothing failed: a branch returned early, which is what it existed to do,
+    and it took the accounting out with it. The dashed boxes are in the code
+    and never reached on this lane; the digest survives because it is written
+    for the next session rather than for the verdict. This is the ordinary
+    shape of a telemetry defect — a table that is complete, consistent, and
+    wrong about one population.
+  </figcaption>
+</figure>
+
+<style>
+  .flow {
+    background: var(--mantle);
+    border: var(--rule);
+    padding: var(--space-m) var(--space-m) var(--space-s);
+  }
+
+  .head {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3xs);
+  }
+
+  .lanes {
+    display: grid;
+    gap: var(--space-m);
+    margin-block-start: var(--space-s);
+  }
+
+  @media (min-width: 40rem) {
+    .lanes {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-l);
+    }
+  }
+
+  .lane {
+    border-block-start: var(--rule);
+    padding-block-start: var(--space-s);
+  }
+
+  .l-label {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-block-end: var(--space-s);
+  }
+
+  .steps {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3xs);
+  }
+
+  .box {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border: var(--rule);
+    background: var(--base);
+    padding-block: var(--space-2xs);
+    padding-inline: var(--space-xs);
+    color: var(--text);
+  }
+
+  /* The question is the hinge of the whole drawing, so it is the one box
+     allowed the accent. */
+  .box.ask {
+    color: var(--current);
+  }
+
+  /* The return is the culprit and the culprit did nothing wrong — it is
+     marked as attention, not failure. */
+  .box.ret {
+    color: var(--yellow);
+    border-color: var(--yellow);
+  }
+
+  /* Present in the code, never reached on this lane. */
+  .box.ghost {
+    color: var(--muted);
+    border-style: dashed;
+    background: repeating-linear-gradient(45deg, var(--pending) 0 3px, transparent 3px 10px);
+  }
+
+  .darrow {
+    font-family: var(--mono);
+    color: var(--muted);
+    padding-inline-start: var(--space-xs);
+  }
+
+  /* Muted, not a quiet role: the quiet three are held to frame bars, and this
+     is a character read as text. The glyph itself already says "not really
+     an edge". */
+  .darrow.ghosted {
+    color: var(--muted);
+  }
+
+  .l-end {
+    margin-block-start: var(--space-s);
+    font-size: var(--text-small);
+  }
+
+  .l-end.ok {
+    color: var(--green);
+  }
+
+  .l-end.bad {
+    color: var(--red);
+  }
+</style>

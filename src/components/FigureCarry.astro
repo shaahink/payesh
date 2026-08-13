@@ -59,7 +59,7 @@
 </figure>
 
 <script>
-  import { wire } from "../scripts/figures.js";
+  import { spawn, wire } from "../scripts/figures.js";
 
   const RULE = '"the obvious fix fails — the flag is ignored; go around"';
   const STATUS_LINE = '"finished checkpoint 3; two commits; gates green"';
@@ -79,22 +79,15 @@
       wrote.textContent = skipped() ? "wrote: nothing" : `wrote: ${RULE}`;
       carried.textContent = "";
       if (!skipped()) {
-        const line = document.createElement("li");
-        line.className = "rule-line";
-        line.textContent = RULE;
-        carried.appendChild(line);
+        carried.appendChild(spawn(figure, "li", "rule-line", RULE));
       }
       for (let i = 0; i < padding; i += 1) {
-        const line = document.createElement("li");
-        line.className = "rent-line";
-        line.textContent = STATUS_LINE;
-        carried.appendChild(line);
+        carried.appendChild(spawn(figure, "li", "rent-line", STATUS_LINE));
       }
       if (skipped() && padding === 0) {
-        const line = document.createElement("li");
-        line.className = "empty-line";
-        line.textContent = "(empty — a clean slate, which reads as good news)";
-        carried.appendChild(line);
+        carried.appendChild(
+          spawn(figure, "li", "empty-line", "(empty — a clean slate, which reads as good news)")
+        );
       }
       outcome.textContent = skipped()
         ? "tries the obvious fix, spends the same money, reaches the same dead end — and writes " +

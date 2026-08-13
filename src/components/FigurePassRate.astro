@@ -1,0 +1,250 @@
+---
+/* A pass rate you can doctor — for "Never believe the agent".
+   ---------------------------------------------------------------------------
+   The article's opening claim is that a good-looking pass rate proves nothing
+   on its own, and the fastest way to believe that is to be handed the levers.
+   The drawing is a battery of gates reported honestly — two of them red — and
+   two buttons that are the two classic ways a checking system rots: skip the
+   slow gates, and mark the hard ones optional. Neither button fixes anything,
+   and together they turn the verdict green. The two counts that would give
+   the game away — skipped and optional — are exactly the ones published
+   metrics rarely carry.
+
+   Same idiom as the other interactive figures: the still is the honest state
+   and stands whole without JS; the controls are simply not there for a
+   visitor who cannot use them. The gates are schematic, not the corpus's —
+   the corpus's own counts are in the strip, where they are recomputed. */
+
+const GATES = [
+  { name: "build", slow: false, hard: false, red: false },
+  { name: "types", slow: false, hard: false, red: false },
+  { name: "unit", slow: false, hard: false, red: false },
+  { name: "lint", slow: false, hard: false, red: false },
+  { name: "integration", slow: true, hard: false, red: false },
+  { name: "e2e", slow: true, hard: true, red: true },
+  { name: "a11y", slow: false, hard: true, red: true },
+  { name: "contrast", slow: false, hard: false, red: false }
+];
+---
+
+<figure class="fig fig-passrate" data-fig="passrate">
+  <div
+    class="pane"
+    role="img"
+    aria-label="A battery of eight gates drawn as a row of chips, reported honestly: two are red, so the battery's verdict is red. One button skips the slow gates — a red one vanishes without being fixed. Another marks the hard gates optional — the remaining red is excused. The verdict line turns green while the checking got weaker twice, which is why a pass rate is only readable next to two more counts: how many gates were skipped, and how many were allowed to fail."
+  >
+    <p class="fig-label">the gate battery, reported honestly</p>
+    <ul class="gates" data-gates aria-hidden="true">
+      {
+        GATES.map((gate) => (
+          <li class={`gate ${gate.red ? "is-red" : "is-green"}`}>
+            <span class="g-name">{gate.name}</span>
+            <span class="g-state">{gate.red ? "✗" : "✓"}</span>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="verdict is-red" data-verdict aria-hidden="true">
+      battery: red — two gates disagree with the agent
+    </p>
+  </div>
+
+  <div class="fig-controls">
+    <button type="button" class="fig-btn" data-act="skip" aria-pressed="false">
+      skip the slow ones
+    </button>
+    <button type="button" class="fig-btn" data-act="excuse" aria-pressed="false">
+      mark the hard ones optional
+    </button>
+    <button type="button" class="fig-btn" data-act="reset">reset</button>
+    <p class="fig-status" data-status aria-live="polite">
+      Two honest reds. Improve the pass rate without fixing anything.
+    </p>
+  </div>
+
+  <figcaption>
+    Neither button touches the work; both improve the verdict. A checking
+    system that never checks anything also reports a perfect pass rate — so a
+    pass rate is only evidence beside two more counts, skipped and optional,
+    and this corpus publishes both at zero.
+  </figcaption>
+</figure>
+
+<script>
+  import { spawn, wire } from "../scripts/figures.js";
+
+  /* The same battery the markup renders honestly, re-reported from state once
+     the reader starts pulling the levers. */
+  const GATES = [
+    { name: "build", slow: false, hard: false, red: false },
+    { name: "types", slow: false, hard: false, red: false },
+    { name: "unit", slow: false, hard: false, red: false },
+    { name: "lint", slow: false, hard: false, red: false },
+    { name: "integration", slow: true, hard: false, red: false },
+    { name: "e2e", slow: true, hard: true, red: true },
+    { name: "a11y", slow: false, hard: true, red: true },
+    { name: "contrast", slow: false, hard: false, red: false }
+  ];
+
+  wire("passrate", (figure) => {
+    const list = figure.querySelector("[data-gates]")!;
+    const verdict = figure.querySelector("[data-verdict]")!;
+    const status = figure.querySelector("[data-status]")!;
+    const skipBtn = figure.querySelector('[data-act="skip"]')!;
+    const excuseBtn = figure.querySelector('[data-act="excuse"]')!;
+    let skipping = false;
+    let excusing = false;
+
+    const render = () => {
+      list.textContent = "";
+      let reds = 0;
+      for (const gate of GATES) {
+        const name = spawn(figure, "span", "g-name", gate.name);
+        const state = spawn(figure, "span", "g-state");
+        const item = spawn(figure, "li", "gate");
+
+        if (skipping && gate.slow) {
+          item.className = "gate is-skipped";
+          state.textContent = "not run";
+        } else if (excusing && gate.hard && gate.red) {
+          item.className = "gate is-excused";
+          state.textContent = "✗ · allowed";
+        } else if (gate.red) {
+          item.className = "gate is-red";
+          state.textContent = "✗";
+          reds += 1;
+        } else {
+          item.className = "gate is-green";
+          state.textContent = "✓";
+        }
+        item.append(name, state);
+        list.appendChild(item);
+      }
+      verdict.className = reds > 0 ? "verdict is-red" : "verdict is-green";
+      verdict.textContent =
+        reds > 1
+          ? "battery: red — two gates disagree with the agent"
+          : reds === 1
+            ? "battery: red — a gate disagrees with the agent"
+            : "battery: green";
+      return reds;
+    };
+
+    const narrate = (reds: number) => {
+      if (!skipping && !excusing) {
+        status.textContent = "Two honest reds. Improve the pass rate without fixing anything.";
+      } else if (reds > 0) {
+        status.textContent =
+          "better already — a red gate stopped running, and nothing on the verdict line says so";
+      } else {
+        status.textContent =
+          "green, and it proves nothing: the slowest gate never ran and the hardest was excused. " +
+          "Ask any pass rate what was skipped and what was optional.";
+      }
+    };
+
+    skipBtn.addEventListener("click", () => {
+      skipping = !skipping;
+      skipBtn.setAttribute("aria-pressed", String(skipping));
+      narrate(render());
+    });
+
+    excuseBtn.addEventListener("click", () => {
+      excusing = !excusing;
+      excuseBtn.setAttribute("aria-pressed", String(excusing));
+      narrate(render());
+    });
+
+    figure.querySelector('[data-act="reset"]')!.addEventListener("click", () => {
+      skipping = false;
+      excusing = false;
+      skipBtn.setAttribute("aria-pressed", "false");
+      excuseBtn.setAttribute("aria-pressed", "false");
+      render();
+      status.textContent = "Two honest reds. Improve the pass rate without fixing anything.";
+    });
+  });
+</script>
+
+<style>
+  .gates {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs);
+  }
+
+  .gate {
+    border: var(--rule);
+    background: var(--base);
+    padding: var(--space-2xs) var(--space-xs);
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2xs);
+  }
+
+  .g-name {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text);
+  }
+
+  .g-state {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+  }
+
+  /* Status colours doing status work — the only decoration the site allows
+     them. */
+  .gate.is-green .g-state {
+    color: var(--green);
+  }
+
+  .gate.is-red .g-state {
+    color: var(--red);
+  }
+
+  /* Skipped is deliberately-not-done territory: the hatch of the quiet fill,
+     dashed at the edge, the wording itself in muted reading text. */
+  .gate.is-skipped {
+    background: repeating-linear-gradient(45deg, var(--pending) 0 3px, transparent 3px 10px);
+    border-style: dashed;
+  }
+
+  .gate.is-skipped .g-name,
+  .gate.is-skipped .g-state {
+    color: var(--muted);
+  }
+
+  /* An excused red still shows its cross — the failure is real, only the
+     accounting looks away. Yellow is the Face's attention role. */
+  .gate.is-excused {
+    border-style: dashed;
+  }
+
+  .gate.is-excused .g-state {
+    color: var(--yellow);
+  }
+
+  .verdict {
+    margin-block-start: var(--space-m);
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-block-start: var(--rule);
+    padding-block-start: var(--space-xs);
+  }
+
+  .verdict.is-red {
+    color: var(--red);
+  }
+
+  .verdict.is-green {
+    color: var(--green);
+  }
+</style>

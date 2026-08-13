@@ -1,0 +1,202 @@
+---
+/* The two denominators — for "What an autonomous run actually costs".
+   ---------------------------------------------------------------------------
+   The opening section's sharpest claim: cost per session and cost per closed
+   checkpoint tell different stories on purpose, because chopping the same
+   work into more sessions improves one and worsens the other. So the drawing
+   is the same checkpoint closed twice — once in one session, once chopped
+   into three — with the two rates read off each pane. The flattering rate and
+   the honest one part ways in the second pane, and that parting is the whole
+   argument for pricing the checkpoint.
+
+   Nothing is to scale and no rate is printed — the measured versions of both
+   figures, with their denominators named, are in the strip. */
+---
+
+<figure class="fig fig-denom">
+  <div
+    class="panes"
+    role="img"
+    aria-label="The same checkpoint closed twice. In the first pane, one session: orientation paid once, then the work, then the closing steps — the cost per session and the cost per closed checkpoint are the same honest number. In the second pane, the same work chopped into three shorter sessions, each paying its own orientation before the last one closes the checkpoint. Cost per session falls, because each slice is smaller. Cost per closed checkpoint rises, because three orientations were bought for one checkpoint. A cap that cuts sessions shorter improves the flattering rate by construction."
+  >
+    <div class="way" aria-hidden="true">
+      <p class="w-label">the work, in one session</p>
+      <div class="row">
+        <span class="box orient">orient</span>
+        <span class="arrow">→</span>
+        <span class="box wide">work</span>
+        <span class="arrow">→</span>
+        <span class="box">closed <span class="ok">✓</span></span>
+      </div>
+      <dl class="rates">
+        <div class="rate">
+          <dt>cost per session</dt>
+          <dd>one honest number —</dd>
+        </div>
+        <div class="rate">
+          <dt>cost per closed checkpoint</dt>
+          <dd>the same honest number —</dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="way" aria-hidden="true">
+      <p class="w-label">the same work, chopped into three</p>
+      <div class="chopped">
+        <div class="row">
+          <span class="box orient">orient</span>
+          <span class="arrow">→</span>
+          <span class="box">work</span>
+          <span class="arrow">→</span>
+          <span class="box cut">cut</span>
+        </div>
+        <div class="row">
+          <span class="box orient">orient, again</span>
+          <span class="arrow">→</span>
+          <span class="box">work</span>
+          <span class="arrow">→</span>
+          <span class="box cut">cut</span>
+        </div>
+        <div class="row">
+          <span class="box orient">orient, again</span>
+          <span class="arrow">→</span>
+          <span class="box">work</span>
+          <span class="arrow">→</span>
+          <span class="box">closed <span class="ok">✓</span></span>
+        </div>
+      </div>
+      <dl class="rates">
+        <div class="rate">
+          <dt>cost per session</dt>
+          <dd class="flatters">falls ↓ — each slice is smaller, and the dashboard smiles</dd>
+        </div>
+        <div class="rate">
+          <dt>cost per closed checkpoint</dt>
+          <dd class="notices">rises ↑ — every slice paid its own start-up for one close</dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <figcaption>
+    The same checkpoint, two denominators. Per-session cost falls whenever
+    sessions get shorter — including when they get shorter because they are
+    being cut off before they finish. Per-checkpoint cost moves the other
+    way, and it is the one that notices.
+  </figcaption>
+</figure>
+
+<style>
+  .panes {
+    display: grid;
+    gap: var(--space-m);
+  }
+
+  @media (min-width: 64rem) {
+    .panes {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-l);
+      align-items: start;
+    }
+  }
+
+  .way {
+    background: var(--mantle);
+    border: var(--rule);
+    padding: var(--space-m) var(--space-m) var(--space-s);
+  }
+
+  .w-label {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-block-end: var(--space-m);
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs);
+  }
+
+  .chopped {
+    display: grid;
+    gap: var(--space-2xs);
+  }
+
+  .box {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border: var(--rule);
+    background: var(--base);
+    padding-block: var(--space-2xs);
+    padding-inline: var(--space-xs);
+    color: var(--text);
+  }
+
+  /* The repeated purchase again — the same accent job as the churn drawing,
+     because it is the same money. */
+  .box.orient {
+    color: var(--current);
+  }
+
+  .box.wide {
+    flex: 1 1 6rem;
+  }
+
+  .box.cut {
+    color: var(--red);
+    border-style: dashed;
+  }
+
+  .arrow {
+    font-family: var(--mono);
+    color: var(--muted);
+  }
+
+  .ok {
+    color: var(--green);
+  }
+
+  .rates {
+    margin: 0;
+    margin-block-start: var(--space-m);
+    display: grid;
+    gap: var(--space-2xs);
+  }
+
+  .rate {
+    border-block-start: var(--rule);
+    padding-block-start: var(--space-2xs);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-2xs) var(--space-xs);
+  }
+
+  .rate dt {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text);
+    flex: 0 0 auto;
+  }
+
+  .rate dd {
+    margin: 0;
+    font-size: var(--text-small);
+    color: var(--muted);
+    flex: 1 1 12rem;
+  }
+
+  /* The flattering rate stays quiet; the honest one is the current thing. */
+  .rate .notices {
+    color: var(--current);
+  }
+</style>

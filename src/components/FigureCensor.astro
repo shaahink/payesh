@@ -1,0 +1,249 @@
+---
+/* The cap that censors its own evidence — for "The nudge that sat below the
+   median".
+   ---------------------------------------------------------------------------
+   The article's central mechanism: a median closing session measured inside a
+   capped window can only count the sessions the cap let finish, so the cap
+   deletes exactly the sessions that would have argued against it and then
+   reports a comfortable number. The drawing is a population of sessions as
+   bars, a ceiling the reader can lower, and a median marker that slips down
+   as the survivors thin out — measured each time from what is left, which is
+   the whole trick.
+
+   Bar heights are schematic units of an imaginary window, chosen to make the
+   shape readable — the measured medians, caps and rollover rates for every
+   real window are in the strip, where they are recomputed. The still is the
+   uncapped population, which is also the article's advice about where honest
+   numbers come from. */
+
+const BARS = [5, 3, 8, 6, 12, 4, 7, 10, 5, 9];
+
+/* The upper median of the uncapped population, marked in the still. */
+const sorted = [...BARS].sort((a, b) => a - b);
+const median = sorted[Math.floor(sorted.length / 2)];
+const medianAt = BARS.indexOf(median!);
+---
+
+{/* No style attribute carries a height: the kit's CSP allows stylesheets and
+    hashed <style> elements but silently zeroes style *attributes*, so the
+    still's units live in this component's <style> as nth-child rules and the
+    script writes through the CSSOM, which CSP permits. */}
+<figure class="fig fig-censor" data-fig="censor">
+  <div
+    class="pane"
+    role="img"
+    aria-label="A population of sessions drawn as bars of different heights, each the size a session needed to close its checkpoint. With no ceiling, the median closer sits in the honest middle. Impose a ceiling and every bar taller than it is killed before it closes anything, so it never joins the sample — the measured median is recomputed from the survivors and slips downward. Lower the ceiling further and the median closer describes the cap rather than the work. The cap deletes its own counter-evidence, which is why a budget can only be measured from a window the cap never touched."
+  >
+    <p class="fig-label">the sessions of one window, by the size each needed</p>
+    <div class="plot" data-plot aria-hidden="true">
+      <p class="capline" data-capline hidden><span class="cap-word">the ceiling</span></p>
+      <div class="bars" data-bars>
+        {
+          BARS.map((_, index) => (
+            <span class={`bar${index === medianAt ? " is-median" : ""}`}>
+              <span class="body" />
+            </span>
+          ))
+        }
+      </div>
+    </div>
+    <p class="legend" aria-hidden="true" data-legend>
+      outlined — the median closer, as measured from the sample the cap allows
+    </p>
+  </div>
+
+  <div class="fig-controls">
+    <button type="button" class="fig-btn" data-act="none" aria-pressed="true">no ceiling</button>
+    <button type="button" class="fig-btn" data-act="high" aria-pressed="false">
+      impose a ceiling
+    </button>
+    <button type="button" class="fig-btn" data-act="low" aria-pressed="false">lower it</button>
+    <p class="fig-status" data-status aria-live="polite">
+      No ceiling in force — every closer joins the sample, and the median is honest.
+    </p>
+  </div>
+
+  <figcaption>
+    You cannot measure a budget from inside the budget. Every session the cap
+    kills closes nothing and joins no sample, so the measured median follows
+    the cap downward — a comfortable number produced by deleting the
+    counter-evidence. The honest statistics come from a window the cap never
+    touched, and the strip carries them for every window in the corpus.
+  </figcaption>
+</figure>
+
+<script>
+  import { spawn, wire } from "../scripts/figures.js";
+
+  /* The same population the markup renders uncapped, re-measured from state
+     once the reader starts moving the ceiling. */
+  const BARS = [5, 3, 8, 6, 12, 4, 7, 10, 5, 9];
+  const CAPS: Record<string, number | null> = { none: null, high: 9, low: 6 };
+
+  wire("censor", (figure) => {
+    const bars = figure.querySelector("[data-bars]")!;
+    const capline = figure.querySelector("[data-capline]") as HTMLElement;
+    const status = figure.querySelector("[data-status]")!;
+    const buttons = ["none", "high", "low"].map(
+      (act) => figure.querySelector(`[data-act="${act}"]`)!
+    );
+
+    const render = (cap: number | null) => {
+      /* The measured median: the middle of the survivors, and only the
+         survivors — that restriction is the drawing's whole subject. */
+      const survivors = BARS.filter((u) => cap === null || u <= cap).sort((a, b) => a - b);
+      const median = survivors[Math.floor(survivors.length / 2)];
+      let marked = false;
+
+      bars.textContent = "";
+      for (const units of BARS) {
+        const killed = cap !== null && units > cap;
+        const isMedian = !killed && !marked && units === median;
+        if (isMedian) marked = true;
+
+        const bar = spawn(figure, "span", `bar${isMedian ? " is-median" : ""}`);
+        if (killed) {
+          const ghost = spawn(figure, "span", "ghost");
+          ghost.style.setProperty("--g", String(units - cap!));
+          const body = spawn(figure, "span", "body is-killed");
+          body.style.setProperty("--b", String(cap));
+          bar.append(ghost, body);
+        } else {
+          const body = spawn(figure, "span", "body");
+          body.style.setProperty("--b", String(units));
+          bar.append(body);
+        }
+        bars.appendChild(bar);
+      }
+
+      if (cap === null) {
+        capline.hidden = true;
+      } else {
+        capline.hidden = false;
+        capline.style.setProperty("--cap", String(cap));
+      }
+    };
+
+    const NARRATE: Record<string, string> = {
+      none: "No ceiling in force — every closer joins the sample, and the median is honest.",
+      high:
+        "the outsized sessions were killed before they closed anything, so they never join " +
+        "the sample — the measured median has already slipped",
+      low:
+        "the cap deleted its own counter-evidence: the median closer now describes the cap, " +
+        "not the work, and it reads as a comfortable number"
+    };
+
+    for (const button of buttons) {
+      button.addEventListener("click", () => {
+        const act = button.getAttribute("data-act")!;
+        for (const other of buttons) {
+          other.setAttribute("aria-pressed", String(other === button));
+        }
+        render(CAPS[act] ?? null);
+        status.textContent = NARRATE[act] ?? "";
+      });
+    }
+  });
+</script>
+
+<style>
+  /* One step for every unit in the drawing, so the bars, the ghost tops and
+     the cap line all speak the same ruler. The plot is one step taller than
+     the tallest bar. */
+  .plot {
+    --step: 0.55rem;
+    position: relative;
+    block-size: calc(var(--step) * 13);
+    border-block-end: var(--rule);
+  }
+
+  /* The still's heights, mirroring BARS in the frontmatter — stylesheet
+     rules rather than style attributes, because the kit's CSP silently
+     zeroes an attribute-borne height. The script's re-render writes through
+     the CSSOM, which wins over these and is CSP-clean. A mismatch with BARS
+     shows immediately as a wrongly-marked median. */
+  .bar:nth-child(1) .body { --b: 5; }
+  .bar:nth-child(2) .body { --b: 3; }
+  .bar:nth-child(3) .body { --b: 8; }
+  .bar:nth-child(4) .body { --b: 6; }
+  .bar:nth-child(5) .body { --b: 12; }
+  .bar:nth-child(6) .body { --b: 4; }
+  .bar:nth-child(7) .body { --b: 7; }
+  .bar:nth-child(8) .body { --b: 10; }
+  .bar:nth-child(9) .body { --b: 5; }
+  .bar:nth-child(10) .body { --b: 9; }
+
+  .bars {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-2xs);
+  }
+
+  .bar {
+    flex: 1 1 0;
+    max-inline-size: 2.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  .body {
+    display: block;
+    block-size: calc(var(--step) * var(--b));
+    background: var(--surface);
+    border: var(--rule);
+  }
+
+  /* A killed bar ends at the ceiling, mid-turn: the kill is status, so the
+     cut edge is allowed the red. */
+  .body.is-killed {
+    border-block-start: 2px solid var(--red);
+  }
+
+  /* What the killed session would have needed — deliberately-not-there
+     territory, in the hatch the other drawings use for it. */
+  .ghost {
+    display: block;
+    block-size: calc(var(--step) * var(--g));
+    background: repeating-linear-gradient(45deg, var(--pending) 0 3px, transparent 3px 10px);
+    border: 1px dashed var(--overlay);
+    border-block-end: none;
+  }
+
+  /* The measured median: the current thing, so it wears the accent. */
+  .bar.is-median .body {
+    outline: 2px solid var(--accent);
+    outline-offset: -1px;
+  }
+
+  .capline {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: calc(var(--step) * var(--cap));
+    margin: 0;
+    border-block-start: 2px dashed var(--red);
+    text-align: end;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .cap-word {
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--red);
+    background: var(--mantle);
+    padding-inline: var(--space-3xs);
+  }
+
+  .legend {
+    margin-block-start: var(--space-s);
+    font-family: var(--mono);
+    font-size: var(--text-micro);
+    color: var(--muted);
+  }
+</style>
