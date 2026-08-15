@@ -885,12 +885,24 @@ function windowFigures(w) {
     must not present them as in flight. The fourth is genuinely paused and
     somebody means to come back to it. Nothing in the store separates those two,
     so `anonymise.json` says which, and a `running` run without a `disposition`
-    is refused rather than guessed at. */
+    is refused rather than guessed at.
+
+    `closed` is the SAME hole and arrived after this was written. Conductor's
+    `run close` verb exists because an engine that was killed, rebooted or reaped
+    with its shell never got to close its own record; an operator writes a
+    terminal status by hand. What that status carries is "somebody closed this
+    record", not "this is how the work ended" — the store still cannot tell the
+    abandoned from the resumable. When those four rows were closed through the
+    new verb they stopped saying `running` and started saying `closed`, and this
+    function waved them straight through to a word RunTable.astro paints in no
+    role. The disposition is the answer for both. */
+const UNRESOLVED = new Set(["running", "closed"]);
+
 function disposition(run, mapped) {
-  if (run.status !== "running") return run.status.toLowerCase();
+  if (!UNRESOLVED.has(run.status.toLowerCase())) return run.status.toLowerCase();
   if (!mapped.disposition) {
     throw new Error(
-      `anonymise.json: run ${short(run.runId)} ("${mapped.label}") is still marked running in the ` +
+      `anonymise.json: run ${short(run.runId)} ("${mapped.label}") is marked ${run.status} in the ` +
         `store, so it needs a "disposition" — "abandoned" or "paused". The store cannot tell a ` +
         `July run whose engine exited from one somebody means to resume, and publishing the ` +
         `wrong one of those is publishing a lie about whether the work is finished.`
