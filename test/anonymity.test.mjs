@@ -105,6 +105,75 @@ test("a public repository is never listed as a private name", () => {
   }
 });
 
+test("a private repository whose whole name is an ordinary word is not an identity", () => {
+  /* The regression this exists for: a private repo directory on the author's
+     machine is called `website`. `keepTokens` already exempted the word — it is
+     in GENERIC beside `site` and `code` — but the whole-name check did not ask,
+     so 69 findings landed on 22 pages, 404.html among them, and the only route
+     to green was deleting the word from the site's English. A rule whose only
+     remedy is "say less" stops being run.
+
+     The identifying form is still forbidden, and that is the whole argument:
+     the PATH keeps its entry, so the directory can never be published. */
+  const generic = forbidden(
+    [...HISTORY, { runId: "2".repeat(32), repo: "C:\\code\\website", plan: "", runDb: "", slug: "a-quiet-round" }],
+    { anonymise: ANONYMISE }
+  );
+
+  assert.ok(!has(generic.names, "website"), "an ordinary noun identifies nobody");
+  assert.ok(!has(generic.tokens, "website"), "and keepTokens already agreed");
+  assert.ok(
+    generic.paths.some((entry) => entry.text === "C:\\code\\website"),
+    "the path is the identifying form and it stays forbidden"
+  );
+
+  /* The exemption is by vocabulary, not by length: a one-word name the site has
+     never had reason to say is still a name. */
+  const distinctive = forbidden(
+    [...HISTORY, { runId: "3".repeat(32), repo: "C:\\code\\harrowgate", plan: "", runDb: "", slug: "a-quiet-round" }],
+    { anonymise: ANONYMISE }
+  );
+  assert.ok(has(distinctive.names, "harrowgate"), "a distinctive one-word name is still forbidden");
+});
+
+test("a run in a public repository is not a secret run", () => {
+  /* The other half of "a public repository is never listed as a private name",
+     which only ever checked one field of three. The karvan run in
+     `C:/code/conductor` is called "the engine knows what it did and what it
+     cost" — a sentence in that engine's own README and release notes — so its
+     slug and every three-word phrase inside it were forbidden on a site whose
+     entire subject is that engine. The page about human-in-the-loop could not
+     write "the engine knows". */
+  const withPublic = forbidden(
+    [
+      ...HISTORY,
+      {
+        runId: "4".repeat(32),
+        repo: "C:\\code\\conductor",
+        plan: "",
+        runDb: "",
+        slug: "conductor-karvan-core---the-engine-knows-what-it-did"
+      }
+    ],
+    { anonymise: ANONYMISE }
+  );
+
+  assert.ok(!has(withPublic.names, "conductor-karvan-core---the-engine-knows-what-it-did"));
+  assert.ok(
+    !withPublic.phrases.has("the engine knows"),
+    "a phrase out of a public repository's run name is not a secret"
+  );
+  assert.ok(
+    withPublic.paths.some((entry) => entry.text === "C:\\code\\conductor"),
+    "the machine path is still forbidden — public repo, private disk"
+  );
+
+  /* And the case the rule exists for is untouched: the private fixture's run
+     name and its phrases stay forbidden. */
+  const { names, phrases } = list();
+  assert.ok(names.length > 0 && phrases.size > 0, "the private fixtures still produce secrets");
+});
+
 test("run names are not a token source, because they are English", () => {
   /* `graph` and `public` are words in the fixture run name and words this site
      writes on purpose. The noisy first version derived tokens from run names

@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-08-13T20:07:58.373Z",
+  "generatedAtUtc": "2026-08-15T04:24:56.695Z",
   "corpus": {
     "totalRuns": {
       "value": 18,
@@ -338,7 +338,7 @@
       "label": "the-first-false-start",
       "scenario": "A first attempt at an orchestrator plan, one session long, stopped before it had cost anything",
       "repoKey": "orchestrator-prototype",
-      "status": "closed",
+      "status": "abandoned",
       "startedUtc": "2026-07-11T22:46:43.4987640+00:00",
       "endedUtc": "2026-07-11T22:47:08.5199762+00:00",
       "runClosed": true,
@@ -519,7 +519,7 @@
       "label": "the-second-false-start",
       "scenario": "The same plan tried again three sessions later, still with no checkpoint declared and no gate green",
       "repoKey": "orchestrator-prototype",
-      "status": "closed",
+      "status": "abandoned",
       "startedUtc": "2026-07-12T00:42:29.4834815+00:00",
       "endedUtc": "2026-07-12T01:02:21.4154679+00:00",
       "runClosed": true,
@@ -881,7 +881,7 @@
       "label": "the-abandoned-prototype",
       "scenario": "A prototype run that reached six of eleven checkpoints and was left there when the work moved elsewhere",
       "repoKey": "orchestrator-prototype",
-      "status": "closed",
+      "status": "abandoned",
       "startedUtc": "2026-07-17T03:54:23.2048771+00:00",
       "endedUtc": "2026-07-17T12:02:55.5059697+00:00",
       "runClosed": true,

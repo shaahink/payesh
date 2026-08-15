@@ -82,6 +82,7 @@ export const GENERIC = [
   "build",
   "site",
   "sites",
+  "website",
   "phase",
   "stage",
   "round",
@@ -249,10 +250,36 @@ export function forbidden(runs, { anonymise, self = "conductor-site" } = {}) {
     keep(paths, run.runDb, "a run store path", 8);
     keep(paths, run.plan, "a plan path", 8);
 
-    keep(names, repoName, "a private repository name", 4);
-    keep(names, run.slug, "a run's real name", 4);
+    /* A repository whose WHOLE name is a word this site is already allowed to
+       say is not an identity, and forbidding it makes the check unfalsifiable:
+       a machine with a private repo directory called `website` reported every
+       page that used the word in prose, 404.html included, and the only way to
+       green was to delete English from the site. keepTokens() has always made
+       this judgement — GENERIC carries site, code, docs, repo, build — so a
+       MULTI-word name never poisoned its parts; the whole-name check just never
+       asked. Nothing is lost: the repository PATH is kept separately below the
+       8-character floor, so `C:\code\website` is still forbidden. It is the
+       bare noun, which identifies nobody, that is exempt. */
+    if (!allowed.has(repoName.toLowerCase()))
+      keep(names, repoName, "a private repository name", 4);
 
     keepTokens(repoName, "a private repository name");
+
+    /* A run in a repository this site is ALLOWED to name is not a secret run.
+       The rule already says so for the repository's own name — `conductor` is in
+       PUBLIC_NAMES and keep() skips it — but it said it in one field out of
+       three, so the run's slug and the phrases inside it stayed forbidden. The
+       karvan era's run in `C:/code/conductor` is called "the engine knows what
+       it did and what it cost"; that sentence is in this engine's own README,
+       CHANGELOG and release notes, and forbidding it meant the field guide could
+       not write "the engine knows" on a page about its own subject.
+
+       Scoped to PUBLIC repositories on purpose. A private repository's run slug
+       stays secret in all three fields — that is the case the check exists for,
+       and `harrowgate-linens` in the fixtures still proves it. */
+    if (publicNames.has(repoName.toLowerCase())) continue;
+
+    keep(names, run.slug, "a run's real name", 4);
 
     /* A three-word run is only worth flagging if it says something the site has
        not already chosen to say. `a four site` is the published scenario; `nine
