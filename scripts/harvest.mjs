@@ -885,15 +885,27 @@ function windowFigures(w) {
     must not present them as in flight. The fourth is genuinely paused and
     somebody means to come back to it. Nothing in the store separates those two,
     so `anonymise.json` says which, and a `running` run without a `disposition`
-    is refused rather than guessed at. */
+    is refused rather than guessed at.
+
+    `closed` is the same problem wearing a tidier word. The engine writes it
+    when a run is closed BY HAND through the CLI (`RunRecord.Closed`: "the run
+    is over and will not be resumed"), which says only that somebody tidied the
+    record — not that the work finished. Those three July runs are `closed` in
+    the store today and were `running` when this script was written; passing the
+    word through would have republished three abandoned runs as a status the
+    site paints in no role, which is how its own corpus test caught it. So a
+    hand-closed run is resolved through `anonymise.json` exactly like a running
+    one, and is refused without a `disposition` for the same reason. */
+const NEEDS_DISPOSITION = new Set(["running", "closed"]);
+
 function disposition(run, mapped) {
-  if (run.status !== "running") return run.status.toLowerCase();
+  if (!NEEDS_DISPOSITION.has(run.status.toLowerCase())) return run.status.toLowerCase();
   if (!mapped.disposition) {
     throw new Error(
-      `anonymise.json: run ${short(run.runId)} ("${mapped.label}") is still marked running in the ` +
-        `store, so it needs a "disposition" — "abandoned" or "paused". The store cannot tell a ` +
-        `July run whose engine exited from one somebody means to resume, and publishing the ` +
-        `wrong one of those is publishing a lie about whether the work is finished.`
+      `anonymise.json: run ${short(run.runId)} ("${mapped.label}") is marked ${run.status} in the ` +
+        `store, so it needs a "disposition" — "abandoned" or "paused". Neither "running" nor ` +
+        `"closed" can tell a July run whose engine exited from one somebody means to resume, and ` +
+        `publishing the wrong one of those is publishing a lie about whether the work is finished.`
     );
   }
   return mapped.disposition;

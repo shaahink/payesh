@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-08-07T11:34:51.033Z",
+  "generatedAtUtc": "2026-08-19T19:11:04.892Z",
   "corpus": {
     "totalRuns": {
       "value": 18,
@@ -340,8 +340,8 @@
       "repoKey": "orchestrator-prototype",
       "status": "abandoned",
       "startedUtc": "2026-07-11T22:46:43.4987640+00:00",
-      "endedUtc": "2026-07-11T22:47:08.5199762Z",
-      "runClosed": false,
+      "endedUtc": "2026-07-11T22:47:08.5199762+00:00",
+      "runClosed": true,
       "figures": {
         "startedOn": {
           "value": 1783810003864,
@@ -352,9 +352,8 @@
         "endedOn": {
           "value": 1783810028519,
           "display": "11 Jul 2026",
-          "label": "last active",
-          "source": "run.db, opened read-only",
-          "note": "the engine exited without closing the record, so this is the last session's end rather than a recorded finish"
+          "label": "ended",
+          "source": "run.db, opened read-only"
         },
         "engineTime": {
           "value": 24656,
@@ -522,8 +521,8 @@
       "repoKey": "orchestrator-prototype",
       "status": "abandoned",
       "startedUtc": "2026-07-12T00:42:29.4834815+00:00",
-      "endedUtc": "2026-07-12T01:02:21.4154679Z",
-      "runClosed": false,
+      "endedUtc": "2026-07-12T01:02:21.4154679+00:00",
+      "runClosed": true,
       "figures": {
         "startedOn": {
           "value": 1783815836606,
@@ -534,9 +533,8 @@
         "endedOn": {
           "value": 1783818141415,
           "display": "12 Jul 2026",
-          "label": "last active",
-          "source": "run.db, opened read-only",
-          "note": "the engine exited without closing the record, so this is the last session's end rather than a recorded finish"
+          "label": "ended",
+          "source": "run.db, opened read-only"
         },
         "engineTime": {
           "value": 1211177,
@@ -885,8 +883,8 @@
       "repoKey": "orchestrator-prototype",
       "status": "abandoned",
       "startedUtc": "2026-07-17T03:54:23.2048771+00:00",
-      "endedUtc": "2026-07-17T12:02:46.5184018Z",
-      "runClosed": false,
+      "endedUtc": "2026-07-17T12:02:55.5059697+00:00",
+      "runClosed": true,
       "figures": {
         "startedOn": {
           "value": 1784245352596,
@@ -898,9 +896,8 @@
         "endedOn": {
           "value": 1784289766518,
           "display": "17 Jul 2026",
-          "label": "last active",
-          "source": "run.db, opened read-only",
-          "note": "the engine exited without closing the record, so this is the last session's end rather than a recorded finish"
+          "label": "ended",
+          "source": "run.db, opened read-only"
         },
         "engineTime": {
           "value": 40764710,
